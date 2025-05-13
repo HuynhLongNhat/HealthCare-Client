@@ -16,11 +16,11 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Pagination from "@/components/Pagination";
-import { deleteClinic, getAllClinics } from "@/api/doctor.api";
+import { deleteClinic, getAllClinics, getAllHealthHandBookByDoctorId } from "@/api/doctor.api";
 import DeleteModal from "@/components/DeleteModal";
 import useAuthToken from "@/utils/userAuthToken";
 
-const ClinicList = () => {
+const MyHandBookList = () => {
   const auth = useAuthToken()
   const {doctorId}  = useParams()
   const navigate = useNavigate();
@@ -32,6 +32,7 @@ const ClinicList = () => {
   const [itemsPerPage] = useState(10);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [dataToDelete, setDataToDelete] = useState(null);
+  const [myHandBooks, setMyHandBooks] = useState();
   useEffect(() => {
     if (Number(auth?.role) === 1) {
       fetchAllClinics(); 
@@ -39,6 +40,10 @@ const ClinicList = () => {
       fetchAllClinicsByDoctorId(); 
     }
   }, [auth?.role]);
+
+  useEffect(() => {
+    fetchAllMyHandbook()
+  }, [])
   const fetchAllClinics = async () => {
     try {
       let res = await getAllClinics();
@@ -59,7 +64,6 @@ const ClinicList = () => {
     
       if (res && res.EC === 0) {
         const filteredClinics = res.DT.filter(clinic => Number(clinic.doctor_id) === Number(doctorId));
-       console.log("Filtered clinics:", filteredClinics);
         setClinics(filteredClinics); 
       }
     } catch (error) {
@@ -67,6 +71,14 @@ const ClinicList = () => {
     } finally {
       setLoading(false);  
     }
+  }
+
+  const fetchAllMyHandbook = async () => {
+    const res = await getAllHealthHandBookByDoctorId(doctorId);
+    console.log("Res" ,res)
+    if (res.EC === 0) {
+      setMyHandBooks(res.DT)
+   }
   }
   
   const filteredData = clinics?.filter((clinic) => {
@@ -115,24 +127,24 @@ const ClinicList = () => {
           </li>
           <li
             className="text-blue-500 cursor-pointer"
-            onClick={() => navigate("/clinics")}
+            onClick={() => navigate("/cam-nang-suc-khoe")}
           >
-            Danh sách cơ sở y tế
+          Cẩm nang sức khỏe
           </li>
           <li>
             <span className="mx-2">/</span>
           </li>
-          <li className="text-gray-500">Cơ sở của tôi</li>
+          <li className="text-gray-500">Bài viết của tôi</li>
         </ol>
       </nav>
       <Card className="mt-5">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Danh sách cơ sở y tế
+              Danh sách bài viết
             </h1>
             <p className="text-gray-600 dark:text-gray-300 my-2">
-              Quản lý thông tin các cơ sở y tế
+              Quản lý thông tin các bài viết của tôi
             </p>
           </div>
 
@@ -151,10 +163,10 @@ const ClinicList = () => {
             />
             <Button
               className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center"
-              onClick={() => navigate(`/doctor/${doctorId}/clinics/create`)}
+              onClick={() => navigate(`/doctor/${doctorId}/handbooks/create`)}
             >
               <Plus className="mr-2" size={16} />
-              Thêm cơ sở y tế
+              Thêm bài viết
             </Button>
           </div>
           <div className="rounded-md border">
@@ -162,22 +174,22 @@ const ClinicList = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[80px] text-center">ID</TableHead>
-                  <TableHead className="text-left">Tên cơ sở y tế</TableHead>
-                  <TableHead className="text-left">Bác sĩ</TableHead>
+                  <TableHead className="text-left">Tên bài viết</TableHead>
+                  <TableHead className="text-left">Tác giả</TableHead>
                   <TableHead className="text-center">Ngày tạo</TableHead>
                   <TableHead className="text-right">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {currentData.map((clinic) => (
-                  <TableRow key={clinic.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <TableCell className="text-center font-semibold">{clinic?.id}</TableCell>
-                    <TableCell className="text-left">{clinic.name}</TableCell>
-                    <TableCell className="text-left">{clinic?.doctor?.DT.userData?.full_name
+                {myHandBooks?.map((handbook) => (
+                  <TableRow key={handbook.handbook?.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <TableCell className="text-center font-semibold">{handbook?.handbook.id}</TableCell>
+                    <TableCell className="text-left">{handbook?.handbook?.title}</TableCell>
+                    <TableCell className="text-left">{handbook?.userData?.full_name
                     }</TableCell>
 
                     <TableCell className="text-center">
-                      {clinic.createdAt ? moment(clinic.createdAt).format('DD/MM/YYYY') : ''}
+                      {handbook.handbook.createdAt ? moment(handbook.handbook.createdAt).format('DD/MM/YYYY') : ''}
                     </TableCell>
                     <TableCell className="text-right">
                       <Popover>
@@ -200,7 +212,7 @@ const ClinicList = () => {
                             <Button
                               variant="ghost"
                               className="flex items-center justify-start gap-2 px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-blue-950"
-                              onClick={() => navigate(`/clinics/${clinic.id}`)}
+                              onClick={() => navigate(`/clinics/${handbook?.handbook.id}`)}
                             >
                               <Eye className="h-4 w-4" />
                               <span>Xem</span>
@@ -208,7 +220,7 @@ const ClinicList = () => {
                             <Button
                               variant="ghost"
                               className="flex items-center justify-start gap-2 px-2 py-1 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-blue-950"
-                              onClick={() => openDeleteModal(clinic)}
+                              onClick={() => openDeleteModal(handbook)}
                             >
                               <Trash className="h-4 w-4" />
                               <span>Xóa</span>
@@ -248,4 +260,4 @@ const ClinicList = () => {
   );
 };
 
-export default ClinicList;
+export default MyHandBookList;

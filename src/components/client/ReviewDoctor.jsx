@@ -4,18 +4,19 @@ import {
   getDoctorRatingsByDoctorId,
 } from "@/api/doctor.api";
 import { Button } from "@/components/ui/button";
-import { getAuth } from "@/utils/getAuth";
 import { Star, Plus, Trash, Edit } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import AddRatingDialog from "./AddRatingDoctor";
 import EditRatingDialog from "./EditRatingDoctor";
 import DeleteModal from "../DeleteModal";
 import moment from "moment";
+import useAuthToken from "@/utils/userAuthToken";
 
 const ReviewDoctor = () => {
-  const auth = getAuth();
+  const auth = useAuthToken();
+  const navigate = useNavigate();
   const { doctorId } = useParams();
   const [ratings, setRatings] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -169,16 +170,26 @@ const ReviewDoctor = () => {
               {ratings?.length}
             </span>
           </h3>
+  {auth === null ? (
+    
+<span
+  onClick={() => navigate("/login")}
+  className="text-blue-600 cursor-pointer hover:underline hover:text-blue-800 transition"
+>
+  Đăng nhập để thêm đánh giá
+</span>
+  ) : (
+    <Button
+      onClick={() => setIsAddDialogOpen(true)}
+      variant="default"
+      className="mt-4 md:mt-0 bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+    >
+      <Plus size={16} />
+      <span>Thêm đánh giá</span>
+    </Button>
+  )}
+</div>
 
-          <Button
-            onClick={() => setIsAddDialogOpen(true)}
-            variant="default"
-            className="mt-4 md:mt-0 bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
-          >
-            <Plus size={16} />
-            <span>Thêm đánh giá</span>
-          </Button>
-        </div>
 
         {ratings?.length > 0 ? (
           <div className="space-y-6">
@@ -230,7 +241,7 @@ const ReviewDoctor = () => {
                   </div>
 
                   {/* Edit and delete buttons - positioned far right */}
-                  {auth.userId === rating.rating.patient_id && (
+                  {auth?.userId === rating?.rating?.patient_id && (
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity sm:opacity-100">
                       <Button
                         onClick={() => handleEditRating(rating)}

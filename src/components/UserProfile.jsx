@@ -13,21 +13,20 @@ import {
   Lock,
   Globe,
   UserCircle,
-  ArrowLeft,
   Home,
 } from "lucide-react";
 import axios from "axios";
 import moment from "moment";
 import { toast } from "react-toastify";
-import { getAuth } from "@/utils/getAuth";
 import { getUserProfile, updateUserProfile } from "@/api/auth.api";
-import { Link, useParams } from "react-router-dom";
+import { Form, Link, useParams } from "react-router-dom";
 import { getDistricts, getProvinces, getWards } from "@/api/address.api";
 import { Button } from "./ui/button";
+import useAuthToken from "@/utils/userAuthToken";
 
 const UserProfile = () => {
   const { userId } = useParams();
-  const auth = getAuth();
+  const auth = useAuthToken();
   const [isLoading, setIsLoading] = useState(false);
   const [avatar, setAvatar] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -193,8 +192,13 @@ const UserProfile = () => {
     setIsLoading(true);
     try {
       const updateData = {
-        ...formData,
-        dob : formData.dob ?  formData : null,
+        full_name: formData.fullname,
+        username: formData.username,
+        email: formData.email,
+        gender: formData.gender,
+        phone_number: formData.phone,
+        address : formData.address ,
+        dob : formData.dob ?  formData.dob : null,
         profile_picture: avatarUrl || avatar,
       };
       const response = await updateUserProfile(userId, updateData);
@@ -202,6 +206,12 @@ const UserProfile = () => {
         await fetchUserProfile();
         toast.success("Cập nhật thông tin thành công");
         setIsEditing(false);
+      }
+      if (response.EC === -1) {
+        toast.error(response.EM)
+      }
+        if (response.EC === -2) {
+        toast.error(response.EM)
       }
     } catch (error) {
       toast.error(
@@ -228,7 +238,8 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 mt-20 bg-white shadow-sm rounded-lg">
+       <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg">
+
 
     <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
         <ol className="list-reset flex">
@@ -374,7 +385,8 @@ const UserProfile = () => {
                     onChange={handleInputChange}
                     className={`w-full px-4 py-2 rounded-lg border ${
                       errors.email ? "border-red-500" : "border-gray-300"
-                    } dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+                      } dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+                    disabled={true}
                   />
                   {errors.email && (
                     <p className="text-red-500 text-sm">{errors.email}</p>
@@ -523,7 +535,7 @@ const UserProfile = () => {
             <div className="space-y-8">
               <div className="flex justify-between items-center">
                 <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
-                  Thông tin chi tiết
+                  Thông tin cá nhân
                 </h3>
                 {Number(userId) === Number(auth?.userId) && (
                   <Button

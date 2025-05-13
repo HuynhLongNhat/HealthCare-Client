@@ -97,6 +97,9 @@ export const deleteScheduleById = (scheduleId) =>{
    return axios.delete(`doctors/schedules/${scheduleId}`)
 }
 
+export const updateScheduleById = (doctorId ,scheduleId , data) => {
+     return axios.put(`doctors/${doctorId}/schedules/${scheduleId}` , data)
+}
 
 export const getAllDoctorBySpecialization = (specializationId) =>{
   return axios.get(`doctors/specializations/${specializationId}/doctors`)
@@ -119,3 +122,26 @@ export const getDoctorRatingsByDoctorId = (doctorId) => {
 export const updateRatingDoctor = (ratingId ,data) => {
   return axios.put(`doctors/ratings/${ratingId}`,data);
 };
+
+export const getAllHealthHandBook = () =>{
+  return axios.get('/doctors/all/handbooks')
+}
+
+export const getLatestlHealthHandBook = () =>{
+  return axios.get('/doctors/latest/handbooks')
+}
+
+export const getOutStandinglHealthHandBook = () =>{
+  return axios.get('/doctors/outstanding/handbooks')
+}
+export const getAllHealthHandBookByDoctorId = (doctorId) =>{
+  return axios.get(`/doctors/all/handbooks/doctor/${doctorId}`)
+
+}
+export const createNewHealthHandbook = (data) => {
+  return axios.post(`doctors/handbook`,data);
+};
+
+export const getDetailHealthHandBook = (slug) =>{
+  return axios.get(`/doctors/handbooks/${slug}`)
+}

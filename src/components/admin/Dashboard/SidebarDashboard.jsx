@@ -13,12 +13,13 @@ import {
   Building,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { getAuth } from "@/utils/getAuth";
+import useAuthToken from "@/utils/userAuthToken";
 
 const SidebarDashBoard = () => {
   const [expanded, setExpanded] = useState(true);
   const [doctorMenuOpen, setDoctorMenuOpen] = useState(false);
-  const auth = getAuth();
+  const auth = useAuthToken();
+  console.log("auth" , auth)
 
   const menuAdmin = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
@@ -41,7 +42,8 @@ const SidebarDashBoard = () => {
       label: "Bác sĩ",
       subItems: [
         { icon: Building, label: "Cơ sở y tế", path: "/doctor/clinics" },
-        { icon: Briefcase, label: "Bác sĩ", path: `/doctor/${auth.userId}` },
+        { icon: Briefcase, label: "Bác sĩ", path: `/doctor/${auth?.userId
+}` },
       ],
     },
     { icon: Calendar, label: "Lịch hẹn", path: "/admin/appointment" },

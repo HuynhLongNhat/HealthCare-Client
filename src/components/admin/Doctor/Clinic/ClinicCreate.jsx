@@ -8,7 +8,6 @@ import * as z from "zod";
 import { getProvinces, getDistricts, getWards } from "@/api/address.api";
 import { createClinic, getAllDoctors } from "@/api/doctor.api";
 import { toast } from "react-toastify";
-import { getAuth } from "@/utils/getAuth";
 import MarkdownEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import { ComboBox } from "@/components/Combobox";
@@ -19,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ReactMarkdown from 'react-markdown';
 import 'highlight.js/styles/github-dark.css';
+import useAuthToken from "@/utils/userAuthToken";
 // ===== Validation Schema =====
 const clinicFormSchema = z.object({
   name: z.string().min(1, "Tên cơ sở y tế không được để trống"),
@@ -31,7 +31,7 @@ const clinicFormSchema = z.object({
 });
 
 const ClinicCreate = () => {
-  const auth = getAuth();
+  const auth = useAuthToken();
   const {doctorId}  = useParams()
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);

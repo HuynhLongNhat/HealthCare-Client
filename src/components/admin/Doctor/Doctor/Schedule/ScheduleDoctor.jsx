@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
-import { Plus, Calendar, Clock, MapPin, Building, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
+import { Plus, Calendar, MapPin, Building, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AddAppointmentDialog from "./AddScheduleDialog";
 import DoctorScheduleInfo from "./DoctorScheduleInfo";
@@ -8,7 +8,7 @@ import PatientNotifications from "./PatientNotifications";
 import { getDoctorSchedulesByClinic } from "@/api/doctor.api";
 import { useParams } from "react-router-dom";
 import ScheduleList from "./ScheduleList";
-import { getAuth } from "@/utils/getAuth";
+import useAuthToken from "@/utils/userAuthToken";
 
 const ScheduleDoctor = ({ doctor }) => {
   const { doctorId } = useParams();
@@ -17,7 +17,7 @@ const ScheduleDoctor = ({ doctor }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [expandedClinics, setExpandedClinics] = useState({});
   const [selectedClinic, setSelectedClinic] = useState(null);
-  const auth = getAuth()
+  const auth = useAuthToken()
   useEffect(() => {
     fetchAllDoctorSchedules();
   }, [doctorId]);
@@ -82,7 +82,9 @@ const ScheduleDoctor = ({ doctor }) => {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-3 mb-6">
             <Calendar className="h-7 w-7 text-blue-500" />
-            <h1 className="text-2xl font-bold text-blue-500">Lịch làm việc bác sĩ</h1>
+            <h1 className="text-2xl font-bold text-blue-500">
+              Lịch làm việc bác sĩ
+            </h1>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5">
             <DoctorScheduleInfo doctor={doctor} />
@@ -99,9 +101,12 @@ const ScheduleDoctor = ({ doctor }) => {
             </div>
           ) : doctor?.doctor?.clinics?.length > 0 ? (
             <div className="">
-              {doctor.doctor.clinics.map(clinic => (
-                <div key={clinic.id} className="bg-white rounded-xl shadow-sm overflow-hidden transition-all hover:shadow-md">
-                  <div 
+              {doctor.doctor.clinics.map((clinic) => (
+                <div
+                  key={clinic.id}
+                  className="bg-white rounded-xl shadow-sm overflow-hidden transition-all hover:shadow-md"
+                >
+                  <div
                     className="px-6 py-4 border-b border-gray-100 cursor-pointer transition-all"
                     onClick={() => toggleClinic(clinic.id)}
                   >
@@ -111,10 +116,14 @@ const ScheduleDoctor = ({ doctor }) => {
                           <Building className="h-5 w-5 text-indigo-600" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-800">{clinic.name}</h3>
+                          <h3 className="text-lg font-semibold text-gray-800">
+                            {clinic.name}
+                          </h3>
                           <div className="flex items-center text-sm text-gray-500 mt-1">
                             <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-                            <span className="truncate max-w-md">{clinic.address}</span>
+                            <span className="truncate max-w-md">
+                              {clinic.address}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -122,10 +131,11 @@ const ScheduleDoctor = ({ doctor }) => {
                         <span className="text-sm font-medium bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full">
                           {schedules[clinic.id]?.length || 0} lịch khám
                         </span>
-                        {expandedClinics[clinic.id] ? 
-                          <ChevronUp className="h-5 w-5 text-gray-400" /> : 
+                        {expandedClinics[clinic.id] ? (
+                          <ChevronUp className="h-5 w-5 text-gray-400" />
+                        ) : (
                           <ChevronDown className="h-5 w-5 text-gray-400" />
-                        }
+                        )}
                       </div>
                     </div>
                   </div>
@@ -133,21 +143,26 @@ const ScheduleDoctor = ({ doctor }) => {
                   {expandedClinics[clinic.id] && (
                     <div className="mt-3">
                       <div className="flex justify-between items-center mb-5">
-                        
-                        {auth.role !== 3 && (
-                          <Button
-                            onClick={() => openAddDialog(clinic.id)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 text-sm flex items-center gap-2 transition-all shadow-sm"
-                          >
-                            <Plus size={18} />
-                            Thêm lịch mới
-                          </Button>)}
+                        <div className="flex-1" />
+                        {(auth === null || auth?.role !== 3) && (
+                          <div className="flex justify-end mr-5">
+                            <Button
+                              variant="info"
+                              onClick={() => openAddDialog(clinic.id)}
+                            >
+                              <Plus size={18} />
+                              Thêm lịch mới
+                            </Button>
+                          </div>
+                        )}
                       </div>
 
                       {schedules[clinic.id]?.length > 0 ? (
                         <ScheduleList
                           schedules={schedules[clinic.id]}
-                          onUpdate={(updated) => handleUpdateAppointment(clinic.id, updated)}
+                          onUpdate={(updated) =>
+                            handleUpdateAppointment(clinic.id, updated)
+                          }
                           fetch={fetchAllDoctorSchedules}
                         />
                       ) : (
@@ -155,11 +170,13 @@ const ScheduleDoctor = ({ doctor }) => {
                           <div className="bg-gray-100 rounded-full p-3 mb-3">
                             <Calendar className="h-8 w-8 text-gray-400" />
                           </div>
-                          <h3 className="text-lg font-medium text-gray-700 mb-2">Chưa có lịch khám</h3>
+                          <h3 className="text-lg font-medium text-gray-700 mb-2">
+                            Chưa có lịch khám
+                          </h3>
                           <p className="text-sm text-gray-500 max-w-md mb-4">
-                            Bạn chưa có lịch khám nào tại phòng khám này. Thêm lịch khám để bắt đầu.
+                            Bạn chưa có lịch khám nào tại phòng khám này. Thêm
+                            lịch khám để bắt đầu.
                           </p>
-                        
                         </div>
                       )}
                     </div>
@@ -172,9 +189,12 @@ const ScheduleDoctor = ({ doctor }) => {
               <div className="bg-gray-100 rounded-full p-4 mb-4">
                 <Building className="h-10 w-10 text-gray-400" />
               </div>
-              <h3 className="text-xl font-medium text-gray-700 mb-3">Bác sĩ chưa có phòng khám</h3>
+              <h3 className="text-xl font-medium text-gray-700 mb-3">
+                Bác sĩ chưa có phòng khám
+              </h3>
               <p className="text-base text-gray-500 max-w-md mb-6">
-                Hiện tại bác sĩ chưa được gắn với bất kỳ phòng khám nào. Vui lòng liên hệ quản trị viên để cập nhật thông tin.
+                Hiện tại bác sĩ chưa được gắn với bất kỳ phòng khám nào. Vui
+                lòng liên hệ quản trị viên để cập nhật thông tin.
               </p>
               <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm">
                 Liên hệ hỗ trợ

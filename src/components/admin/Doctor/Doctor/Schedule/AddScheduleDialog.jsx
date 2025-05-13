@@ -74,8 +74,6 @@ const AddAppointmentDialog = ({ open, onOpenChange, clinicId, fetch }) => {
 
   const handleAddAllAppointments = async () => {
     if (appointments.length === 0) return;
-    console.log("appointments", appointments);
-
     const res = await addSchedule(doctorId, clinicId, appointments);
     if (res.EC === 0) {
       toast.success(res.EM);
@@ -137,7 +135,7 @@ const AddAppointmentDialog = ({ open, onOpenChange, clinicId, fetch }) => {
       <DialogContent className="sm:max-w-[640px] p-6">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-primary">
-            Thêm lịch khám mới
+            Thêm lịch khám bệnh mới
           </DialogTitle>
         </DialogHeader>
 
@@ -150,12 +148,12 @@ const AddAppointmentDialog = ({ open, onOpenChange, clinicId, fetch }) => {
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full flex items-center justify-between text-left font-normal",
                     !date && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
                   {date ? format(date, "PPPP", { locale: vi }) : "Chọn ngày"}
+                  <CalendarIcon className="h-4 w-4" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -172,7 +170,7 @@ const AddAppointmentDialog = ({ open, onOpenChange, clinicId, fetch }) => {
 
           {/* Khung giờ */}
           <div className="border p-4 rounded-lg space-y-4">
-            <h4 className="font-semibold text-lg">Thêm khung giờ</h4>
+            <h4 className="font-semibold text-lg  ">Thêm khung giờ</h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -216,9 +214,9 @@ const AddAppointmentDialog = ({ open, onOpenChange, clinicId, fetch }) => {
               </div>
             </div>
 
-            <div className="pt-2">
+            <div className="pt-2 flex justify-end">
               <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                variant="info"
                 onClick={handleAddTimeSlot}
                 disabled={!date || !startTime || !endTime}
               >

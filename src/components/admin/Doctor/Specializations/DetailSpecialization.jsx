@@ -29,10 +29,10 @@ import {
   getAllDoctorBySpecialization,
   getSpecializationsById,
 } from "@/api/doctor.api";
-import { getAuth } from "@/utils/getAuth";
+import useAuthToken from "@/utils/userAuthToken";
 const DetailSpecialization = () => {
   const { specializationId } = useParams();
-  const auth = getAuth();
+  const auth = useAuthToken();
   const navigate = useNavigate();
   const [doctors, setDoctors] = useState([]);
   const [specialization, setSpecialization] = useState(null);
@@ -56,7 +56,6 @@ const DetailSpecialization = () => {
 
   const fetchAllDoctorsBySpecialization = async () => {
     const res = await getAllDoctorBySpecialization(specializationId);
-    console.log("fetchAllDoctorsBySpecialization", res);
     if (res.EC === 0) {
       setDoctors(res.DT);
     }

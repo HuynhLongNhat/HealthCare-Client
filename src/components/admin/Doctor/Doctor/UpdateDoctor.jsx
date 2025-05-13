@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User, Star, Save } from "lucide-react";
+import { User, Star, Save, Home } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -34,7 +34,7 @@ import {
   getDoctorById,
   updateDoctorProfile,
 } from "@/api/doctor.api";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import MarkdownIt from "markdown-it";
 import MdEditor from "react-markdown-editor-lite";
 
@@ -126,7 +126,44 @@ const UpdateDoctor = () => {
     }
   };
   return (
-    <div className="container mx-auto py-8 px-4 max-w-3xl">
+ 
+     <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg mb-3">
+      <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
+        <ol className="list-reset flex">
+          <li>
+            <Link to="/" className="text-blue-600 hover:underline">
+              <Home size={18} />
+            </Link>
+          </li>
+          <li>
+            <span className="mx-2">/</span>
+          </li>
+          <li
+            className="text-blue-500 cursor-pointer"
+            onClick={() => navigate("/doctors")}
+          >
+           Danh sách bác sĩ
+          </li>
+          <li>
+            <span className="mx-2">/</span>
+          </li>
+           <li
+            className="text-blue-500 cursor-pointer"
+            onClick={() => navigate(`/doctor/${doctorId}`)}
+          >
+            {form.watch("name")}
+          </li>
+          <li>
+            <span className="mx-2">/</span>
+          </li> 
+           <li
+         
+          >
+           Cập nhật
+          </li>
+          </ol>
+         
+      </nav>
       <Card className="shadow-lg border-0">
         <CardHeader className="bg-gradient-to-r from-blue-100 to-indigo-50 rounded-t-lg">
           <CardTitle className="text-2xl font-bold text-blue-800 flex items-center gap-2">

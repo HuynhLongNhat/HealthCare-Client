@@ -30,6 +30,20 @@ export const changePassword = (userData) => {
   return axios.post("/users/change-password", userData);
 };
 
+export const forgotPassword = (userData) => {
+  return axios.post(
+    "/users/forgot-password",
+    userData,
+  );
+};
+
+export const resetPassword = (userData) => {
+  return axios.post(
+    "/users/reset-password",
+    userData,
+    
+  );
+};
 export const getUserProfile = (userId) => {
   return axios.get(`/users/profile/${userId}`);
 };

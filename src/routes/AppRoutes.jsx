@@ -24,35 +24,58 @@ import UpdateDoctor from "@/components/admin/Doctor/Doctor/UpdateDoctor";
 import ScheduleList from "@/components/admin/Doctor/Schedule/ScheduleList";
 import ScheduleDetail from "@/components/admin/Doctor/Schedule/ScheduleDetail";
 import NotFoundPage from "@/pages/NotFoundPage";
-import LoginForm from "@/components/LoginForm";
-import SignupForm from "@/components/SignUpForm";
-import ConfirmCode from "@/components/ConfirmCode";
-import ForgotPassword from "@/components/ForgotPassword";
-import ResetPassword from "@/components/ResetPassword";
 import ListSpecialization from "@/components/client/ListSpecialization";
 import ListClinics from "@/components/client/ListClinics";
 import ListDoctor from "@/components/client/ListDoctor";
-
 import DashboardDoctor from "@/components/admin/Dashboard/DashboardDoctor";
-import Login from "@/components/clerk/Login";
-import Registers from "@/components/clerk/Registers";
-
+import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
+import ResetPasswordPage from "@/pages/ResetPasswordPage";
+import ConfirmCodePage from "@/pages/ConfirmCodePage";
+import ListHealthHandBook from "@/components/client/ListHealthHandBook";
+import HealthHandbookDetail from "@/components/client/HealthHandbookDetail";
+import EditHandBook from "@/components/admin/Doctor/HandleBook/EditHandBook";
+import MyHandBookList from "@/components/admin/Doctor/HandleBook/MyHandBookList";
+import CreateNewHandBook from "@/components/admin/Doctor/HandleBook/CreateNewHandBook";
 
 const AppRoutes = () => {
   return (
     <>
       <Suspense fallback={<Loading />}>
         <Routes>
-          <Route path="/sign-in" element={<Login />} />
-          <Route path="/sign-up" element={<Registers />} />
-                      <Route path="/" element={<HomePage />} />
-
+          <Route path="/" element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="doctor/:doctorId" element={<DoctorProfile />} />
+            <Route path="clinics" element={<ListClinics />} />
+            <Route path="clinics/:clinicId" element={<ClinicDetail />} />
+            <Route path="specializations" element={<ListSpecialization />} />
+            <Route
+              path="specializations/:specializationId"
+              element={<DetailSpecialization />}
+            />
+            <Route
+              path="/cam-nang-suc-khoe/:slug"
+              element={<HealthHandbookDetail />}
+            />
+             <Route
+              path="/cam-nang-suc-khoe/:slugHandbook/cap-nhat"
+              element={<EditHandBook />}
+            />
+               
+            <Route
+              path="/cam-nang-suc-khoe"
+              element={<ListHealthHandBook />}
+            />
+            <Route path="/doctors" element={<ListDoctor />} />
+        
+          </Route>
           <Route element={<PublicRoute />}>
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/register" element={<SignupForm />} />
-            <Route path="/verify-code" element={<ConfirmCode />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/verify-code" element={<ConfirmCodePage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Route>
           <Route
             path="/"
@@ -62,26 +85,26 @@ const AppRoutes = () => {
               </PrivateRoute>
             }
           >
-            <Route index element={<HomePage />} />
             <Route path="/profile/:userId" element={<UserProfile />} />
-            <Route path="/doctor/:doctorId" element={<DoctorProfile />} />
-            <Route path="/clinics" element={<ListClinics />} />
-            <Route path="/clinics/:clinicId" element={<ClinicDetail />} />
-            <Route path="/specializations" element={<ListSpecialization />} />
-            <Route
-              path="specializations/:specializationId"
-              element={<DetailSpecialization />}
-            />
-
-            <Route path="/doctors" element={<ListDoctor />} />
             <Route path="/doctor/:doctorId/clinics" element={<ClinicList />} />
-            <Route path="/doctor/:doctorId/clinics/create" element={<ClinicCreate />} />
-            <Route path="/doctor/:doctorId/clinics/:clinicId/update" element={<ClinicUpdate />} />
-
-
-              <Route path="/doctors" element={<ListDoctor />} />
-
-
+            <Route
+              path="/doctor/:doctorId/clinics/create"
+              element={<ClinicCreate />}
+            />
+            <Route
+              path="/doctor/:doctorId/clinics/:clinicId/update"
+              element={<ClinicUpdate />}
+            />
+            <Route path="/doctor/:doctorId/handbooks" element={<MyHandBookList />} />
+             <Route
+              path="/doctor/:doctorId/handbooks/create"
+              element={<CreateNewHandBook />}
+            />
+            <Route
+              path="/doctor/:doctorId/handbooks/:handbookId/update"
+              element={<ClinicUpdate />}
+            />
+            <Route path="/doctor/:doctorId/update" element={<UpdateDoctor />} />
           </Route>
           <Route
             path="/admin"
@@ -107,16 +130,8 @@ const AppRoutes = () => {
               </PrivateRoute>
             }
           >
-              <Route path="dashboard" element={<DashboardDoctor />} />
+            <Route path="dashboard" element={<DashboardDoctor />} />
             {/* <Route index element={<DoctorList />} /> */}
-
-            {/* Clinics */}
-            <Route path="clinics">
-              <Route index element={<ClinicList />} />
-              <Route path="create" element={<ClinicCreate />} />
-              <Route path=":clinicId" element={<ClinicDetail />} />
-              <Route path=":clinicId/update" element={<ClinicUpdate />} />
-            </Route>
 
             {/* Specializations */}
             <Route path="specializations" element={<SpecializationList />} />
@@ -136,7 +151,7 @@ const AppRoutes = () => {
             {/* Doctors */}
             <Route path="" element={<DoctorList />} />
             <Route path=":doctorId" element={<DoctorProfile />} />
-            <Route path=":doctorId/update" element={<UpdateDoctor />} />
+
             <Route path="doctors/all/schedules" element={<ScheduleList />} />
             <Route
               path="doctors/:doctorId/schedules/:scheduleId"

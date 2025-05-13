@@ -88,7 +88,6 @@ const ListDoctor = () => {
               className="text-blue-600 hover:underline flex items-center"
             >
               <Home size={18} className="mr-1" />
-
             </Link>
           </li>
           <li>
@@ -98,59 +97,59 @@ const ListDoctor = () => {
         </ol>
       </nav>
       <div className="flex flex-wrap items-center justify-between mb-6">
-  {/* Tiêu đề bên trái */}
-  <h1 className="text-2xl font-bold text-gray-800">Danh sách bác sĩ</h1>
+        {/* Tiêu đề bên trái */}
+        <h1 className="text-2xl font-bold text-gray-800">Danh sách bác sĩ</h1>
 
-  {/* Bộ lọc nằm bên phải */}
-  <div className="flex flex-col md:flex-row items-start md:items-center gap-4 ml-auto mt-4 md:mt-0">
-    {/* Lọc chức vụ */}
-    <Select
-      value={
-        positions.find((pos) => pos.value === positionFilter) || {
-          value: "",
-          label: "Tất cả chức vụ",
-        }
-      }
-      onChange={(selectedOption) => {
-        setPositionFilter(selectedOption?.value || "");
-      }}
-      options={[{ value: "", label: "Tất cả chức vụ" }, ...positions]}
-      className="w-64"
-      placeholder="Chọn chức vụ..."
-      isClearable
-    />
+        {/* Bộ lọc nằm bên phải */}
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 ml-auto mt-4 md:mt-0">
+          {/* Lọc chức vụ */}
+          <Select
+            value={
+              positions.find((pos) => pos.value === positionFilter) || {
+                value: "",
+                label: "Tất cả chức vụ",
+              }
+            }
+            onChange={(selectedOption) => {
+              setPositionFilter(selectedOption?.value || "");
+            }}
+            options={[{ value: "", label: "Tất cả chức vụ" }, ...positions]}
+            className="w-64"
+            placeholder="Chọn chức vụ..."
+            isClearable
+          />
 
-    {/* Lọc chuyên khoa */}
-    <Select
-      options={specializationOptions}
-      value={
-        specializationOptions.find(
-          (option) => option.value === selectedSpecialization
-        ) || { value: "", label: "Tất cả chuyên khoa" }
-      }
-      onChange={(selectedOption) => {
-        setSelectedSpecialization(selectedOption.value);
-      }}
-      placeholder="Chọn chuyên khoa..."
-      isClearable
-      className="w-64"
-    />
+          {/* Lọc chuyên khoa */}
+          <Select
+            options={specializationOptions}
+            value={
+              specializationOptions.find(
+                (option) => option.value === selectedSpecialization
+              ) || { value: "", label: "Tất cả chuyên khoa" }
+            }
+            onChange={(selectedOption) => {
+              setSelectedSpecialization(selectedOption.value);
+            }}
+            placeholder="Chọn chuyên khoa..."
+            isClearable
+            className="w-64"
+          />
 
-    {/* Ô tìm kiếm */}
-    <div className="relative w-64">
-      <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
-      <Input
-        type="text"
-        placeholder="Tìm kiếm..."
-        className="pl-8"
-        value={searchTerm}
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-        }}
-      />
-    </div>
-  </div>
-</div>
+          {/* Ô tìm kiếm */}
+          <div className="relative w-64">
+            <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Tìm kiếm..."
+              className="pl-8"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+              }}
+            />
+          </div>
+        </div>
+      </div>
 
       <div className="text-sm text-gray-500 mb-4">
         Tìm thấy {filteredDoctors.length} kết quả

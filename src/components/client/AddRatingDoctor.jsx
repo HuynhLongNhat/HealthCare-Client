@@ -10,13 +10,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { getAuth } from "@/utils/getAuth";
+import useAuthToken from "@/utils/userAuthToken";
 import { Check, Star, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 const AddRatingDialog = ({ open, onOpenChange, doctorId, onSuccess }) => {
-  const auth = getAuth();
+  const auth = useAuthToken();
   const [newReview, setNewReview] = useState({
     ratings: {
       expertise: 5,

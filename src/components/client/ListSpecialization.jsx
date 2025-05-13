@@ -57,7 +57,7 @@ const ListSpecialization = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Tìm kiếm cơ sở y tế..."
+                  placeholder="Tìm kiếm chuyên khoa..."
                   className="pl-10"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}

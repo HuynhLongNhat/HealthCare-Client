@@ -1,10 +1,17 @@
-import { getAuth } from "@/utils/getAuth";
+import Loading from "@/components/Loading";
+import useAuthToken from "@/utils/userAuthToken";
 import { Navigate, Outlet } from "react-router-dom";
-// eslint-disable-next-line react/prop-types
+
 const PublicRoute = () => {
-  const auth = getAuth();
+  const auth = useAuthToken();
+  if (auth === undefined) {
+    return (
+    <Loading/>
+    );
+  }
+
   if (auth) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

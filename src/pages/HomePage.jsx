@@ -1,8 +1,8 @@
 import Header from "@/components/Header";
-import { AppDownloadSection } from "@/components/home/AppDownloadSection";
 import ClinicSection from "@/components/home/ClinicSection";
 import  DoctorSection  from "@/components/home/DoctorSection";
 import { FeaturesSection } from "@/components/home/FeaturesSection";
+import HealthHandbookSection from "@/components/home/HealthHandbookSection";
 import { HeroSection } from "@/components/home/HeroSection";
 import { ServicesSection } from "@/components/home/ServicesSection";
 import  SpecialtySection  from "@/components/home/SpecialtySection";
@@ -17,9 +17,9 @@ const HomePage = () => (
       <SpecialtySection />
       <ClinicSection/>
       <DoctorSection />
+      <HealthHandbookSection/>
       <FeaturesSection />
       <ServicesSection />
-      <AppDownloadSection />
       <StatsSection />
 
       {/* Custom CSS for hiding scrollbars */}

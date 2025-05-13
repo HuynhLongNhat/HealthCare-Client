@@ -18,74 +18,13 @@ import { getClinicDetail } from "@/api/doctor.api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import "highlight.js/styles/github-dark.css";
-import { getAuth } from "@/utils/getAuth";
+import useAuthToken from "@/utils/userAuthToken";
 const ClinicDetail = () => {
-  const auth = getAuth();
+  const auth = useAuthToken();
   const { clinicId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [clinic, setClinic] = useState(null);
   const [clinicDetail, setClinicDetail] = useState();
-
-  useEffect(() => {
-    // Simulating API call to fetch clinic data
-    const fetchClinicData = async () => {
-      try {
-        // Replace with actual API call
-        setTimeout(() => {
-          setClinic({
-            id: clinicId || "1",
-            name: "Phòng khám Đa khoa Quốc tế ABC",
-            address: "123 Đường Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh",
-            phone: "1900 1234",
-            email: "info@abcclinic.vn",
-            website: "www.abcclinic.vn",
-            rating: 4.8,
-            reviewCount: 245,
-            openHours: "07:30 - 20:00 (Thứ 2 - Chủ Nhật)",
-            description:
-              "Phòng khám Đa khoa Quốc tế ABC là một trong những phòng khám hàng đầu tại TP. Hồ Chí Minh, với đội ngũ bác sĩ giàu kinh nghiệm và trang thiết bị hiện đại. Chúng tôi cam kết mang đến dịch vụ y tế chất lượng cao và chăm sóc tận tâm cho mọi bệnh nhân.",
-            images: [
-              "/clinics/clinic-1.jpg",
-              "/clinics/clinic-2.jpg",
-              "/clinics/clinic-3.jpg",
-            ],
-            facilities: [
-              "Phòng khám hiện đại",
-              "Phòng chờ thoải mái",
-              "Máy móc trang thiết bị tiên tiến",
-              "Hệ thống xét nghiệm tại chỗ",
-              "Nhà thuốc tại phòng khám",
-            ],
-            insurance: [
-              "Bảo hiểm Y tế nhà nước",
-              "Bảo Việt",
-              "Bảo Minh",
-              "PJICO",
-              "PTI",
-            ],
-            specializations: [
-              "Nội khoa",
-              "Ngoại khoa",
-              "Sản phụ khoa",
-              "Nhi khoa",
-              "Da liễu",
-              "Mắt",
-              "Tai Mũi Họng",
-            ],
-          });
-
-          setLoading(false);
-        }, 1000);
-      } catch (error) {
-        console.error("Failed to fetch clinic data:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchClinicData();
-  }, [clinicId]);
-
   useEffect(() => {
     fetchClinicDetail();
   }, [clinicId]);
@@ -142,54 +81,23 @@ const ClinicDetail = () => {
       <div className="relative mt-5 rounded-lg h-72 sm:h-96 w-full bg-gradient-to-r from-blue-700 to-indigo-600 overflow-hidden shadow-xl">
         {/* Nút chỉnh sửa - góc trên phải */}
 
-      {(auth?.role === 1 || auth?.userId === clinicDetail.doctor_id) && clinicDetail && (
-  <div className="absolute top-4 right-4 z-20">
-    <Button
-      variant="outline"
-      size="sm"
-      className="flex items-center px-3 py-1.5 text-sm bg-white/90 hover:bg-white text-blue-600 backdrop-blur-sm border-white/50 shadow-sm hover:shadow-md transition-all"
-      onClick={() =>
-        navigate(`/doctor/${auth.userId}/clinics/${clinicDetail.id}/update`)
-      }
-    >
-      <Edit className="h-[14px] w-[14px] mr-1" />
-      Chỉnh sửa phòng khám
-    </Button>
-  </div>
-)}
-
-
-        {/* Hình ảnh phòng khám */}
-        {clinicDetail?.avatar && (
-          <div className="absolute inset-0 overflow-hidden">
-            <img
-              src={clinicDetail.avatar}
-              alt={clinicDetail.name}
-              className="w-full h-full object-cover object-center opacity-70 transform scale-100 hover:scale-105 transition-transform duration-1000 ease-out"
-            />
-          </div>
-        )}
-
-        {/* Lớp phủ gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent backdrop-blur-[1px]" />
-
-
-        {(auth?.role === 1 || auth?.role === 2) && clinicDetail && (
-
-          <div className="absolute top-4 right-4 z-20">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center px-3 py-1.5 text-sm bg-white/90 hover:bg-white text-blue-600 backdrop-blur-sm border-white/50 shadow-sm hover:shadow-md transition-all"
-              onClick={() =>
-                navigate(`/doctor/clinics/${clinicDetail.id}/update`)
-              }
-            >
-              <Edit className="h-[14px] w-[14px] mr-1.5" />
-              <span>Chỉnh sửa</span>
-            </Button>
-          </div>
-        )}
+        {(auth?.role === 1 || auth?.userId === clinicDetail.doctor_id) &&
+          clinicDetail && (
+            <div className="absolute top-4 right-4 z-20">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center px-3 py-1.5 text-sm bg-white/90 hover:bg-white text-blue-600 backdrop-blur-sm border-white/50 shadow-sm hover:shadow-md transition-all"
+                onClick={() =>
+                  navigate(
+                    `/doctor/${auth.userId}/clinics/${clinicDetail.id}/update`
+                  )
+                }
+              >
+                <Edit className="h-[14px] w-[14px] mr-1" />
+              </Button>
+            </div>
+          )}
 
         {/* Hình ảnh phòng khám */}
         {clinicDetail?.avatar && (
@@ -205,6 +113,21 @@ const ClinicDetail = () => {
         {/* Lớp phủ gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent backdrop-blur-[1px]" />
 
+      
+
+        {/* Hình ảnh phòng khám */}
+        {clinicDetail?.avatar && (
+          <div className="absolute inset-0 overflow-hidden">
+            <img
+              src={clinicDetail.avatar}
+              alt={clinicDetail.name}
+              className="w-full h-full object-cover object-center opacity-70 transform scale-100 hover:scale-105 transition-transform duration-1000 ease-out"
+            />
+          </div>
+        )}
+
+        {/* Lớp phủ gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent backdrop-blur-[1px]" />
 
         {/* Nội dung thông tin */}
         <div className="absolute bottom-0 left-0 right-0 z-10 p-6 sm:p-8">
@@ -378,51 +301,51 @@ const ClinicDetail = () => {
                   <div
                     key={clinicDetail.doctor.DT.userData.id}
                     className="flex flex-col sm:flex-row p-4 border rounded-lg bg-white hover:bg-blue-50 transition-colors cursor-pointer"
+                    onClick={() =>
+                      navigate(`/doctor/${clinicDetail.doctor_id}`)
+                    }
                   >
                     <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 mb-4 sm:mb-0 mx-auto sm:mx-0">
                       <img
                         src={clinicDetail.doctor.DT.userData.profile_picture}
                         alt={clinicDetail.doctor.DT.userData.full_name}
                         className="w-full h-full object-cover"
-                        onClick={() =>
-                          navigate(`/doctor/${clinicDetail.doctor_id}`)
-                        }
                       />
                     </div>
                     <div className="sm:ml-6 flex-1 text-center sm:text-left">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
                         <h3 className="font-bold text-lg text-blue-700">
-                        {clinicDetail.doctor.DT.doctor.position}  {clinicDetail.doctor.DT.userData.full_name}
+                          {clinicDetail.doctor.DT.doctor.position}{" "}
+                          {clinicDetail.doctor.DT.userData.full_name}
                         </h3>
-                       
                       </div>
 
                       <div className="flex flex-col sm:flex-row sm:items-center text-sm text-gray-500 mt-1 gap-2 sm:gap-4">
                         <span className="flex items-center">
                           <Stethoscope className="h-3.5 w-3.5 mr-1" />
-                            {clinicDetail.doctor.DT.doctor.specialization.name}
+                          {clinicDetail.doctor.DT.doctor.specialization.name}
                         </span>
                         <span className="flex items-center">
                           <Clock className="h-3.5 w-3.5 mr-1" />
                           {clinicDetail.doctor.DT.doctor.experience}
                         </span>
-                      </div> 
+                      </div>
                       <div className="flex items-center mt-2">
-                    <div className="flex text-yellow-400 mr-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          size={16}
-                          className={`${
-                            i < 4 ? "fill-current" : "text-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-500">
-                      4.8 (120 đánh giá)
-                    </span>
-                  </div>
+                        <div className="flex text-yellow-400 mr-2">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              size={16}
+                              className={`${
+                                i < 4 ? "fill-current" : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm text-gray-500">
+                          4.8 (120 đánh giá)
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

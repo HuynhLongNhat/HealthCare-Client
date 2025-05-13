@@ -47,7 +47,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getAuth } from "@/utils/getAuth";
+import useAuthToken from "@/utils/userAuthToken";
 
 // Demo data
 const mockAppointments = [
@@ -107,7 +107,7 @@ const AppointmentManager = ({ doctorId }) => {
   const [currentAppointment, setCurrentAppointment] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const auth = getAuth();
+  const auth = useAuthToken();
 
   // Simulating the form data for new appointments
   const [formData, setFormData] = useState({

@@ -1,221 +1,278 @@
 import { useState, useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  ChevronDown,
   User,
-  Search,
   Menu,
   X,
   Calendar,
-  Heart,
-  Phone,
   Home,
   Stethoscope,
   Contact,
   Building2,
   Key,
   LogOut,
+  LogIn,
+  Sun,
+  Moon,
+  ChevronDown,
+  FileText,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
+import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "./ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Separator } from "./ui/separator";
 import ChangePasswordModal from "./ChangePassword";
-import { getAuth } from "@/utils/getAuth";
+import useAuthToken from "@/utils/userAuthToken";
+import logo from "@/assets/logo-min.jpg";
 
 const Header = () => {
   const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const menuRef = useRef(null);
-  const auth = getAuth();
-
+  const auth = useAuthToken();
+  const [isDarkMode, setIsDarkMode] = useState(false);
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsMenuOpen(false);
-      }
-    };
-
     window.addEventListener("scroll", handleScroll);
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLogout = async () => {
-    localStorage.removeItem("accessToken");
+  useEffect(() => {
+    if (
+      localStorage.getItem("theme") === "dark" ||
+      (!localStorage.getItem("theme") &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches)
+    ) {
+      setIsDarkMode(true);
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    document.documentElement.classList.toggle("dark");
+    localStorage.setItem(
+      "theme",
+      document.documentElement.classList.contains("dark") ? "dark" : "light"
+    );
+  };
+  const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
 
+  const navItems = [
+    { to: "/", icon: Home, label: "Trang chủ" },
+    { to: "/clinics", icon: Building2, label: "Cơ sở y tế" },
+    { to: "/specializations", icon: Calendar, label: "Chuyên khoa" },
+    { to: "/doctors", icon: Stethoscope, label: "Bác sĩ" },
+     { to: "/cam-nang-suc-khoe", icon: FileText, label: "Cẩm nang sức khỏe" },
+  ];
+
+  const profileItems = auth
+    ? [
+        {
+          to: `/profile/${auth.userId}`,
+          icon: Contact,
+          label: "Thông tin cá nhân",
+        },
+        ...(auth?.role === 2
+          ? [
+              {
+                to: `/doctor/${auth.userId}`,
+                icon: Stethoscope,
+                label: "Hồ sơ bác sĩ",
+              },
+              {
+                to: `/doctor/${auth.userId}/clinics`,
+                icon: Building2,
+                label: "Cơ sở của tôi",
+              },
+              {
+                to: `/doctor/${auth.userId}/handbooks`,
+                icon: FileText,
+                label: "Bài viết của tôi",
+              },
+            ]
+          : []),
+      ]
+    : [];
+
   return (
     <header
-      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white shadow-lg py-2" : "bg-white/80 backdrop-blur-md py-4"
-      }`}
+      className={`fixed w-full top-0 z-50 transition-all duration-300 bg-white border-b `}
     >
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center">
-          {/* Logo */}
-          <Link to="/" className="flex items-center group">
-            <div className="relative w-10 h-10 mr-2 bg-gradient-to-r from-blue-500 to-teal-400 rounded-full flex items-center justify-center transform group-hover:scale-110 transition-transform">
-              <Heart className="text-white" size={20} />
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo - Left side */}
+          <Link
+            to="/"
+            className="flex items-center gap-3 group transition-transform hover:scale-[0.98]"
+          >
+            <div className="relative w-10 h-10 flex items-center justify-center">
+              <img
+                src={logo}
+                alt="HealthCare Logo"
+                className="w-full h-full rounded-full object-cover border-2 border-primary shadow-lg"
+              />
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-teal-500 bg-clip-text text-transparent hidden sm:block">
               HealthCare
             </h1>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {[
-              { to: "/", icon: Home, label: "Trang chủ" },
-              { to: "/clinics", icon: Building2, label: "Cơ sở y tế" },
-              { to: "/specializations", icon: Calendar, label: "Chuyên khoa" },
-              { to: "/doctors", icon: User, label: "Bác sĩ" },
-            ].map((item) => (
-              <Link
+          {/* Main Navigation - Center */}
+          <nav className="hidden md:flex items-center gap-0.5 mx-4">
+            {navItems.map((item) => (
+              <Button
                 key={item.to}
-                to={item.to}
-                className="font-medium flex items-center text-gray-700 hover:text-blue-600 transition-colors"
+                asChild
+                variant="ghost"
+                className={`gap-1.5 rounded-lg px-4 ${
+                  location.pathname === item.to
+                    ? "bg-accent text-primary font-medium"
+                    : "hover:bg-accent/30 text-foreground/80"
+                }`}
               >
-                <item.icon size={16} className="mr-1.5" />
-                {item.label}
-              </Link>
+                <Link to={item.to}>
+                  <item.icon className="h-[15px] w-[15px]" />
+                  <span>{item.label}</span>
+                </Link>
+              </Button>
             ))}
-
-            {auth ? (
-              <div className="relative" ref={menuRef}>
-                <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="flex items-center hover:text-blue-500 transition-colors text-gray-700"
-                >
-                  {auth.avatar ? (
-                    <img
-                      src={auth.avatar}
-                      alt="avatar"
-                      className="w-9 h-9 rounded-full object-cover border-2 border-blue-500"
-                    />
-                  ) : (
-                    <div className="w-9 h-9 bg-gradient-to-r from-blue-500 to-teal-400 rounded-full flex items-center justify-center text-white font-semibold">
-                      {auth.email.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </button>
-
-                <AnimatePresence>
-                  {isMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50"
-                    >
-                      <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm text-gray-500">Đã đăng nhập với</p>
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {auth.email}
-                        </p>
-                      </div>
-
-                      {/* Menu items */}
-                      {[
-                        {
-                          to: `/profile/${auth.userId}`,
-                          icon: Contact,
-                          label: "Thông tin cá nhân",
-                        },
-                        ...(auth?.role === 2
-                          ? [
-                              {
-                                to: `/doctor/${auth.userId}`,
-                                icon: Stethoscope,
-                                label: "Hồ sơ bác sĩ",
-                              },
-                              {
-                                to: `/doctor/${auth.userId}/clinics`,
-                                icon: Building2,
-                                label: "Cơ sở của tôi",
-                              },
-                            ]
-                          : []),
-                      ].map((item) => (
-                        <Link
-                          key={item.to}
-                          to={item.to}
-                          className="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                        >
-                          <item.icon size={16} className="mr-2" />
-                          {item.label}
-                        </Link>
-                      ))}
-
-                      {auth?.role === 1 && (
-                        <Link
-                          to="/admin/dashboard"
-                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-                        >
-                          Admin dashboard
-                        </Link>
-                      )}
-
-                      <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="flex w-full items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                      >
-                        <Key size={16} className="mr-2" />
-                        Đổi mật khẩu
-                      </button>
-
-                      <div className="border-t border-gray-100 my-1"></div>
-                      <button
-                        onClick={handleLogout}
-                        className="flex w-full items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                      >
-                        <LogOut size={16} className="mr-2" />
-                        Đăng xuất
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-3">
-                <Link
-                  to="/login"
-                  className="py-2 px-4 rounded-lg border-2 border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors font-medium"
-                >
-                  Đăng nhập
-                </Link>
-                <Link
-                  to="/register"
-                  className="py-2 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:opacity-90 transition-opacity font-medium"
-                >
-                  Đăng ký
-                </Link>
-              </div>
-            )}
           </nav>
 
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? (
-              <X className="text-gray-800" size={24} />
+          {/* Right side - User & Dark Mode */}
+          <div className="flex items-center gap-3">
+            {/* Dark Mode Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full hover:bg-accent/30"
+              onClick={toggleDarkMode}
+            >
+              {isDarkMode ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
+
+            {auth ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div className="flex items-center gap-2 hover:bg-accent/30 px-2 py-1.5 rounded-lg cursor-pointer">
+                    <span className="hidden lg:inline font-medium text-sm">
+                      {auth.full_name || auth.email.split("@")[0]}
+                    </span>
+                    {auth.avatar ? (
+                      <Avatar className="h-8 w-8 border-2 border-primary/20">
+                        <AvatarImage src={auth.avatar} />
+                      </Avatar>
+                    ) : (
+                      <Avatar className="h-8 w-8 border-2 border-primary/20">
+                        <AvatarFallback className="bg-gradient-to-r from-primary to-teal-400 text-white">
+                          {auth.email.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-56 rounded-lg shadow-lg"
+                >
+                  <div className="px-2 py-1.5">
+                    <p className="text-sm font-medium">{auth.email}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {auth.role === 1
+                        ? "Quản trị viên"
+                        : auth.role === 2
+                        ? "Bác sĩ"
+                        : "Bệnh nhân"}
+                    </p>
+                  </div>
+                  <DropdownMenuSeparator />
+
+                  {profileItems.map((item) => (
+                    <DropdownMenuItem key={item.to} asChild>
+                      <Link to={item.to} className="cursor-pointer gap-2">
+                        <item.icon className="h-4 w-4" />
+                        {item.label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+
+                  {auth?.role === 1 && (
+                    <DropdownMenuItem asChild>
+                      <Link
+                        to="/admin/dashboard"
+                        className="cursor-pointer gap-2"
+                      >
+                        <Stethoscope className="h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+
+                  {!auth?.googleId && !auth?.facebookId && (
+                    <DropdownMenuItem
+                      onClick={() => setIsModalOpen(true)}
+                      className="gap-2"
+                    >
+                      <Key className="h-4 w-4" />
+                      Đổi mật khẩu
+                    </DropdownMenuItem>
+                  )}
+
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="gap-2 text-destructive focus:text-destructive"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Đăng xuất
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
-              <Menu className="text-gray-800" size={24} />
+              <Button
+                variant="outline"
+                className="gap-2 hidden sm:flex"
+                onClick={() => navigate("/login")}
+              >
+                <LogIn className="h-4 w-4" />
+                <span>Đăng nhập</span>
+              </Button>
             )}
-          </button>
+
+            {/* Mobile menu button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -226,91 +283,110 @@ const Header = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white px-4 pt-2 pb-4 shadow-lg"
+            className="md:hidden overflow-hidden"
           >
-            <nav className="space-y-1">
-              <Link
-                to="/"
-                className="block px-3 py-2 rounded-md hover:bg-blue-50 text-gray-700"
-              >
-                Trang chủ
-              </Link>
-              <Link
-                to="/specializations"
-                className="block px-3 py-2 rounded-md hover:bg-blue-50 text-gray-700"
-              >
-                Chuyên khoa
-              </Link>
-              <Link
-                to="/doctors"
-                className="block px-3 py-2 rounded-md hover:bg-blue-50 text-gray-700"
-              >
-                Bác sĩ
-              </Link>
-            </nav>
-            <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="space-y-1 px-4 pb-3 pt-2 bg-background shadow-inner">
+              {navItems.map((item) => (
+                <Button
+                  key={item.to}
+                  asChild
+                  variant="ghost"
+                  className={`w-full justify-start gap-2 ${
+                    location.pathname === item.to ? "bg-accent" : ""
+                  }`}
+                >
+                  <Link to={item.to}>
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                </Button>
+              ))}
+            </div>
+
+            <Separator />
+
+            <div className="space-y-1 px-4 pb-3 pt-2 bg-background">
               {auth ? (
-                <div className="space-y-1">
-                  <div className="px-3 py-2 flex items-center">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white mr-3">
-                      {auth.email.charAt(0).toUpperCase()}
-                    </div>
+                <>
+                  <div className="flex items-center gap-3 px-2 py-2.5">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={auth.avatar} />
+                      <AvatarFallback className="bg-gradient-to-r from-primary to-teal-400">
+                        {auth.email.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {auth.email}
+                      <p className="text-sm font-medium">{auth.email}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {auth.role === 1
+                          ? "Quản trị viên"
+                          : auth.role === 2
+                          ? "Bác sĩ"
+                          : "Bệnh nhân"}
                       </p>
                     </div>
                   </div>
-                  <Link
-                    to={`/profile/${auth.userId}`}
-                    className="block px-3 py-2 rounded-md hover:bg-blue-50 text-gray-700"
-                  >
-                    Thông tin cá nhân
-                  </Link>
+
+                  <Separator className="my-1" />
+
+                  {profileItems.map((item) => (
+                    <Button
+                      key={item.to}
+                      asChild
+                      variant="ghost"
+                      className="w-full justify-start gap-2"
+                    >
+                      <Link to={item.to}>
+                        <item.icon className="h-4 w-4" />
+                        {item.label}
+                      </Link>
+                    </Button>
+                  ))}
+
                   {auth?.role === 1 && (
-                    <Link
-                      to="/admin/dashboard"
-                      className="block px-3 py-2 rounded-md hover:bg-blue-50 text-gray-700"
+                    <Button
+                      asChild
+                      variant="ghost"
+                      className="w-full justify-start gap-2"
                     >
-                      Admin dashboard
-                    </Link>
+                      <Link to="/admin/dashboard">
+                        <Stethoscope className="h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    </Button>
                   )}
-                  {auth?.role === 2 && (
-                    <Link
-                      to="/doctor/dashboard"
-                      className="block px-3 py-2 rounded-md hover:bg-blue-50 text-gray-700"
+
+                  {!auth?.googleId && !auth?.facebookId && (
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2"
+                      onClick={() => setIsModalOpen(true)}
                     >
-                      Doctor dashboard
-                    </Link>
+                      <Key className="h-4 w-4" />
+                      Đổi mật khẩu
+                    </Button>
                   )}
-                  <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="block w-full text-left px-3 py-2 rounded-md hover:bg-blue-50 text-gray-700"
-                  >
-                    Đổi mật khẩu
-                  </button>
-                  <button
+
+                  <Separator className="my-1" />
+
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-2 text-destructive hover:text-destructive"
                     onClick={handleLogout}
-                    className="block w-full text-left px-3 py-2 rounded-md hover:bg-red-50 text-red-600"
                   >
+                    <LogOut className="h-4 w-4" />
                     Đăng xuất
-                  </button>
-                </div>
+                  </Button>
+                </>
               ) : (
-                <div className="space-y-2 px-3">
-                  <Link
-                    to="/login"
-                    className="block w-full py-2 text-center rounded-md border border-blue-600 text-blue-600"
-                  >
-                    Đăng nhập
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="block w-full py-2 text-center rounded-md bg-blue-600 text-white"
-                  >
-                    Đăng ký
-                  </Link>
-                </div>
+                <Button
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={() => navigate("/login")}
+                >
+                  <LogIn className="h-4 w-4" />
+                  Đăng nhập
+                </Button>
               )}
             </div>
           </motion.div>

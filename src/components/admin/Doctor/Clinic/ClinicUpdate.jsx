@@ -21,7 +21,6 @@ import * as z from "zod";
 import { getProvinces, getDistricts, getWards } from "@/api/address.api";
 import {  getAllDoctors, getClinicDetail, updateClinic } from "@/api/doctor.api";
 import { toast } from "react-toastify";
-import { getAuth } from "@/utils/getAuth";
 import MarkdownEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import { ComboBox } from "@/components/Combobox";
@@ -46,6 +45,7 @@ import {
 } from "@/components/ui/select";
 import ReactMarkdown from "react-markdown";
 import "highlight.js/styles/github-dark.css";
+import useAuthToken from "@/utils/userAuthToken";
 
 const clinicFormSchema = z.object({
   name: z.string().min(1, "Tên cơ sở y tế không được để trống"),
@@ -59,7 +59,7 @@ const clinicFormSchema = z.object({
 
 const ClinicUpdate = () => {
   const {doctorId} = useParams()
-  const auth = getAuth();
+  const auth = useAuthToken();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [doctors, setDoctors] = useState([]);

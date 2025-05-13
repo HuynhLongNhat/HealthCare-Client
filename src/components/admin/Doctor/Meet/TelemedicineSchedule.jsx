@@ -25,8 +25,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getAuth } from "@/utils/getAuth";
 import CreateMeeting from "./CreateMeeting";
+import useAuthToken from "@/utils/userAuthToken";
 
 // Demo data
 const mockMeetings = [
@@ -83,7 +83,7 @@ const TelemedicineSchedule = ({ doctorId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateMeetingOpen, setIsCreateMeetingOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const auth = getAuth();
+  const auth = useAuthToken();
 
   useEffect(() => {
     // Simulate API call
