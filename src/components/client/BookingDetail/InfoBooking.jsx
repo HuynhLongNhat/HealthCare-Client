@@ -17,7 +17,6 @@ import {
   FileText,
   Info,
   Clock,
-  AlertCircle,
   CircleSlash,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +38,8 @@ import {
 import PatientNotifications from "@/components/admin/Doctor/Doctor/Schedule/PatientNotifications";
 import DialogConfirmPayment from "../Payment/DialogConfirmPayment";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { setPaymentStatus } from "@/store/appointment.slice";
 const paymentMethodText = {
   cash: "Tiền mặt",
   bank: "Chuyển khoản",
@@ -60,6 +61,8 @@ const formatCurrency = (value) => {
 };
 
 const InfoBooking = ({ booking, fetch }) => {
+    const dispatch = useDispatch()
+  const paymentData = useSelector((state) => state.appointment.paymentStatus)
   const { appointmentId } = useParams();
   const auth = useAuthToken();
   const navigate = useNavigate();
@@ -70,7 +73,7 @@ const InfoBooking = ({ booking, fetch }) => {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [isAppointmentReject, setIsAppointmentReject] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [paymentData, setPaymentData] = useState("");
+  // const [paymentData, setPaymentData] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const a = booking.appointment;
 
@@ -79,13 +82,12 @@ const InfoBooking = ({ booking, fetch }) => {
     fetchPaymentByAppointment();
   }, [appointmentId]);
 
-   const fetchPaymentByAppointment = async () => {
-     const res = await getPaymentByAppointmentId(appointmentId);
-     console.log("fetchPaymentByAppointment" ,res)
+  const fetchPaymentByAppointment = async () => {
+    const res = await getPaymentByAppointmentId(appointmentId)
     if (res.EC === 0) {
-      setPaymentData(res.DT);
+      dispatch(setPaymentStatus(res.DT))
     }
-  };
+  }
   const toggleModal = (appointment) => {
     setShowCancelModal(true);
     setIsAppointmentCancel(appointment);
@@ -161,17 +163,19 @@ const InfoBooking = ({ booking, fetch }) => {
         transfer_content: `Thanh toán khám bệnh cho bác sĩ ${booking.doctorData.userData.full_name}`,
         payment_date: new Date(),
         appointment_id: booking.appointment?.id,
-      });
+      })
+      
       if (res.EC === 0) {
         await confirmPayment(booking.appointment?.id)
-         window.location.reload()
-        fetchPaymentByAppointment()
-        toast.success(res.EM);
+        // Update both booking and payment status
+        await fetch() // This will update the booking through ViewBookingDetail
+        await fetchPaymentByAppointment() // This will update payment status
+        toast.success(res.EM)
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message)
     }
-  };
+  }
 
   return (
     <TabsContent value="info" className="space-y-6">

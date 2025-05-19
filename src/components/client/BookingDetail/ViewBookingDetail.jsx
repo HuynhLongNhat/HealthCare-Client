@@ -6,10 +6,13 @@ import { getBookingDetail } from "@/api/appointment.api";
 import useAuthToken from "@/utils/userAuthToken";
 import AppointmentDetail from "./AppointmentDetail";
 import NoAppointment from "./NoAppointment";
+import { useDispatch, useSelector } from "react-redux";
+import { setBooking } from "@/store/appointment.slice";
 
 const ViewBookingDetail = () => {
   const { appointmentId } = useParams();
-  const [booking, setBooking] = useState(null);
+   const dispatch = useDispatch()
+  const booking = useSelector((state) => state.appointment.currentBooking)
   const [loading, setLoading] = useState(true);
   const auth = useAuthToken();
   useEffect(() => {
@@ -17,21 +20,20 @@ const ViewBookingDetail = () => {
   }, [appointmentId]);
 
   const fetchBookingDetail = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const res = await getBookingDetail(appointmentId);
+      const res = await getBookingDetail(appointmentId)
       if (res.EC === 0) {
-        setBooking(res.DT);
+        dispatch(setBooking(res.DT))
       } else {
-        console.error("Error fetching booking details:", res.EM);
+        console.error("Error fetching booking details:", res.EM)
       }
     } catch (error) {
-      console.error("Error fetching booking details:", error);
+      console.error("Error fetching booking details:", error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
-
+  }
   if (loading) {
     return (
       <div className="container mx-auto p-6 mt-20 flex justify-center items-center min-h-[50vh]">
