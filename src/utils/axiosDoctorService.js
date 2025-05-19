@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const baseURL = import.meta.env.VITE_API_DOCTOR_SERVICE;
+
 // Set config defaults when creating the instance
 const instance = axios.create({
-  baseURL: "http://localhost:8002/api",
+  baseURL:baseURL,
   timeout: 10000,
   withCredentials: true,
 });

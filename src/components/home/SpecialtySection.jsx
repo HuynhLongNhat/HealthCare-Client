@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const SpecialtySection = () => {
   const [startIndex, setStartIndex] = useState(0);
   const [specializations, setSpecializations] = useState([]);
   const navigate = useNavigate();
 
-  const itemsPerView = 3; // Hiển thị 3 card mỗi lần
+  const itemsPerView = 3; 
 
   const handleNext = () => {
     setStartIndex((prev) =>
@@ -38,18 +39,16 @@ const SpecialtySection = () => {
   };
 
   return (
-    <section className="py-16 bg-blue-50">
+      <section className="py-16 bg-gradient-to-b from-white to-blue-50">
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="flex justify-between items-center mb-12">
-
           <h2 className="text-3xl font-bold text-gray-800 ml-5">Chuyên khoa</h2>
-         
           <Button
             variant="ghost"
             className="text-blue-600 hover:text-blue-700 font-medium text-lg flex items-center group"
             onClick={() => navigate("/specializations")}
           >
-            Xem tất cả 
+            Xem tất cả
             <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Button>
         </div>
@@ -76,35 +75,39 @@ const SpecialtySection = () => {
                 transform: `translateX(-${startIndex * (100 / itemsPerView)}%)`,
               }}
             >
-        
               {specializations.map((specialization) => (
-                <div key={specialization.id} className="w-1/3 flex-shrink-0 px-4">
+                <div
+                  key={specialization.id}
+                  className="w-1/3 flex-shrink-0 px-4"
+                >
                   <Card
                     className="hover:shadow-2xl transition-shadow overflow-hidden h-full flex flex-col cursor-pointer"
-                    onClick={() => navigate(`/specializations/${specialization.id}`)}
+                    onClick={() =>
+                      navigate(`/specializations/${specialization.id}`)
+                    }
                   >
                     <div className="h-48 bg-gray-200 overflow-hidden rounded-xl">
-                      {specialization.avatar ? (
-                        <img
-                          src={specialization.avatar}
-                          alt={specialization.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                          <span className="text-gray-400 text-xl">
-                          </span>
-                      )}
+                      <div className="h-48 w-full overflow-hidden bg-gray-200 rounded-xl">
+                        <Avatar className="w-full h-full rounded-none">
+                          <AvatarImage
+                            src={specialization.avatar}
+                            className="w-full h-full object-cover rounded-none"
+                          />
+                          <AvatarFallback className="w-full h-full flex items-center justify-center bg-gray-300 text-white text-5xl font-semibold rounded-none">
+                            {specialization.name.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
                     </div>
-
                     <CardContent className="p-6 flex-grow">
-                      <h3 className="font-semibold text-lg mb-2 text-center">{specialization.name}</h3>
-                     
+                      <h3 className="font-semibold text-lg mb-2 text-center">
+                        {specialization.name}
+                      </h3>
                     </CardContent>
                   </Card>
                 </div>
               ))}
             </div>
-         
           </div>
 
           {/* Nút Next */}

@@ -28,15 +28,13 @@ const ScheduleDoctor = ({ doctor }) => {
     setIsLoading(true);
     try {
       const clinicPromises = doctor.doctor.clinics.map(clinic => 
-        getDoctorSchedulesByClinic(doctorId, clinic.id)
+        getDoctorSchedulesByClinic(doctorId, clinic.id, "fromToday" )
       );
-      
       const results = await Promise.all(clinicPromises);
       const allSchedules = results.reduce((acc, res, index) => {
         const clinicId = doctor.doctor.clinics[index].id;
         return { ...acc, [clinicId]: res.DT };
       }, {});
-      
       setSchedules(allSchedules);
       
       // Initialize expanded state for all clinics
@@ -144,7 +142,7 @@ const ScheduleDoctor = ({ doctor }) => {
                     <div className="mt-3">
                       <div className="flex justify-between items-center mb-5">
                         <div className="flex-1" />
-                        {(auth === null || auth?.role !== 3) && (
+                        {auth && ((auth.role === 1) || Number(auth.userId) === Number(doctorId)) && (
                           <div className="flex justify-end mr-5">
                             <Button
                               variant="info"
@@ -159,6 +157,7 @@ const ScheduleDoctor = ({ doctor }) => {
 
                       {schedules[clinic.id]?.length > 0 ? (
                         <ScheduleList
+                          doctor={doctor}
                           schedules={schedules[clinic.id]}
                           onUpdate={(updated) =>
                             handleUpdateAppointment(clinic.id, updated)
@@ -171,11 +170,10 @@ const ScheduleDoctor = ({ doctor }) => {
                             <Calendar className="h-8 w-8 text-gray-400" />
                           </div>
                           <h3 className="text-lg font-medium text-gray-700 mb-2">
-                            Chưa có lịch khám
+                            Chưa có lịch khám 
                           </h3>
                           <p className="text-sm text-gray-500 max-w-md mb-4">
-                            Bạn chưa có lịch khám nào tại phòng khám này. Thêm
-                            lịch khám để bắt đầu.
+                          Bác sĩ chưa có lịch khám nào trong hôm nay
                           </p>
                         </div>
                       )}
@@ -204,17 +202,7 @@ const ScheduleDoctor = ({ doctor }) => {
         </div>
 
         {/* Sidebar - Notifications */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-6">
-            <div className="flex items-center gap-2 mb-4 border-b border-gray-100 pb-4">
-              <div className="bg-orange-100 rounded-full p-1.5">
-                <AlertCircle className="h-5 w-5 text-orange-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-800">Thông báo</h3>
-            </div>
-            <PatientNotifications />
-          </div>
-        </div>
+          <PatientNotifications type="noti" />
       </div>
 
       {/* Add appointment dialog */}

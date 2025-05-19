@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { getLatestlHealthHandBook } from "@/api/doctor.api";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const LatestArticlesSection = () => {
   const navigate = useNavigate();
@@ -24,7 +25,6 @@ const LatestArticlesSection = () => {
   }, [])
   const fetchLatestHealthHandbook = async () => {
     const res = await getLatestlHealthHandBook()
-    console.log("Res" ,res)
     if (res.EC === 0) {
       setLatestHandbook(res.DT)
     }
@@ -64,14 +64,17 @@ const LatestArticlesSection = () => {
                       className="hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col cursor-pointer hover:translate-y-[-5px]"
                       onClick={() => navigate(`/cam-nang-suc-khoe/${handbook.handbook.slug}`)}
                     >
-                      <div className="h-48 overflow-hidden relative">
-                        <img
-                          src={handbook.handbook.image}
-                          alt={handbook.handbook.title}
-                          className="w-full h-full object-cover"
+                     <div className="h-48 w-full overflow-hidden bg-gray-200 rounded-xl">
+                      <Avatar className="w-full h-full rounded-none">
+                        <AvatarImage
+                          src={handbook.handbook.avatar}
+                          className="w-full h-full object-cover rounded-none"
                         />
-                      
-                      </div>
+                        <AvatarFallback className="w-full h-full flex items-center justify-center bg-gray-300 text-white text-5xl font-semibold rounded-none">
+                          {handbook.handbook.title.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
 
                       <CardContent className="p-6 flex-grow">
                         <h3 className="font-semibold text-lg text-gray-900 line-clamp-2 mb-2">

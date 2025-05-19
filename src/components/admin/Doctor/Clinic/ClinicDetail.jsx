@@ -6,19 +6,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
   MapPin,
-  Clock,
   Stethoscope,
   Edit,
   Info,
   Loader,
   Home,
-  Star,
 } from "lucide-react";
 import { getClinicDetail } from "@/api/doctor.api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import "highlight.js/styles/github-dark.css";
 import useAuthToken from "@/utils/userAuthToken";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const ClinicDetail = () => {
   const auth = useAuthToken();
   const { clinicId } = useParams();
@@ -32,7 +31,6 @@ const ClinicDetail = () => {
   const fetchClinicDetail = async () => {
     try {
       const res = await getClinicDetail(clinicId);
-      console.log("res", res);
       if (res && res.EC === 0) {
         setClinicDetail(res.DT);
       }
@@ -79,8 +77,6 @@ const ClinicDetail = () => {
         </ol>
       </nav>
       <div className="relative mt-5 rounded-lg h-72 sm:h-96 w-full bg-gradient-to-r from-blue-700 to-indigo-600 overflow-hidden shadow-xl">
-        {/* Nút chỉnh sửa - góc trên phải */}
-
         {(auth?.role === 1 || auth?.userId === clinicDetail.doctor_id) &&
           clinicDetail && (
             <div className="absolute top-4 right-4 z-20">
@@ -112,8 +108,6 @@ const ClinicDetail = () => {
 
         {/* Lớp phủ gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent backdrop-blur-[1px]" />
-
-      
 
         {/* Hình ảnh phòng khám */}
         {clinicDetail?.avatar && (
@@ -305,12 +299,15 @@ const ClinicDetail = () => {
                       navigate(`/doctor/${clinicDetail.doctor_id}`)
                     }
                   >
-                    <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 mb-4 sm:mb-0 mx-auto sm:mx-0">
-                      <img
-                        src={clinicDetail.doctor.DT.userData.profile_picture}
-                        alt={clinicDetail.doctor.DT.userData.full_name}
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 mb-4 sm:mb-0 mx-auto sm:mx-0">
+                      <Avatar className="h-16 w-16 border-2 border-gray-200 shadow-sm">
+                        <AvatarImage
+                          src={clinicDetail.doctor.DT.userData.profile_picture}
+                        />
+                        <AvatarFallback className="text-2xl">
+                          {clinicDetail.doctor.DT.userData.full_name?.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
                     </div>
                     <div className="sm:ml-6 flex-1 text-center sm:text-left">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between">
@@ -323,27 +320,19 @@ const ClinicDetail = () => {
                       <div className="flex flex-col sm:flex-row sm:items-center text-sm text-gray-500 mt-1 gap-2 sm:gap-4">
                         <span className="flex items-center">
                           <Stethoscope className="h-3.5 w-3.5 mr-1" />
-                          {clinicDetail.doctor.DT.doctor.specialization.name}
+                          {clinicDetail.doctor.DT.doctor.specialization.name ||
+                            "Chưa cập nhật"}
                         </span>
                         <span className="flex items-center">
-                          <Clock className="h-3.5 w-3.5 mr-1" />
-                          {clinicDetail.doctor.DT.doctor.experience}
-                        </span>
-                      </div>
-                      <div className="flex items-center mt-2">
-                        <div className="flex text-yellow-400 mr-2">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              size={16}
-                              className={`${
-                                i < 4 ? "fill-current" : "text-gray-300"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-500">
-                          4.8 (120 đánh giá)
+                         <MapPin className="h-4 w-4 mr-2 text-blue-600 flex-shrink-0" />
+                      <span className="truncate">
+                        {clinicDetail.doctor.DT?.userData?.address
+                          ? clinicDetail.doctor.DT?.userData.address
+                              .split(",")
+                              .slice(3)
+                              .join(", ")
+                          : "Chưa cập nhật địa chỉ"}
+                      </span>
                         </span>
                       </div>
                     </div>

@@ -1,81 +1,108 @@
-import { Shield, AlertCircle, Home, ArrowLeft } from "lucide-react";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const UnAuthorized = () => {
+export default function UnAuthorizedPage() {
+  const eyefRef = useRef(null);
+  const rootRef = useRef(null);
+  const navigate = useNavigate()
+  useEffect(() => {
+    const root = rootRef.current;
+    const eyef = eyefRef.current;
+    
+    if (!root || !eyef) return;
+    
+    const handleMouseMove = (evt) => {
+      const x = evt.clientX / window.innerWidth;
+      const y = evt.clientY / window.innerHeight;
+      
+      root.style.setProperty("--mouse-x", x);
+      root.style.setProperty("--mouse-y", y);
+      
+      const cx = 115 + 30 * x;
+      const cy = 50 + 30 * y;
+      eyef.setAttribute("cx", cx);
+      eyef.setAttribute("cy", cy);
+    };
+    
+    const handleTouchMove = (touchHandler) => {
+      const x = touchHandler.touches[0].clientX / window.innerWidth;
+      const y = touchHandler.touches[0].clientY / window.innerHeight;
+      root.style.setProperty("--mouse-x", x);
+      root.style.setProperty("--mouse-y", y);
+      
+      const cx = 115 + 30 * x;
+      const cy = 50 + 30 * y;
+      eyef.setAttribute("cx", cx);
+      eyef.setAttribute("cy", cy);
+    };
+    
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("touchmove", handleTouchMove);
+    
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, []);
+  
   return (
-    <div className="min-h-screen bg-gradient-to-b from-red-50 to-white flex items-center justify-center px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-lg w-full text-center"
-      >
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2 }}
-          className="relative mx-auto w-32 h-32 mb-8"
-        >
-          <Shield className="w-full h-full text-red-500" />
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.4 }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          >
-            <AlertCircle className="w-12 h-12 text-red-600" />
-          </motion.div>
-        </motion.div>
-
-        <motion.h1
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="text-3xl font-bold text-red-600 mb-4"
-        >
-          Truy cập bị từ chối
-        </motion.h1>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="space-y-2 mb-8"
-        >
-          <p className="text-lg text-gray-600">
-            Xin lỗi, bạn không có quyền truy cập vào trang này.
-          </p>
-          <p className="text-sm text-gray-500">
-            Vui lòng liên hệ quản trị viên nếu bạn cho rằng đây là một sự nhầm
-            lẫn.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center"
-        >
-          <button
-            onClick={() => window.history.back()}
-            className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Quay lại
-          </button>
-
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
-          >
-            <Home className="w-5 h-5 mr-2" />
-            Về trang chủ
-          </Link>
-        </motion.div>
-      </motion.div>
+    <div ref={rootRef} className="bg-[#1b1b1b] text-white font-['Bungee',cursive] flex flex-col items-center justify-center min-h-screen w-full">
+      <svg xmlns="http://www.w3.org/2000/svg" id="robot-error" viewBox="0 0 260 118.9" role="img" className="w-1/2 md:w-1/3 lg:w-1/4 mx-auto">
+        <title>403 Error</title>
+        <defs>
+          <clipPath id="white-clip">
+            <circle id="white-eye" fill="#cacaca" cx="130" cy="65" r="20" />
+          </clipPath>
+          <text id="text-s" className="text-[120px]" y="106">403</text>
+        </defs>
+        <path className="animate-[alarmOn_0.5s_infinite]" fill="#e62326" d="M120.9 19.6V9.1c0-5 4.1-9.1 9.1-9.1h0c5 0 9.1 4.1 9.1 9.1v10.6" />
+        <use xlinkHref="#text-s" x="-0.5px" y="-1px" fill="black"></use>
+        <use xlinkHref="#text-s" fill="#2b2b2b"></use>
+        <g id="robot">
+          <g id="eye-wrap" className="overflow-hidden">
+            <use xlinkHref="#white-eye"></use>
+            <circle 
+              ref={eyefRef}
+              id="eyef" 
+              className="eye" 
+              clipPath="url(#white-clip)" 
+              fill="#000" 
+              stroke="#2aa7cc" 
+              strokeWidth="2" 
+              strokeMiterlimit="10" 
+              cx="130" 
+              cy="65" 
+              r="11" 
+            />
+            <ellipse id="white-eye" fill="#2b2b2b" cx="130" cy="40" rx="18" ry="12" />
+          </g>
+          <circle className="fill-[#444]" cx="105" cy="32" r="2.5" id="tornillo" />
+          <use xlinkHref="#tornillo" x="50"></use>
+          <use xlinkHref="#tornillo" x="50" y="60"></use>
+          <use xlinkHref="#tornillo" y="60"></use>
+        </g>
+      </svg>
+      <h1 className="text-3xl mt-6">You are not allowed to enter here</h1>
+      <h2 className="text-xl mt-4">Go <span  className="text-[#2aa7cc] hover:text-white transition-colors duration-300" onClick={() => navigate("/")}>Home!</span></h2>
+      
+      <style jsx>{`
+        @import url("https://fonts.googleapis.com/css?family=Bungee");
+        
+        @keyframes alarmOn {
+          to {
+            fill: darkred;
+          }
+        }
+        
+        html, body {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          width: 100%;
+          overflow: hidden;
+        }
+      `}</style>
     </div>
   );
-};
-
-export default UnAuthorized;
+}
+  

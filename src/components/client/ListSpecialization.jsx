@@ -48,7 +48,7 @@ const ListSpecialization = () => {
       </nav>
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-gray-800">Chuyên khoa</h1>
+          <h1 className="text-2xl font-bold text-blue-600">Chuyên khoa</h1>
 
           <div className="flex items-center space-x-4">
           

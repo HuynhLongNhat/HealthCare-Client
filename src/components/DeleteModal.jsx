@@ -40,7 +40,7 @@ const DeleteModal = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-red-600 text-lg">
             <AlertTriangle className="w-5 h-5" />
-            Xác nhận xóa {data?.name || data?.full_name}
+            Xác nhận xóa {data?.name || data?.full_name || data?.room_name}
           </DialogTitle>
           <DialogDescription className="text-sm text-gray-600 mt-2">
             Bạn có chắc chắn muốn thực hiện thao tác này không? Hành động này không thể hoàn tác.

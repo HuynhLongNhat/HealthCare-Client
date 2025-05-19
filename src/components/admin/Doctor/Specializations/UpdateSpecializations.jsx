@@ -101,7 +101,7 @@ const UpdateSpecialization = () => {
       });
       if (res && res.EC === 0) {
         toast.success(res.EM);
-        navigate(-1);
+        navigate(-1)
       } else if (res && res.EC === -1) {
         toast.error(res.EM);
       }

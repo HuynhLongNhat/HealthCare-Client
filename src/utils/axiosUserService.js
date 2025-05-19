@@ -1,8 +1,9 @@
 import axios from "axios";
+ const baseURL = import.meta.env.VITE_API_AUTH_SERVICE;
 
 // Set config defaults when creating the instance
 const instance = axios.create({
-  baseURL: "http://localhost:8001/api",
+  baseURL:baseURL,
   timeout: 10000,
   withCredentials: true,
 });

@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { getAllDoctors, getAllSpecializations } from "@/api/doctor.api";
 import { Link, useNavigate } from "react-router-dom";
-import { Home, User, Star, Search } from "lucide-react";
+import { Home, User, Star, Search, Stethoscope, MapPin } from "lucide-react";
 import { Input } from "../ui/input";
-import Select from "react-select";
+import { ComboBox } from "../Combobox";
+import { getProvinces } from "@/api/address.api";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const ListDoctor = () => {
   const [doctors, setDoctors] = useState([]);
@@ -12,6 +14,8 @@ const ListDoctor = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [positionFilter, setPositionFilter] = useState("");
   const [selectedSpecialization, setSelectedSpecialization] = useState("");
+  const [provinces, setProvinces] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState("");
 
   const navigate = useNavigate();
 
@@ -26,7 +30,12 @@ const ListDoctor = () => {
   useEffect(() => {
     fetchDoctors();
     fetchSpecializations();
+    fetchProvinces();
   }, []);
+  const fetchProvinces = async () => {
+    const provincesData = await getProvinces();
+    setProvinces(provincesData);
+  };
 
   const fetchDoctors = async () => {
     try {
@@ -63,15 +72,25 @@ const ListDoctor = () => {
       ? doctor.doctor?.position === selectedPositionLabel
       : true;
 
-    // Lọc theo chuyên khoa - sửa lại phần này
+    // Lọc theo chuyên khoa
     const matchesSpecialization = selectedSpecialization
       ? doctor.doctor?.specialization?.name === selectedSpecialization
       : true;
 
-    return matchesSearch && matchesPosition && matchesSpecialization;
+    // Lọc theo tỉnh/thành phố (địa chỉ là chuỗi, tỉnh thường nằm ở phần cuối)
+    const matchesProvince = selectedProvince
+      ? doctor.userData.address?.split(",").at(-1)?.trim() === selectedProvince
+      : true;
+
+    return (
+      matchesSearch &&
+      matchesPosition &&
+      matchesSpecialization &&
+      matchesProvince
+    );
   });
+
   const specializationOptions = [
-    { value: "", label: "Tất cả chuyên khoa" },
     ...specializations.map((spec) => ({
       value: spec.name,
       label: spec.name,
@@ -96,52 +115,69 @@ const ListDoctor = () => {
           <li className="text-gray-500">Danh sách bác sĩ</li>
         </ol>
       </nav>
-      <div className="flex flex-wrap items-center justify-between mb-6">
-        {/* Tiêu đề bên trái */}
-        <h1 className="text-2xl font-bold text-gray-800">Danh sách bác sĩ</h1>
+      <div className="mb-6">
+        {/* Tiêu đề */}
+        <h1 className="text-2xl font-bold text-blue-600 mb-4 md:mb-6">
+          Danh sách bác sĩ
+        </h1>
 
-        {/* Bộ lọc nằm bên phải */}
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 ml-auto mt-4 md:mt-0">
-          {/* Lọc chức vụ */}
-          <Select
-            value={
-              positions.find((pos) => pos.value === positionFilter) || {
-                value: "",
-                label: "Tất cả chức vụ",
-              }
-            }
-            onChange={(selectedOption) => {
-              setPositionFilter(selectedOption?.value || "");
-            }}
-            options={[{ value: "", label: "Tất cả chức vụ" }, ...positions]}
-            className="w-64"
-            placeholder="Chọn chức vụ..."
-            isClearable
-          />
+        {/* Bộ lọc nằm ngang */}
+        <div className="flex flex-wrap md:flex-nowrap items-center gap-4">
+          {/* ComboBox: Lọc chức vụ */}
+          <div className="flex-1 min-w-[180px]">
+            <ComboBox
+              options={[
+                { label: "Tất cả chức vụ", value: "" },
+                ...positions.map((pos) => ({
+                  label: pos.label,
+                  value: pos.value,
+                })),
+              ]}
+              value={positionFilter}
+              onChange={setPositionFilter}
+              placeholder="Chọn chức vụ..."
+              className="w-full"
+            />
+          </div>
 
-          {/* Lọc chuyên khoa */}
-          <Select
-            options={specializationOptions}
-            value={
-              specializationOptions.find(
-                (option) => option.value === selectedSpecialization
-              ) || { value: "", label: "Tất cả chuyên khoa" }
-            }
-            onChange={(selectedOption) => {
-              setSelectedSpecialization(selectedOption.value);
-            }}
-            placeholder="Chọn chuyên khoa..."
-            isClearable
-            className="w-64"
-          />
+          {/* ComboBox: Lọc chuyên khoa */}
+          <div className="flex-1 min-w-[180px]">
+            <ComboBox
+              options={[
+                { label: "Tất cả chuyên khoa", value: "" },
+                ...specializationOptions,
+              ]}
+              value={selectedSpecialization}
+              onChange={setSelectedSpecialization}
+              placeholder="Chọn chuyên khoa..."
+              className="w-full"
+            />
+          </div>
+
+          {/* ComboBox: Lọc tỉnh thành */}
+          <div className="flex-1 min-w-[180px]">
+            <ComboBox
+              options={[
+                { label: "Tất cả tỉnh thành", value: "" },
+                ...(provinces?.map((province) => ({
+                  label: province.label,
+                  value: province.label,
+                })) || []),
+              ]}
+              value={selectedProvince}
+              onChange={setSelectedProvince}
+              placeholder="Tỉnh thành"
+              className="w-full"
+            />
+          </div>
 
           {/* Ô tìm kiếm */}
-          <div className="relative w-64">
+          <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Tìm kiếm..."
-              className="pl-8"
+              className="pl-8 w-full"
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -168,17 +204,12 @@ const ListDoctor = () => {
                 {/* Avatar */}
                 <div className="flex-shrink-0">
                   <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-                    {doctor.userData?.profile_picture ? (
-                      <img
-                        src={doctor.userData.profile_picture}
-                        alt={doctor.userData.full_name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="text-2xl font-medium text-gray-600">
-                        {doctor.userData?.full_name?.charAt(0) || "?"}
-                      </div>
-                    )}
+                    <Avatar className="h-16 w-16 border-2 border-gray-200 shadow-sm">
+                      <AvatarImage src={doctor.userData.profile_picture} />
+                      <AvatarFallback className="text-2xl">
+                        {doctor.userData.full_name?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
                   </div>
                 </div>
 
@@ -189,32 +220,28 @@ const ListDoctor = () => {
                   </h3>
 
                   {/* Chuyên khoa */}
-                  <div className="flex items-center text-gray-600 mt-1">
-                    <User className="h-4 w-4 mr-1 flex-shrink-0" />
-                    <span className="truncate">
-                      {doctor.doctor.specialization?.name ||
-                        "Chưa cập nhật chuyên khoa"}
-                    </span>
-                  </div>
-
-                  {/* Địa chỉ làm việc */}
-
-                  {/* Đánh giá */}
-                  <div className="flex items-center mt-2">
-                    <div className="flex text-yellow-400 mr-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          size={16}
-                          className={`${
-                            i < 4 ? "fill-current" : "text-gray-300"
-                          }`}
-                        />
-                      ))}
+                  <div className="flex flex-wrap items-center gap-x-6 text-gray-500 mt-1">
+                    {/* Chuyên khoa */}
+                    <div className="flex items-center">
+                      <Stethoscope className="h-4 w-4 mr-2 text-blue-600 flex-shrink-0" />
+                      <span className="truncate">
+                        {doctor?.doctor?.specialization?.name ||
+                          "Chưa cập nhật chuyên khoa"}
+                      </span>
                     </div>
-                    <span className="text-sm text-gray-500">
-                      4.8 (120 đánh giá)
-                    </span>
+
+                    {/* Địa chỉ */}
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-2 text-blue-600 flex-shrink-0" />
+                      <span className="truncate">
+                        {doctor?.userData?.address
+                          ? doctor.userData.address
+                              .split(",")
+                              .slice(3)
+                              .join(", ")
+                          : "Chưa cập nhật địa chỉ"}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

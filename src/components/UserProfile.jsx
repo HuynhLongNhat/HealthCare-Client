@@ -19,7 +19,7 @@ import axios from "axios";
 import moment from "moment";
 import { toast } from "react-toastify";
 import { getUserProfile, updateUserProfile } from "@/api/auth.api";
-import { Form, Link, useParams } from "react-router-dom";
+import {  Link, useParams } from "react-router-dom";
 import { getDistricts, getProvinces, getWards } from "@/api/address.api";
 import { Button } from "./ui/button";
 import useAuthToken from "@/utils/userAuthToken";
@@ -42,6 +42,13 @@ const UserProfile = () => {
     address: "",
     profile_picture: "",
   });
+  const [initialAddressParts, setInitialAddressParts] = useState({
+    street: "",
+    ward: "",
+    district: "",
+    province: "",
+  });
+
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -50,6 +57,7 @@ const UserProfile = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
+  const [fullAddress, setFullAddress] = useState("");
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -85,17 +93,30 @@ const UserProfile = () => {
   }, [selectedDistrict]);
 
   useEffect(() => {
-    const provinceName =
-      provinces.find((p) => p.value === selectedProvince)?.label || "";
-    const districtName =
-      districts.find((d) => d.value === selectedDistrict)?.label || "";
-    const wardName = wards.find((w) => w.value === selectedWard)?.label || "";
+    if (
+      selectedProvince ||
+      selectedDistrict ||
+      selectedWard ||
+      streetAddress !== initialAddressParts.street
+    ) {
+      const provinceName =
+        provinces.find((p) => p.value === selectedProvince)?.label || "";
+      const districtName =
+        districts.find((d) => d.value === selectedDistrict)?.label || "";
+      const wardName = wards.find((w) => w.value === selectedWard)?.label || "";
 
-    const fullAddress = [streetAddress, wardName, districtName, provinceName]
-      .filter(Boolean)
-      .join(", ");
+      const completeAddress = [
+        streetAddress,
+        wardName,
+        districtName,
+        provinceName,
+      ]
+        .filter(Boolean)
+        .join(", ");
 
-    setFormData((prev) => ({ ...prev, address: fullAddress }));
+      setFormData((prev) => ({ ...prev, address: completeAddress }));
+      setFullAddress(completeAddress);
+    }
   }, [
     streetAddress,
     selectedProvince,
@@ -104,7 +125,7 @@ const UserProfile = () => {
     provinces,
     districts,
     wards,
-    setFormData,
+    initialAddressParts,
   ]);
 
   useEffect(() => {
@@ -129,6 +150,29 @@ const UserProfile = () => {
           address: userData.address || "",
           profile_picture: userData.profile_picture || "",
         });
+        setFullAddress(userData.address || "");
+
+        // Tách địa chỉ thành các phần: street, ward, district, province
+        if (userData.address) {
+          const parts = userData.address.split(",").map((part) => part.trim());
+          const [street, ward, district, province] = [
+            parts[0] || "",
+            parts[1] || "",
+            parts[2] || "",
+            parts[3] || "",
+          ];
+
+          setStreetAddress(street);
+          setInitialAddressParts({ street, ward, district, province });
+
+          // Tìm giá trị value tương ứng để set cho dropdown nếu cần
+          const findValue = (list, label) =>
+            list.find((item) => item.label === label)?.value || "";
+
+          setSelectedProvince(findValue(provinces, province));
+          setSelectedDistrict(findValue(districts, district));
+          setSelectedWard(findValue(wards, ward));
+        }
       }
     } catch (error) {
       toast.error("Không thể tải thông tin người dùng");
@@ -197,8 +241,8 @@ const UserProfile = () => {
         email: formData.email,
         gender: formData.gender,
         phone_number: formData.phone,
-        address : formData.address ,
-        dob : formData.dob ?  formData.dob : null,
+        address: formData.address,
+        dob: formData.dob ? formData.dob : null,
         profile_picture: avatarUrl || avatar,
       };
       const response = await updateUserProfile(userId, updateData);
@@ -208,10 +252,10 @@ const UserProfile = () => {
         setIsEditing(false);
       }
       if (response.EC === -1) {
-        toast.error(response.EM)
+        toast.error(response.EM);
       }
-        if (response.EC === -2) {
-        toast.error(response.EM)
+      if (response.EC === -2) {
+        toast.error(response.EM);
       }
     } catch (error) {
       toast.error(
@@ -238,10 +282,8 @@ const UserProfile = () => {
   };
 
   return (
-       <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg">
-
-
-    <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
+    <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg">
+      <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
         <ol className="list-reset flex">
           <li>
             <Link to="/" className="text-blue-600 hover:underline">
@@ -254,10 +296,9 @@ const UserProfile = () => {
           <li className="text-gray-500">Thông tin cá nhân</li>
         </ol>
       </nav>
-      <div className="max-w-7xl mt-5 mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+      <div className="max-w-7xl mt-5 mx-auto  dark:bg-gray-800 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
         {/* Sidebar */}
         <div className="md:w-1/3 relative bg-gradient-to-b from-blue-600 to-indigo-700 dark:from-gray-700 dark:to-gray-800 p-6 md:p-8 flex flex-col items-center">
-        
           <div className="relative group mb-6">
             <div className="w-32 h-32 rounded-full border-4 border-white/20 overflow-hidden">
               {avatar ? (
@@ -326,11 +367,8 @@ const UserProfile = () => {
                 <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
                   Chỉnh sửa hồ sơ
                 </h3>
-                <Button
-                  variant="ghost"
-                  onClick={cancelEdit}
-                >
-                  <X className="w-5 h-5 " />
+                <Button variant="ghost" onClick={cancelEdit}>
+                  <X className="w-5 h-5 text-red-500 " />
                 </Button>
               </div>
 
@@ -385,7 +423,7 @@ const UserProfile = () => {
                     onChange={handleInputChange}
                     className={`w-full px-4 py-2 rounded-lg border ${
                       errors.email ? "border-red-500" : "border-gray-300"
-                      } dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+                    } dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
                     disabled={true}
                   />
                   {errors.email && (
@@ -506,6 +544,14 @@ const UserProfile = () => {
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </div>
+
+                  {/* Display full address preview */}
+                  {fullAddress && (
+                    <div className="mt-3 p-3 bg-blue-50 text-blue-800 rounded-lg">
+                      <p className="text-sm font-medium">Địa chỉ đầy đủ:</p>
+                      <p>{fullAddress}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -538,10 +584,8 @@ const UserProfile = () => {
                   Thông tin cá nhân
                 </h3>
                 {Number(userId) === Number(auth?.userId) && (
-                  <Button
-                    onClick={() => setIsEditing(true)}
-                    variant="ghost">
-                    <Edit className="w-5 h-5 " />
+                  <Button onClick={() => setIsEditing(true)} variant="ghost">
+                    <Edit className="w-5 h-5 text-blue-500" />
                   </Button>
                 )}
               </div>
@@ -556,8 +600,12 @@ const UserProfile = () => {
                 <InfoItem
                   icon={Calendar}
                   label="Ngày sinh"
-                  value={userData?.dob ? moment(userData.dob).format("DD/MM/YYYY") : ""}
-                  />
+                  value={
+                    userData?.dob
+                      ? moment(userData.dob).format("DD/MM/YYYY")
+                      : ""
+                  }
+                />
                 <InfoItem
                   icon={User}
                   label="Giới tính"

@@ -49,8 +49,6 @@ const ListClinics = () => {
         clinic.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    console.log("Filtered clinics after search term:", selectedProvince);
-    // Filter by province
     if (selectedProvince) {
       result = result.filter((clinic) => {
         const addressParts = clinic.address?.split(",")[3]?.trim();
@@ -81,43 +79,49 @@ const ListClinics = () => {
          
         </ol>
       </nav>
+    
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-gray-800">Cơ sở y tế</h1>
 
-          <div className="flex items-center space-x-4">
-            <div className="w-1/3">
-              <ComboBox
-                options={
-                  provinces?.map((province) => ({
-                    label: province.label,
-                    value: province.label,
-                  })) || []
-                }
-                value={selectedProvince}
-                onChange={setSelectedProvince}
-                placeholder="Tỉnh thành"
-                className="w-full focus-visible:ring-blue-500"
-              />
-            </div>
-            {/* Ô tìm kiếm */}
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Tìm kiếm cơ sở y tế..."
-                  className="pl-10"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </div>
+        <div className="flex items-center justify-between mb-4 w-full">
+  {/* Tiêu đề bên trái */}
+  <h1 className="text-2xl font-bold text-blue-600">Cơ sở y tế</h1>
 
-            {/* Bộ lọc tỉnh/thành phố */}
-          </div>
-        </div>
-        <Separator />
+  {/* Bộ lọc bên phải */}
+  <div className="flex items-center space-x-3">
+    {/* ComboBox */}
+    <div className="w-1/3 min-w-[180px]">
+      <ComboBox
+        options={
+          provinces?.map((province) => ({
+            label: province.label,
+            value: province.label,
+          })) || []
+        }
+        value={selectedProvince}
+        onChange={setSelectedProvince}
+        placeholder="Tỉnh thành"
+        className="w-full focus-visible:ring-blue-500"
+      />
+    </div>
+
+    {/* Ô tìm kiếm (giữ nguyên chiều rộng) */}
+    <div className="w-[280px]">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Input
+          placeholder="Tìm kiếm cơ sở y tế..."
+          className="pl-10"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
+    </div>
+  </div>
+</div>
+
+  <Separator />
+</div>
+
 
       {/* Results Count */}
       <div className="text-sm text-gray-500 mb-4">

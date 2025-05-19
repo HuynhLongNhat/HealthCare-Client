@@ -37,7 +37,7 @@ const DoctorSection = () => {
   };
 
   return (
-    <section className="py-12 bg-blue-50">
+     <section className="py-12 bg-gradient-to-b from-white to-blue-50">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-gray-800">Bác sĩ </h2>

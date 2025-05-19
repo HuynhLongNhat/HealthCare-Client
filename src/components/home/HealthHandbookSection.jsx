@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { getAllHealthHandBook } from "@/api/doctor.api";
 import moment from "moment";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const HealthHandbookSection = () => {
   const navigate = useNavigate();
@@ -37,7 +38,9 @@ const HealthHandbookSection = () => {
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex justify-between items-center mb-10">
           <div>
-            <h2 className="text-3xl font-bold text-gray-800">Cẩm nang sức khỏe</h2>
+            <h2 className="text-3xl font-bold text-gray-800">
+              Cẩm nang sức khỏe
+            </h2>
           </div>
           <Button
             variant="ghost"
@@ -76,18 +79,26 @@ const HealthHandbookSection = () => {
                 }}
               >
                 {handbooks.map((handbook) => (
-                  <div key={handbook.handbook.id}  className="w-1/3 flex-shrink-0 px-4 ">
+                  <div
+                    key={handbook.handbook.id}
+                    className="w-1/3 flex-shrink-0 px-4 "
+                  >
                     <Card
                       className="hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col cursor-pointer hover:translate-y-[-5px]"
-                      onClick={() => navigate(`/cam-nang-suc-khoe/${handbook.handbook.slug}`)}
+                      onClick={() =>
+                        navigate(`/cam-nang-suc-khoe/${handbook.handbook.slug}`)
+                      }
                     >
-                      <div className="h-48 overflow-hidden relative">
-                        <img
-                          src={handbook.handbook.image}
-                          alt={handbook.handbook.title}
-                          className="w-full h-full object-cover"
-                        />
-                      
+                      <div className="h-48 w-full overflow-hidden bg-gray-200 rounded-xl">
+                        <Avatar className="w-full h-full rounded-none">
+                          <AvatarImage
+                            src={handbook.handbook.avatar}
+                            className="w-full h-full object-cover rounded-none"
+                          />
+                          <AvatarFallback className="w-full h-full flex items-center justify-center bg-gray-300 text-white text-5xl font-semibold rounded-none">
+                            {handbook.handbook.title.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
                       </div>
 
                       <CardContent className="p-6 flex-grow">
@@ -103,7 +114,11 @@ const HealthHandbookSection = () => {
                         </div>
                         <div className="flex items-center">
                           <Clock size={14} className="mr-1" />
-                          <span>{moment(handbook.handbook.createdAt).format("DD/MM/YYYY")}</span>
+                          <span>
+                            {moment(handbook.handbook.createdAt).format(
+                              "DD/MM/YYYY"
+                            )}
+                          </span>
                         </div>
                       </CardFooter>
                     </Card>
@@ -127,8 +142,6 @@ const HealthHandbookSection = () => {
             <ChevronRight size={28} className="text-gray-700" />
           </button>
         </div>
-
-      
       </div>
     </section>
   );

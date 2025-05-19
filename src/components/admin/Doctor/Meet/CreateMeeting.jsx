@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Save, X, Clock, Loader2, User, Calendar as CalendarIcon } from "lucide-react";
+import {
+  Save,
+
+  Clock,
+  Loader2,
+
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -13,97 +19,74 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast } from "react-toastify";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { v4 as uuidv4 } from "uuid";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { toast } from "react-toastify";
+import { DateTimePicker } from "@/components/DateTimePicker";
+import { createMeetingByDoctor } from "@/api/doctor.api";
+import { useParams } from "react-router-dom";
 
+// Form validation schema
 const formSchema = z.object({
   roomName: z.string().min(1, "Tên cuộc họp không được để trống"),
-  meetingDate: z.date({
-    required_error: "Vui lòng chọn ngày khám",
+   meetingDate: z.date({
+    required_error: "Vui lòng chọn thời gian bắt đầu",
+  }).refine(date => date > new Date(), {
+    message: "Thời gian bắt đầu phải sau thời gian hiện tại"
   }),
-  meetingTime: z.string().min(1, "Vui lòng chọn giờ khám"),
-  duration: z.string().min(1, "Thời lượng không được để trống"),
-  reason: z.string().min(1, "Lý do khám không được để trống"),
+  duration: z.coerce
+    .number()
+    .min(15, "Thời lượng tối thiểu 15 phút")
+    .max(240, "Thời lượng tối đa 240 phút"),
 });
 
-const CreateMeeting = ({ open, onOpenChange, fetchAllMeetingList, selectedPatient }) => {
+const CreateMeeting = ({ open, onOpenChange, fetch }) => {
   const [isLoading, setIsLoading] = useState(false);
-
+  const { doctorId } = useParams();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      roomName: selectedPatient ? `Khám cho bệnh nhân ${selectedPatient?.patientName}` : "",
-      meetingDate: new Date(),
-      meetingTime: "",
-      duration: "30",
-      reason: "",
+      roomName: "",
+      meetingDate: "",
+      duration: 30,
     },
   });
-
-  useEffect(() => {
-    if (selectedPatient) {
-      form.reset({
-        roomName: `Khám cho bệnh nhân ${selectedPatient.patientName}`,
-        meetingDate: new Date(),
-        meetingTime: "",
-        duration: "30",
-        reason: "",
-      });
-    }
-  }, [selectedPatient, form]);
 
   const onSubmit = async (values) => {
     setIsLoading(true);
     try {
-      // Combine date and time
-      const meetingDateTime = new Date(values.meetingDate);
-      const [hours, minutes] = values.meetingTime.split(':').map(Number);
-      meetingDateTime.setHours(hours, minutes);
-      
-      const patientId = selectedPatient?.patientId || "new-patient";
-      const newMeetLink = `https://meet.google.com/${uuidv4().substring(0, 8)}`;
-
-      // Prepare meeting data
       const meetingData = {
-        patientId: patientId,
         roomName: values.roomName,
-        meetingUrl: newMeetLink,
-        date: meetingDateTime.toISOString(),
-        duration: parseInt(values.duration),
-        reason: values.reason,
-        status: "scheduled"
+        meetingUrl: `https://meet.jit.si/${uuidv4().substring(
+        0,
+        8
+      )}`,
+        date: values.meetingDate,
+        duration: values.duration,
       };
 
-      console.log("Creating meeting:", meetingData);
-      
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      
-      // In a real application, you would call your API here
-      // const response = await createMeetingByPatientId(patientId, meetingData);
-      
-      const response = { success: true, message: "Đặt lịch khám mới thành công" };
+     const res = await createMeetingByDoctor(doctorId , meetingData)
+     console.log("Res" ,res)
+     
 
-      if (response.success) {
-        form.reset();
-        toast.success(response.message || "Đặt lịch khám mới thành công");
-        onOpenChange(false);
-        fetchAllMeetingList();
-      }
+      // In a real app, you would call your API here
+      // await createMeeting(meetingData);
+
+      toast.success("Tạo cuộc họp thành công");
+      form.reset();
+
+      onOpenChange(false);
+      fetch();
     } catch (error) {
       console.error("Error creating meeting:", error);
-      toast.error("Không thể tạo cuộc họp mới: " + error.message);
+      toast.error("Không thể tạo cuộc họp: " + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -111,195 +94,128 @@ const CreateMeeting = ({ open, onOpenChange, fetchAllMeetingList, selectedPatien
 
   const handleCancel = () => {
     form.reset();
+
     onOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        if (!open) handleCancel();
+      }}
+    >
+      <DialogContent className="max-w-2xl p-6 rounded-lg">
         <DialogHeader>
-          <DialogTitle>
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-2">
-                <div className="flex flex-col">
-                  <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    Đặt lịch khám mới
-                  </h1>
-                  {selectedPatient && (
-                    <p className="text-gray-600 mt-2 flex items-center">
-                      <User className="h-4 w-4 mr-1" />
-                      Bệnh nhân: {selectedPatient.patientName}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-white">
-                <Clock className="h-4 w-4" />
-                <span>{new Date().toLocaleDateString("vi-VN")}</span>
-              </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <DialogTitle className="text-2xl font-bold text-blue-700">
+                Tạo cuộc họp mới
+              </DialogTitle>
+              <DialogDescription className="text-gray-500">
+                Điền thông tin để tạo cuộc họp trực tuyến
+              </DialogDescription>
             </div>
-          </DialogTitle>
+            <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <Clock className="h-4 w-4" />
+              <span>{format(new Date(), "dd/MM/yyyy")}</span>
+            </div>
+          </div>
         </DialogHeader>
-        {/* Form */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Tên cuộc họp */}
-            <FormField
-              control={form.control}
-              name="roomName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base font-medium">
-                    Tên cuộc họp
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Nhập tên cuộc họp"
-                      {...field}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 mt-4"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Room Name */}
+              <FormField
+                control={form.control}
+                name="roomName"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel className="font-medium">
+                      Tên cuộc họp *
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Nhập tên cuộc họp"
+                        {...field}
+                        disabled={isLoading}
+                        className="focus-visible:ring-blue-500 h-10"
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500 text-xs" />
+                  </FormItem>
+                )}
+              />
 
-            {/* Ngày và giờ khám */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Duration */}
+              <FormField
+                control={form.control}
+                name="duration"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel className="font-medium">
+                      Thời lượng (phút) *
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="15"
+                        max="120"
+                        step="15"
+                        {...field}
+                        disabled={isLoading}
+                        className="focus-visible:ring-blue-500 h-10"
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500 text-xs" />
+                  </FormItem>
+                )}
+              />
+
+              {/* Meeting Date */}
+            </div>
               <FormField
                 control={form.control}
                 name="meetingDate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel className="text-base font-medium">
-                      Ngày khám
+                  <FormItem className="flex flex-col w-full">
+                    <FormLabel className="font-medium">
+                     Thời gian bắt đầu
                     </FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Chọn ngày</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date(new Date().setHours(0, 0, 0, 0))
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
+                    
+                      <DateTimePicker field={field} disabled={isLoading} />
+                        <FormMessage className="text-red-500" />
                   </FormItem>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="meetingTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-base font-medium">
-                      Giờ khám
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="time"
-                        {...field}
-                        disabled={isLoading}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Thời lượng */}
-            <FormField
-              control={form.control}
-              name="duration"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base font-medium">
-                    Thời lượng (phút)
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Thời lượng cuộc gọi (phút)"
-                      {...field}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Lý do khám */}
-            <FormField
-              control={form.control}
-              name="reason"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base font-medium">
-                    Lý do khám
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Nhập lý do khám"
-                      {...field}
-                      disabled={isLoading}
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end space-x-4 pt-6">
+            <div className="flex justify-end space-x-3 pt-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleCancel}
                 disabled={isLoading}
-                className="gap-2"
+                className="min-w-[100px] h-9"
               >
-                <X className="h-4 w-4" />
                 Hủy
               </Button>
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white gap-2"
+                className="min-w-[100px] h-9 bg-blue-600 hover:bg-blue-700 text-white"
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Đang xử lý...</span>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Đang tạo...
                   </>
                 ) : (
                   <>
-                    <Save className="h-4 w-4" />
-                    <span>Lưu</span>
+                    <Save className="h-4 w-4 mr-2" />
+                    Tạo cuộc họp
                   </>
                 )}
               </Button>

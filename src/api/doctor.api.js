@@ -1,147 +1,169 @@
 import axios from "../utils/axiosDoctorService";
 
 export const createDoctor = (doctorData) => {
-  return axios.post(`/doctors`, doctorData);
+  return axios.post(`/`, doctorData);
 };
 
 export const deleteDoctor = (doctorId) => {
-  return axios.delete(`/doctors/${doctorId}`);
+  return axios.delete(`/${doctorId}`);
 };
 
 export const getDoctorById = (doctorId) => {
-  return axios.get(`/doctors/${doctorId}`);
+  return axios.get(`/${doctorId}`);
 };
 
 export const getAllDoctors = () => {
-  return axios.get(`/doctors`);
+  return axios.get(`/`);
 };
 
 export const getAllSpecializations = () => {
-  return axios.get("/doctors/specializations");
+  return axios.get("/specializations");
 };
 
 export const updateDoctorProfile = (doctorId, doctorData) => {
-  return axios.put(`/doctors/${doctorId}/profile`, doctorData);
+  return axios.put(`/${doctorId}/profile`, doctorData);
 };
 
 
 export const getAllClinics = () =>{
-  return axios.get('/doctors/clinics');
+  return axios.get('/clinics');
 
 }
 
 export const getAllClinicsByDoctorId = (doctorId) =>{
-  return axios.get(`/doctors/clinics/doctors/${doctorId}`);
+  return axios.get(`/clinics/doctors/${doctorId}`);
 
 }
 
 
 export const createClinic = (clinicData) =>{
-  return axios.post('/doctors/clinics',clinicData);
+  return axios.post('/clinics',clinicData);
 
 }
 
 export const deleteClinic = (clinicId) =>{
-  return axios.delete(`/doctors/clinics/${clinicId}`);
+  return axios.delete(`/clinics/${clinicId}`);
 
 }
 
 export const getClinicDetail = (clinicId) =>{
-  return axios.get(`/doctors/clinics/${clinicId}`);
+  return axios.get(`/clinics/${clinicId}`);
 
 }
 
 export const updateClinic = (clinicId,clinicData) =>{
-  return axios.put(`/doctors/clinics/${clinicId}`,clinicData);
+  return axios.put(`/clinics/${clinicId}`,clinicData);
 
 }
 
 export const createNewSpecializations = (specializationsData) => {
   return axios.post(
-    "/doctors/specializations",
+    "/specializations",
     specializationsData,
   );
 };
 
 export const deleteSpecializations = (specializationId) => {
   return axios.delete(
-    `/doctors/specializations/${specializationId}`,
+    `/specializations/${specializationId}`,
   );
 };
 
 export const getSpecializationsById = (specializationId) => {
   return axios.get(
-    `/doctors/specializations/${specializationId}`,
+    `/specializations/${specializationId}`,
   
   );
 };
 
 export const updateSpecializations = (specializationId,specializationsData) => {
   return axios.put(
-    `/doctors/specializations/${specializationId}`,
+    `/specializations/${specializationId}`,
     specializationsData
   );
 };
 
 
 export const addSchedule = (doctorId , clinicId , scheduleData ) =>{
-   return axios.post(`doctors/${doctorId}/clinic/${clinicId}/schedules`,scheduleData)
+   return axios.post(`/${doctorId}/clinic/${clinicId}/schedules`,scheduleData)
 }
 
-export const getDoctorSchedulesByClinic = (doctorId , clinicId) =>{
-  return axios.get(`doctors/${doctorId}/clinic/${clinicId}/schedules`)
+export const getDoctorSchedulesByClinic = (doctorId , clinicId , timeRange) =>{
+  return axios.get(`/${doctorId}/clinic/${clinicId}/schedules/${timeRange}`)
 
 }
 
 export const deleteScheduleById = (scheduleId) =>{
-   return axios.delete(`doctors/schedules/${scheduleId}`)
+   return axios.delete(`/schedules/${scheduleId}`)
 }
 
 export const updateScheduleById = (doctorId ,scheduleId , data) => {
-     return axios.put(`doctors/${doctorId}/schedules/${scheduleId}` , data)
+     return axios.put(`/${doctorId}/schedules/${scheduleId}` , data)
 }
 
 export const getAllDoctorBySpecialization = (specializationId) =>{
-  return axios.get(`doctors/specializations/${specializationId}/doctors`)
+  return axios.get(`/specializations/${specializationId}/doctors`)
 
 }
 
 export const createRatingDoctor = (data) => {
-  return axios.post(`doctors/ratings`,data);
+  return axios.post(`/ratings`,data);
 };
 
 export const deleteRatingDoctor = (ratingId) => {
-  return axios.delete(`doctors/ratings/${ratingId}`);
+  return axios.delete(`/ratings/${ratingId}`);
 };
 
 
 export const getDoctorRatingsByDoctorId = (doctorId) => {
-  return axios.get(`doctors/${doctorId}/ratings`);
+  return axios.get(`/${doctorId}/ratings`);
 };
 
 export const updateRatingDoctor = (ratingId ,data) => {
-  return axios.put(`doctors/ratings/${ratingId}`,data);
+  return axios.put(`/ratings/${ratingId}`,data);
 };
 
 export const getAllHealthHandBook = () =>{
-  return axios.get('/doctors/all/handbooks')
+  return axios.get('/all/handbooks')
 }
 
 export const getLatestlHealthHandBook = () =>{
-  return axios.get('/doctors/latest/handbooks')
+  return axios.get('/latest/handbooks')
 }
 
 export const getOutStandinglHealthHandBook = () =>{
-  return axios.get('/doctors/outstanding/handbooks')
+  return axios.get('/outstanding/handbooks')
 }
 export const getAllHealthHandBookByDoctorId = (doctorId) =>{
-  return axios.get(`/doctors/all/handbooks/doctor/${doctorId}`)
+  return axios.get(`/all/handbooks/doctor/${doctorId}`)
 
 }
 export const createNewHealthHandbook = (data) => {
-  return axios.post(`doctors/handbook`,data);
+  return axios.post(`/handbook`,data);
 };
 
 export const getDetailHealthHandBook = (slug) =>{
-  return axios.get(`/doctors/handbooks/${slug}`)
+  return axios.get(`/handbooks/${slug}`)
 }
+
+export const updateHealthHandBook = (slug , data) =>{
+  return axios.put(`/handbooks/${slug}` , data)
+}
+
+export const deleteHeathHandBook = (id) => {
+    return axios.delete(`/handbooks/${id}`)
+
+}
+
+export const createMeetingByDoctor = (doctorId,data) => {
+  return axios.post(`/meetings/doctor/${doctorId}`, data)
+};
+
+export const getAllMeetingByDoctor = (doctorId) => {
+  return axios.get(`/meetings/doctor/${doctorId}`)
+};
+
+export const deleteMeeting = (meetingId) => {
+  return axios.delete(`/meetings/${meetingId}`)
+};
+

@@ -1,25 +1,16 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import {
-  ArrowLeft,
   Edit,
   Loader,
-  Calendar,
-  Clock,
-  Users,
   Info,
-  FileText,
   Stethoscope,
-  MapPin,
   Home,
-  CalendarCheck,
-  Video,
-  ShieldCheck,
   MapPinCheck,
+  Star,
+  CheckCircle,
+  MapPin,
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -30,6 +21,7 @@ import {
   getSpecializationsById,
 } from "@/api/doctor.api";
 import useAuthToken from "@/utils/userAuthToken";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const DetailSpecialization = () => {
   const { specializationId } = useParams();
   const auth = useAuthToken();
@@ -94,67 +86,92 @@ const DetailSpecialization = () => {
         </ol>
       </nav>
 
-      <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl shadow-lg overflow-hidden mt-5 relative">
-        <div className="max-w-6xl mx-auto p-6 md:p-8">
-          {/* Nút chỉnh sửa - góc trên phải */}
-          {(auth?.role === 1 || auth?.role === 2) && specializationId && (
+      <div className="bg-blue-50 rounded-2xl shadow-xl overflow-hidden mt-6 relative isolate">
+        <div className="">
+          {/* Edit button - floating with better styling */}
+          {(auth?.role === 1 ) && specializationId && (
             <div className="absolute top-6 right-6 z-20">
-              <Button
-                variant="ghost"
-                className="bg-white/90 hover:bg-white text-blue-600 shadow-sm hover:shadow-md px-4 py-2 rounded-lg transition-all backdrop-blur-sm"
+              <button
+                className="absolute top-0 right-0 p-2 rounded-full bg-white hover:bg-gray-50 transition-colors shadow-md border border-gray-200"
                 onClick={() =>
                   navigate(`/doctor/specializations/update/${specializationId}`)
                 }
               >
-                <Edit className="mr-2 h-4 w-4" />
-                Chỉnh sửa
-              </Button>
+                <Edit className="h-4 w-4 text-blue-600" />
+              </button>
             </div>
           )}
 
-          <div className="flex flex-col md:flex-row items-start gap-8 pt-2">
-            {/* Avatar section */}
-            <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-2xl overflow-hidden bg-white/10 flex-shrink-0 border-[3px] border-white/30 shadow-inner hover:border-white/50 transition-all duration-300 group">
-              {specialization.avatar ? (
-                <img
-                  src={specialization.avatar}
-                  alt={specialization.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              ) : (
-                <div className="w-full h-full bg-blue-400/30 flex items-center justify-center backdrop-blur-sm">
-                  <Stethoscope className="h-16 w-16 text-white/90" />
-                </div>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20" />
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 p-6 bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+            {/* Avatar section - redesigned with elegant effects */}
+            <div className="relative group">
+              <div className="relative w-56 h-56 rounded-full overflow-hidden flex-shrink-0 border-4 border-white shadow-xl ring-4 ring-blue-100/50 hover:ring-blue-200 transition-all duration-500">
+                {specialization.avatar ? (
+                  <>
+                    <img
+                      src={specialization.avatar}
+                      alt={specialization.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-blue-800/10" />
+                  </>
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                    <Stethoscope className="h-24 w-24 text-white/90 drop-shadow-lg" />
+                  </div>
+                )}
+              </div>
+              {/* Decorative element */}
+              <div className="absolute -bottom-3 -right-3 bg-blue-500/10 backdrop-blur-sm w-24 h-24 rounded-full -z-10 group-hover:scale-150 transition-transform duration-700"></div>
             </div>
 
-            {/* Content section */}
-            <div className="flex-1 space-y-4">
+            {/* Content section - enhanced with visual hierarchy */}
+            <div className="flex-1 space-y-6">
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-1 bg-blue-500 rounded-full"></div>
+                  <span className="text-sm font-semibold text-blue-600 uppercase tracking-wider">
+                    Chuyên khoa
+                  </span>
+                </div>
+
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
                   {specialization.name}
                 </h1>
-                <p className="text-white/90 mt-2 max-w-2xl">
-                  {specialization.description ||
-                    "Chuyên khoa y tế chất lượng cao"}
-                </p>
+
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <span className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 text-blue-700 text-sm font-medium">
+                    <Star className="w-4 h-4 mr-2 fill-yellow-400 text-yellow-400" />
+                    4.9 (128 đánh giá)
+                  </span>
+                  <span className="inline-flex items-center px-4 py-2 rounded-full bg-green-50 text-green-700 text-sm font-medium">
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Đang trực tuyến
+                  </span>
+                </div>
               </div>
 
-              {/* Badges */}
-              <div className="flex flex-wrap gap-2 mt-4">
-                <Badge className="bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm px-4 py-1.5 border-white/30">
-                  <CalendarCheck className="mr-2 h-4 w-4" />
-                  Đặt khám trực tuyến
-                </Badge>
-                <Badge className="bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm px-4 py-1.5 border-white/30">
-                  <Video className="mr-2 h-4 w-4" />
-                  Tư vấn từ xa
-                </Badge>
-                <Badge className="bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm px-4 py-1.5 border-white/30">
-                  <ShieldCheck className="mr-2 h-4 w-4" />
-                  Bảo hiểm y tế
-                </Badge>
+              {/* Decorative divider */}
+              <div className="w-20 h-0.5 bg-gray-200 my-4"></div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                  <div className="text-3xl font-bold text-blue-600">15+</div>
+                  <div className="text-sm text-gray-600">Năm kinh nghiệm</div>
+                </div>
+                <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                  <div className="text-3xl font-bold text-blue-600">2K+</div>
+                  <div className="text-sm text-gray-600">Bệnh nhân</div>
+                </div>
+                <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                  <div className="text-3xl font-bold text-blue-600">98%</div>
+                  <div className="text-sm text-gray-600">Hài lòng</div>
+                </div>
+                <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                  <div className="text-3xl font-bold text-blue-600">24/7</div>
+                  <div className="text-sm text-gray-600">Hỗ trợ</div>
+                </div>
               </div>
             </div>
           </div>
@@ -164,18 +181,13 @@ const DetailSpecialization = () => {
       {/* Content section */}
       <div className="  py-8">
         <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-[250px] grid-cols-2">
-
-            <TabsTrigger value="overview" >
-              Tổng quan
-            </TabsTrigger>
-            <TabsTrigger value="doctors" >
-              Bác sĩ ({doctors.length})
-            </TabsTrigger>
+          <TabsList className="grid w-[250px] grid-cols-2">
+            <TabsTrigger value="overview">Tổng quan</TabsTrigger>
+            <TabsTrigger value="doctors">Bác sĩ ({doctors.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <Card className="border-none shadow-md">
+            <Card className="border-none shadow-md bg-blue-50">
               <CardHeader className="pb-2">
                 <h2 className="text-xl font-bold text-blue-600 flex items-center">
                   <Info className="h-5 w-5 mr-2" />
@@ -260,36 +272,48 @@ const DetailSpecialization = () => {
                       className="flex cursor-pointer flex-col sm:flex-row items-center gap-4 p-5 border border-gray-200 rounded-xl shadow-sm bg-white hover:shadow-md hover:bg-blue-50 transition"
                       onClick={() => navigate(`/doctor/${doctor.userData.id}`)}
                     >
-                      {/* Avatar */}
-                      <div className="w-24 h-24 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center text-3xl font-semibold text-blue-600">
-                        {doctor.userData?.profile_picture ? (
-                          <img
-                            src={doctor.userData.profile_picture}
-                            alt={doctor.userData.full_name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          doctor.userData?.full_name?.charAt(0) || "?"
-                        )}
-                      </div>
+                         <div className="flex-shrink-0">
+                  <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                    <Avatar className="h-16 w-16 border-2 border-gray-200 shadow-sm">
+                      <AvatarImage src={doctor.userData.profile_picture} />
+                      <AvatarFallback className="text-2xl">
+                        {doctor.userData.full_name?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                </div>
 
-                      {/* Info */}
-                      <div className="flex-1 text-center sm:text-left">
-                        <h3 className="font-bold text-xl text-blue-800">
-                          {doctor.userData.full_name}
-                        </h3>
+                {/* Thông tin */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-semibold text-blue-700 truncate">
+                    {doctor.doctor.position} {doctor.userData.full_name}
+                  </h3>
 
-                        {/* Address */}
-                        <div className="flex items-center justify-center sm:justify-start mt-2 text-gray-600">
-                          <MapPinCheck className="text-blue-700 w-5 h-5 mr-2" />
-                          <span>
-                            {doctor?.userData?.address
-                              ? doctor.userData.address.split(",")[3] ||
-                                "Địa chỉ chưa cập nhật"
-                              : "Địa chỉ chưa cập nhật"}
-                          </span>
-                        </div>
-                      </div>
+                  {/* Chuyên khoa */}
+                  <div className="flex flex-wrap items-center gap-x-6 text-gray-500 mt-1">
+                    {/* Chuyên khoa */}
+                    <div className="flex items-center">
+                      <Stethoscope className="h-4 w-4 mr-2 text-blue-600 flex-shrink-0" />
+                      <span className="truncate">
+                        {doctor?.doctor?.specialization?.name ||
+                          "Chưa cập nhật chuyên khoa"}
+                      </span>
+                    </div>
+
+                    {/* Địa chỉ */}
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-2 text-blue-600 flex-shrink-0" />
+                      <span className="truncate">
+                        {doctor?.userData?.address
+                          ? doctor.userData.address
+                              .split(",")
+                              .slice(3)
+                              .join(", ")
+                          : "Chưa cập nhật địa chỉ"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
                     </div>
                   ))}
                 </div>

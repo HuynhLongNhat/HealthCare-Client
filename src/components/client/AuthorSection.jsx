@@ -64,7 +64,7 @@ const AuthorSection = ({ handbooks }) => {
               >
                 {author?.map((doctor) => (
                   <div
-                    key={doctor?.userData?.id}
+                    key={doctor.doctor.DT.doctor.user_id}
                     className="w-1/3 flex-shrink-0 px-4 "
                   >
                     <Card

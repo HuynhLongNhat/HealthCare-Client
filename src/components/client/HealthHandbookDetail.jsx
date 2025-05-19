@@ -6,30 +6,41 @@ import {
   Home,
   Edit,
   Eye,
+  Badge,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getDetailHealthHandBook } from "@/api/doctor.api";
+import { getAllHealthHandBookByDoctorId, getDetailHealthHandBook } from "@/api/doctor.api";
 import moment from "moment";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import "highlight.js/styles/github-dark.css";
+import { Card, CardContent } from "../ui/card";
 const HealthHandbookDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const  [handbook , setHandbook] = useState()
- 
+   const [myHandBooks, setMyHandBooks] = useState();
+
   useEffect(() => {
    fetchDetailHealthHandBook()
  } ,[slug])
   const fetchDetailHealthHandBook = async () => {
     const res = await getDetailHealthHandBook(slug);
-    console.log("res" ,res)
     if (res.EC === 0) {
       setHandbook(res.DT)
     }
   }
-
+    useEffect(() => {
+      fetchAllMyHandbook()
+    }, [handbook?.author_id])
+  
+    const fetchAllMyHandbook = async () => {
+      const res = await getAllHealthHandBookByDoctorId(handbook?.author_id);
+      if (res.EC === 0) {
+        setMyHandBooks(res.DT)
+     }
+    }
  if (!handbook) {
   return (
     <div className="container mx-auto max-w-2xl py-24 text-center">
@@ -208,35 +219,39 @@ const HealthHandbookDetail = () => {
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
               Bài viết liên quan
             </h2>
-            {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {relatedArticles.map((related) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {myHandBooks.filter((item) => item.handbook.id !== handbook?.id).slice(0,3).map((handbook) => (
                 <Card
-                  key={related.id}
+                  key={handbook.handbook.id}
                   className="hover:shadow-lg transition-shadow overflow-hidden cursor-pointer"
-                  onClick={() => navigate(`/health-handbook/${related.id}`)}
+                  onClick={() => navigate(`/cam-nang-suc-khoe/${handbook.handbook.slug}`)}
                 >
                   <div className="h-40 overflow-hidden">
-                    <img
-                      src={related.image}
-                      alt={related.title}
-                      className="w-full h-full object-cover transition-transform hover:scale-105"
-                    />
+                  
+                    <Avatar className="w-full h-full rounded-none">
+                        <AvatarImage
+                          src={handbook.handbook.image}
+                          className="w-full h-full object-cover rounded-none"
+                        />
+                        <AvatarFallback className="w-full h-full flex items-center justify-center bg-gray-300 text-white text-5xl font-semibold rounded-none">
+                          {handbook.handbook.title.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+
                   </div>
                   <CardContent className="p-4">
-                    <Badge className="mb-2 bg-blue-100 text-blue-800 hover:bg-blue-200 border-none">
-                      {related.category}
-                    </Badge>
+                    
                     <h3 className="font-semibold text-gray-800 line-clamp-2 mb-2">
-                      {related.title}
+                      {handbook.handbook.title}
                     </h3>
                     <div className="flex items-center text-gray-500 text-xs">
                       <Calendar className="h-3 w-3 mr-1" />
-                      <span>{related.date}</span>
+                      <span>{moment(handbook?.createdAt).format("DD/MM/YYYY")}</span>          
                     </div>
                   </CardContent>
                 </Card>
               ))}
-            </div> */}
+            </div>
           </div>
         </main>
       </div>

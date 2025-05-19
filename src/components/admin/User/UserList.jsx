@@ -15,7 +15,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import DeleteUser from "./DeleteUser";
 import { deleteUser, getAllUsers, updateRoleUser } from "@/api/auth.api";
 import RoleUpdate from "./RoleUpdate";
 import { toast } from "react-toastify";
@@ -126,7 +125,7 @@ const UserList = () => {
   }
 
   return (
-    <div className="p-4">
+    <div className="mt-20">
       <Card>
         <CardHeader>
           <div className="mb-8">

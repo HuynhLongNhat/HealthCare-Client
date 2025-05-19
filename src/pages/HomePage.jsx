@@ -17,7 +17,7 @@ const HomePage = () => (
       <SpecialtySection />
       <ClinicSection/>
       <DoctorSection />
-      <HealthHandbookSection/>
+      <HealthHandbookSection />
       <FeaturesSection />
       <ServicesSection />
       <StatsSection />

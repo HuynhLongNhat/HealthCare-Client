@@ -1,27 +1,19 @@
-/* eslint-disable react/prop-types */
-import { useState, useEffect } from "react";
-import { format, parseISO } from "date-fns";
-import { vi } from "date-fns/locale";
+import { useState, useEffect, useMemo } from "react";
 import {
-  Calendar,
-  Clock,
-  Edit2,
-  Trash2,
-  Plus,
   Search,
   Filter,
   CheckCircle,
   XCircle,
-  AlertCircle,
+  X,
+  BadgeCheck,
+  Clock1,
+  CircleSlash,
+  Stethoscope,
+  TimerOff,
+  CalendarCheck,
+  Ban,
+  Calendar,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -30,785 +22,466 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useAuthToken from "@/utils/userAuthToken";
+import { getAllMyBooking } from "@/api/appointment.api";
+import { useParams } from "react-router-dom";
+import AppointmentCard from "./AppointmentCard";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
-// Demo data
-const mockAppointments = [
-  {
-    id: 1,
-    patientName: "Nguyễn Văn A",
-    patientAge: 32,
-    patientGender: "Nam",
-    date: "2025-05-10T09:30:00",
-    reason: "Đau đầu, sốt nhẹ",
-    status: "confirmed",
-    phone: "0912345678",
-    email: "nguyenvana@example.com",
+const statusConfig = {
+  1: {
+    text: "Chờ xác nhận",
+    variant: "warning",
+    icon: <Clock1 className="h-4 w-4 mr-1 text-yellow-500" />,
   },
-  {
-    id: 2,
-    patientName: "Trần Thị B",
-    patientAge: 45,
-    patientGender: "Nữ",
-    date: "2025-05-12T14:00:00",
-    reason: "Khám định kỳ",
-    status: "pending",
-    phone: "0923456789",
-    email: "tranthib@example.com",
+  2: {
+    text: "Đã xác nhận",
+    variant: "success",
+    icon: <BadgeCheck className="h-4 w-4 mr-1 text-green-600" />,
   },
-  {
-    id: 3,
-    patientName: "Lê Văn C",
-    patientAge: 28,
-    patientGender: "Nam",
-    date: "2025-05-09T10:15:00",
-    reason: "Đau lưng kéo dài",
-    status: "completed",
-    phone: "0934567890",
-    email: "levanc@example.com",
+  3: {
+    text: "Đã hủy",
+    variant: "destructive",
+    icon: <X className="h-4 w-4 mr-1 text-red-500" />,
   },
-  {
-    id: 4,
-    patientName: "Phạm Thị D",
-    patientAge: 56,
-    patientGender: "Nữ",
-    date: "2025-05-15T11:00:00",
-    reason: "Mệt mỏi, khó ngủ",
-    status: "cancelled",
-    phone: "0945678901",
-    email: "phamthid@example.com",
+  4: {
+    text: "Đã từ chối",
+    variant: "destructive",
+    icon: <CircleSlash className="h-4 w-4 mr-1 text-gray-500" />,
   },
-];
+  5: {
+    text: "Đã thanh toán",
+    variant: "success",
+    icon: <CheckCircle className="h-4 w-4 mr-1 text-blue-600" />,
+  },
+};
 
-const AppointmentManager = ({ doctorId }) => {
-  const [appointments, setAppointments] = useState(mockAppointments);
-  const [filteredAppointments, setFilteredAppointments] = useState([]);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isViewOpen, setIsViewOpen] = useState(false);
-  const [currentAppointment, setCurrentAppointment] = useState(null);
+const AppointmentManager = () => {
+  const { userId } = useParams();
+  const [appointments, setAppointments] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all");
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedStatuses, setSelectedStatuses] = useState(
+    Object.keys(statusConfig).map(Number)
+  );
   const auth = useAuthToken();
 
-  // Simulating the form data for new appointments
-  const [formData, setFormData] = useState({
-    patientName: "",
-    patientAge: "",
-    patientGender: "Nam",
-    date: "",
-    time: "",
-    reason: "",
-    status: "pending",
-    phone: "",
-    email: "",
-  });
-
   useEffect(() => {
-    // Filter appointments based on search term and status
+    fetchAppointments();
+  }, [userId]);
+
+  const fetchAppointments = async () => {
+    setIsLoading(true);
+    try {
+      const res = await getAllMyBooking(userId);
+      if (res.EC === 0) {
+        setAppointments(res.DT);
+      }
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filterByDate = (appointments, filterType) => {
+  const now = new Date();
+
+  // Mốc bắt đầu ngày hôm nay 00:00 và ngày mai 00:00
+  const startOfToday = new Date(now);
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const startOfTomorrow = new Date(startOfToday);
+  startOfTomorrow.setDate(startOfToday.getDate() + 1);
+
+  switch (filterType) {
+    case "today":
+      return appointments.filter((apt) => {
+        const aptDate = new Date(apt.appointment.booking_time);
+        return aptDate >= startOfToday && aptDate < startOfTomorrow;
+      });
+
+    case "this_week": {
+      // Mốc đầu tuần (Chủ nhật) và cuối tuần (Thứ bảy)
+      const startOfWeek = new Date(startOfToday);
+      startOfWeek.setDate(startOfToday.getDate() - startOfToday.getDay());
+
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 7); // exclusive
+
+      return appointments.filter((apt) => {
+        const aptDate = new Date(apt.appointment.booking_time);
+        return aptDate >= startOfWeek && aptDate < endOfWeek;
+      });
+    }
+
+    case "this_month": {
+      // Mốc đầu tháng và đầu tháng kế tiếp
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+      return appointments.filter((apt) => {
+        const aptDate = new Date(apt.appointment.booking_time);
+        return aptDate >= startOfMonth && aptDate < startOfNextMonth;
+      });
+    }
+
+    case "this_year": {
+      // Mốc đầu năm và đầu năm kế tiếp
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+      const startOfNextYear = new Date(now.getFullYear() + 1, 0, 1);
+
+      return appointments.filter((apt) => {
+        const aptDate = new Date(apt.appointment.booking_time);
+        return aptDate >= startOfYear && aptDate < startOfNextYear;
+      });
+    }
+
+    case "newest":
+      // Đổi thứ tự mới -> cũ
+      return [...appointments].sort((a, b) => 
+        new Date(b.appointment.booking_time) - new Date(a.appointment.booking_time)
+      );
+
+    case "oldest":
+      // Đổi thứ tự cũ -> mới
+      return [...appointments].sort((a, b) => 
+        new Date(a.appointment.booking_time) - new Date(b.appointment.booking_time)
+      );
+
+    default:
+      return appointments;
+  }
+};
+
+  // Count appointments by status
+  const statusCounts = useMemo(() => {
+    const counts = {};
+    appointments.forEach((booking) => {
+      const statusId = booking.appointment.status_id;
+      counts[statusId] = (counts[statusId] || 0) + 1;
+    });
+    return counts;
+  }, [appointments]);
+
+  const filteredAppointments = useMemo(() => {
     let filtered = [...appointments];
-    
+
+    // Lọc theo search term
     if (searchTerm) {
       filtered = filtered.filter(
         (apt) =>
-          apt.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          apt.phone.includes(searchTerm) ||
-          apt.email.toLowerCase().includes(searchTerm.toLowerCase())
+          apt.doctorData?.userData?.full_name
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          apt.patientData?.full_name?.includes(searchTerm) ||
+          apt.patientData?.phone?.includes(searchTerm) ||
+          apt.patientData?.email
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase())
       );
     }
-    
-    if (statusFilter !== "all") {
-      filtered = filtered.filter((apt) => apt.status === statusFilter);
+
+    // Lọc theo status
+    if (selectedStatuses.length > 0 && selectedStatuses.length < Object.keys(statusConfig).length) {
+      filtered = filtered.filter(
+        (apt) => selectedStatuses.includes(apt.appointment.status_id)
+      );
     }
-    
-    setFilteredAppointments(filtered);
-  }, [appointments, searchTerm, statusFilter]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+    // Lọc theo ngày
+    filtered = filterByDate(filtered, dateFilter);
 
-  const handleSelectChange = (name, value) => {
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+    return filtered;
+  }, [appointments, searchTerm, selectedStatuses, dateFilter]);
 
-  const handleCreateAppointment = () => {
-    // Combine date and time into a single ISO string
-    const dateTime = `${formData.date}T${formData.time}:00`;
-    
-    const newAppointment = {
-      id: appointments.length + 1,
-      patientName: formData.patientName,
-      patientAge: parseInt(formData.patientAge),
-      patientGender: formData.patientGender,
-      date: dateTime,
-      reason: formData.reason,
-      status: formData.status,
-      phone: formData.phone,
-      email: formData.email,
-    };
-    
-    setAppointments([...appointments, newAppointment]);
-    resetForm();
-    setIsCreateOpen(false);
-  };
-
-  const handleUpdateAppointment = () => {
-    // Combine date and time if they're provided separately
-    let dateTime = currentAppointment.date;
-    if (formData.date && formData.time) {
-      dateTime = `${formData.date}T${formData.time}:00`;
-    }
-    
-    const updatedAppointment = {
-      ...currentAppointment,
-      patientName: formData.patientName,
-      patientAge: parseInt(formData.patientAge),
-      patientGender: formData.patientGender,
-      date: dateTime,
-      reason: formData.reason,
-      status: formData.status,
-      phone: formData.phone,
-      email: formData.email,
-    };
-    
-    setAppointments(
-      appointments.map((apt) =>
-        apt.id === currentAppointment.id ? updatedAppointment : apt
-      )
+  const toggleStatusFilter = (statusId) => {
+    setSelectedStatuses((prev) =>
+      prev.includes(statusId)
+        ? prev.filter((id) => id !== statusId)
+        : [...prev, statusId]
     );
-    
-    setIsEditOpen(false);
   };
 
-  const handleDeleteAppointment = () => {
-    setAppointments(
-      appointments.filter((apt) => apt.id !== currentAppointment.id)
+  const selectAllStatuses = () => {
+    setSelectedStatuses(Object.keys(statusConfig).map(Number))
+  };
+
+  const clearAllStatuses = () => {
+    setSelectedStatuses([]);
+  };
+
+  const getStatusBadge = (statusId) => {
+    const status = statusConfig[statusId] || statusConfig[1];
+    return (
+      <Badge
+        className={`px-3 py-1.5 text-sm flex items-center gap-1.5
+          ${
+            status.variant === "success"
+              ? "bg-green-100 text-green-800 hover:bg-green-100 hover:text-green-800"
+              : status.variant === "warning"
+              ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100 hover:text-yellow-800"
+              : "bg-red-100 text-red-800 hover:bg-red-100 hover:text-red-800"
+          }`}
+      >
+        {status.icon}
+        {status.text}
+      </Badge>
     );
-    setIsDeleteOpen(false);
   };
 
-  const openEditDialog = (appointment) => {
-    setCurrentAppointment(appointment);
-    
-    // Parse ISO date to get separate date and time
-    const date = appointment.date.split("T")[0];
-    const time = appointment.date.split("T")[1].substring(0, 5);
-    
-    setFormData({
-      patientName: appointment.patientName,
-      patientAge: appointment.patientAge.toString(),
-      patientGender: appointment.patientGender,
-      date: date,
-      time: time,
-      reason: appointment.reason,
-      status: appointment.status,
-      phone: appointment.phone,
-      email: appointment.email,
-    });
-    
-    setIsEditOpen(true);
-  };
-
-  const openViewDialog = (appointment) => {
-    setCurrentAppointment(appointment);
-    setIsViewOpen(true);
-  };
-
-  const openDeleteDialog = (appointment) => {
-    setCurrentAppointment(appointment);
-    setIsDeleteOpen(true);
-  };
-
-  const resetForm = () => {
-    setFormData({
-      patientName: "",
-      patientAge: "",
-      patientGender: "Nam",
-      date: "",
-      time: "",
-      reason: "",
-      status: "pending",
-      phone: "",
-      email: "",
-    });
-  };
-
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case "confirmed":
-        return (
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-            <CheckCircle className="w-3 h-3 mr-1" />
-            Đã xác nhận
-          </Badge>
-        );
-      case "pending":
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">
-            <AlertCircle className="w-3 h-3 mr-1" />
-            Chờ xác nhận
-          </Badge>
-        );
-      case "completed":
-        return (
-          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
-            <CheckCircle className="w-3 h-3 mr-1" />
-            Hoàn thành
-          </Badge>
-        );
-      case "cancelled":
-        return (
-          <Badge className="bg-red-100 text-red-800 hover:bg-red-200">
-            <XCircle className="w-3 h-3 mr-1" />
-            Đã hủy
-          </Badge>
-        );
-      default:
-        return (
-          <Badge className="bg-gray-100 text-gray-800">
-            Không xác định
-          </Badge>
-        );
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-6 mt-20 flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h2 className="text-2xl font-bold tracking-tight">Quản lý lịch hẹn</h2>
-        
-        {auth?.role !== 3 && (
-          <Button 
-            onClick={() => setIsCreateOpen(true)} 
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Thêm lịch hẹn mới
-          </Button>
-        )}
-      </div>
-
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-          <Input
-            type="search"
-            placeholder="Tìm kiếm theo tên, email, số điện thoại..."
-            className="pl-9"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+    <div className="container mx-auto p-6  mt-5 bg-white shadow-md rounded-lg">
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center ml-2 gap-4">
+          <h2 className="text-2xl font-bold tracking-tight text-blue-600">
+            Quản lý lịch khám bệnh
+          </h2>
         </div>
-        
-        <div className="w-full md:w-48">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger>
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Lọc trạng thái" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tất cả</SelectItem>
-              <SelectItem value="pending">Chờ xác nhận</SelectItem>
-              <SelectItem value="confirmed">Đã xác nhận</SelectItem>
-              <SelectItem value="completed">Hoàn thành</SelectItem>
-              <SelectItem value="cancelled">Đã hủy</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
 
-      <Tabs defaultValue="upcoming" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="upcoming">Sắp tới</TabsTrigger>
-          <TabsTrigger value="completed">Đã hoàn thành</TabsTrigger>
-          <TabsTrigger value="cancelled">Đã hủy</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="upcoming" className="space-y-4 mt-4">
-          {filteredAppointments.filter(apt => 
-            apt.status === "pending" || apt.status === "confirmed"
-          ).length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <p className="text-gray-500">Không có lịch hẹn sắp tới</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredAppointments
-                .filter(apt => apt.status === "pending" || apt.status === "confirmed")
-                .map((appointment) => (
-                  <AppointmentCard 
-                    key={appointment.id}
-                    appointment={appointment}
-                    onEdit={openEditDialog}
-                    onDelete={openDeleteDialog}
-                    onView={openViewDialog}
-                    getStatusBadge={getStatusBadge}
-                    isDoctor={auth?.role !== 3}
-                  />
-                ))}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="completed" className="space-y-4 mt-4">
-          {filteredAppointments.filter(apt => apt.status === "completed").length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <p className="text-gray-500">Không có lịch hẹn đã hoàn thành</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredAppointments
-                .filter(apt => apt.status === "completed")
-                .map((appointment) => (
-                  <AppointmentCard 
-                    key={appointment.id}
-                    appointment={appointment}
-                    onEdit={openEditDialog}
-                    onDelete={openDeleteDialog}
-                    onView={openViewDialog}
-                    getStatusBadge={getStatusBadge}
-                    isDoctor={auth?.role !== 3}
-                  />
-                ))}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="cancelled" className="space-y-4 mt-4">
-          {filteredAppointments.filter(apt => apt.status === "cancelled").length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <p className="text-gray-500">Không có lịch hẹn đã hủy</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredAppointments
-                .filter(apt => apt.status === "cancelled")
-                .map((appointment) => (
-                  <AppointmentCard 
-                    key={appointment.id}
-                    appointment={appointment}
-                    onEdit={openEditDialog}
-                    onDelete={openDeleteDialog}
-                    onView={openViewDialog}
-                    getStatusBadge={getStatusBadge}
-                    isDoctor={auth?.role !== 3}
-                  />
-                ))}
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
-
-      {/* Create Appointment Dialog */}
-      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Thêm lịch hẹn mới</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="patientName">Tên bệnh nhân</Label>
-                <Input
-                  id="patientName"
-                  name="patientName"
-                  value={formData.patientName}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <Label htmlFor="patientAge">Tuổi</Label>
-                <Input
-                  id="patientAge"
-                  name="patientAge"
-                  type="number"
-                  value={formData.patientAge}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="patientGender">Giới tính</Label>
-                <Select 
-                  value={formData.patientGender} 
-                  onValueChange={(value) => handleSelectChange("patientGender", value)}
-                >
-                  <SelectTrigger id="patientGender">
-                    <SelectValue placeholder="Chọn giới tính" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Nam">Nam</SelectItem>
-                    <SelectItem value="Nữ">Nữ</SelectItem>
-                    <SelectItem value="Khác">Khác</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="status">Trạng thái</Label>
-                <Select 
-                  value={formData.status} 
-                  onValueChange={(value) => handleSelectChange("status", value)}
-                >
-                  <SelectTrigger id="status">
-                    <SelectValue placeholder="Chọn trạng thái" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Chờ xác nhận</SelectItem>
-                    <SelectItem value="confirmed">Đã xác nhận</SelectItem>
-                    <SelectItem value="completed">Hoàn thành</SelectItem>
-                    <SelectItem value="cancelled">Đã hủy</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="date">Ngày</Label>
-                <Input
-                  id="date"
-                  name="date"
-                  type="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <Label htmlFor="time">Giờ</Label>
-                <Input
-                  id="time"
-                  name="time"
-                  type="time"
-                  value={formData.time}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
-            
-            <div>
-              <Label htmlFor="reason">Lý do khám</Label>
-              <Textarea
-                id="reason"
-                name="reason"
-                value={formData.reason}
-                onChange={handleInputChange}
+        {/* Filter section */}
+        <div className="bg-gray-50 p-2 rounded-lg">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+            <div className="relative w-full md:w-1/3">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="search"
+                placeholder="Tìm kiếm theo tên, email, số điện thoại..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="phone">Số điện thoại</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Hủy</Button>
-            <Button onClick={handleCreateAppointment}>Tạo lịch hẹn</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
-      {/* Edit Appointment Dialog */}
-      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Chỉnh sửa lịch hẹn</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="patientName">Tên bệnh nhân</Label>
-                <Input
-                  id="patientName"
-                  name="patientName"
-                  value={formData.patientName}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <Label htmlFor="patientAge">Tuổi</Label>
-                <Input
-                  id="patientAge"
-                  name="patientAge"
-                  type="number"
-                  value={formData.patientAge}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="patientGender">Giới tính</Label>
-                <Select 
-                  value={formData.patientGender} 
-                  onValueChange={(value) => handleSelectChange("patientGender", value)}
-                >
-                  <SelectTrigger id="patientGender">
-                    <SelectValue placeholder="Chọn giới tính" />
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              {/* Status filter dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <Filter className="h-4 w-4" />
+                    Trạng thái
+                    <Badge className="ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-800 hover:bg-blue-100">
+                      {selectedStatuses.length}
+                    </Badge>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Lọc theo trạng thái</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  
+                  <div className="px-2 py-1.5">
+                    <div className="flex justify-between text-xs">
+                      <button
+                        onClick={selectAllStatuses}
+                        className="text-blue-600 hover:underline"
+                      >
+                        Chọn tất cả
+                      </button>
+                      <button
+                        onClick={clearAllStatuses}
+                        className="text-gray-500 hover:underline"
+                      >
+                        Bỏ chọn tất cả
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  {Object.entries(statusConfig).map(([id, config]) => (
+                    <DropdownMenuCheckboxItem
+                      key={id}
+                      checked={selectedStatuses.includes(Number(id))}
+                      onCheckedChange={() => toggleStatusFilter(Number(id))}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center">
+                        {config.icon}
+                        <span className="ml-2">{config.text}</span>
+                      </div>
+                      <Badge
+                        variant="outline"
+                        className="ml-1 px-1.5 py-0.5 bg-gray-100"
+                      >
+                        {statusCounts[Number(id)] || 0}
+                      </Badge>
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Date filter */}
+              <div className="w-full md:w-48">
+                <Select value={dateFilter} onValueChange={setDateFilter}>
+                  <SelectTrigger>
+                    <Calendar className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Lọc theo ngày" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Nam">Nam</SelectItem>
-                    <SelectItem value="Nữ">Nữ</SelectItem>
-                    <SelectItem value="Khác">Khác</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="status">Trạng thái</Label>
-                <Select 
-                  value={formData.status} 
-                  onValueChange={(value) => handleSelectChange("status", value)}
-                >
-                  <SelectTrigger id="status">
-                    <SelectValue placeholder="Chọn trạng thái" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Chờ xác nhận</SelectItem>
-                    <SelectItem value="confirmed">Đã xác nhận</SelectItem>
-                    <SelectItem value="completed">Hoàn thành</SelectItem>
-                    <SelectItem value="cancelled">Đã hủy</SelectItem>
+                    <SelectItem value="all">Tất cả ngày</SelectItem>
+                    <SelectItem value="newest">Mới nhất</SelectItem>
+                    <SelectItem value="oldest">Cũ nhất</SelectItem>
+                    <SelectItem value="today">Hôm nay</SelectItem>
+                    <SelectItem value="this_week">Tuần này</SelectItem>
+                    <SelectItem value="this_month">Tháng này</SelectItem>
+                    <SelectItem value="this_year">Năm này</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="date">Ngày</Label>
-                <Input
-                  id="date"
-                  name="date"
-                  type="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <Label htmlFor="time">Giờ</Label>
-                <Input
-                  id="time"
-                  name="time"
-                  type="time"
-                  value={formData.time}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
-            
-            <div>
-              <Label htmlFor="reason">Lý do khám</Label>
-              <Textarea
-                id="reason"
-                name="reason"
-                value={formData.reason}
-                onChange={handleInputChange}
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="phone">Số điện thoại</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditOpen(false)}>Hủy</Button>
-            <Button onClick={handleUpdateAppointment}>Cập nhật</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
-      {/* View Appointment Dialog */}
-      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Chi tiết lịch hẹn</DialogTitle>
-          </DialogHeader>
-          {currentAppointment && (
-            <div className="grid gap-4 py-4">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium">{currentAppointment.patientName}</h3>
-                {getStatusBadge(currentAppointment.status)}
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-gray-500">Tuổi</p>
-                  <p>{currentAppointment.patientAge}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Giới tính</p>
-                  <p>{currentAppointment.patientGender}</p>
-                </div>
-              </div>
-              
-              <div>
-                <p className="text-gray-500 text-sm">Thời gian khám</p>
-                <p className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-2 text-blue-600" />
-                  {format(parseISO(currentAppointment.date), "EEEE, dd/MM/yyyy", { locale: vi })}
-                </p>
-                <p className="flex items-center mt-1">
-                  <Clock className="h-4 w-4 mr-2 text-blue-600" />
-                  {format(parseISO(currentAppointment.date), "HH:mm", { locale: vi })}
-                </p>
-              </div>
-              
-              <div>
-                <p className="text-gray-500 text-sm">Lý do khám</p>
-                <p className="mt-1">{currentAppointment.reason}</p>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-gray-500">Số điện thoại</p>
-                  <p>{currentAppointment.phone}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Email</p>
-                  <p>{currentAppointment.email}</p>
-                </div>
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button onClick={() => setIsViewOpen(false)}>Đóng</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Xác nhận xóa lịch hẹn</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <p>Bạn có chắc chắn muốn xóa lịch hẹn này không? Thao tác này không thể hoàn tác.</p>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteOpen(false)}>Hủy</Button>
-            <Button variant="destructive" onClick={handleDeleteAppointment}>Xóa</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-};
-
-// Appointment Card Component
-const AppointmentCard = ({ appointment, onEdit, onDelete, onView, getStatusBadge, isDoctor }) => {
-  return (
-    <Card className="overflow-hidden transition-all hover:shadow-md">
-      <CardHeader className="p-4 bg-gray-50 flex flex-row justify-between items-center space-y-0">
-        <CardTitle className="text-base font-medium">
-          {appointment.patientName}
-        </CardTitle>
-        {getStatusBadge(appointment.status)}
-      </CardHeader>
-      <CardContent className="p-4 space-y-2">
-        <div className="flex items-center text-sm">
-          <Calendar className="h-4 w-4 mr-2 text-blue-600" />
-          <span>
-            {format(parseISO(appointment.date), "EEEE, dd/MM/yyyy", { locale: vi })}
-          </span>
-        </div>
-        <div className="flex items-center text-sm">
-          <Clock className="h-4 w-4 mr-2 text-blue-600" />
-          <span>{format(parseISO(appointment.date), "HH:mm", { locale: vi })}</span>
-        </div>
-        <p className="text-sm text-gray-500 mt-2 line-clamp-2">{appointment.reason}</p>
-      </CardContent>
-      <CardFooter className="p-4 pt-0 flex justify-end gap-2">
-        <Button variant="ghost" size="sm" onClick={() => onView(appointment)}>
-          Chi tiết
-        </Button>
-        
-        {isDoctor && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                Thao tác
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(appointment)}>
-                <Edit2 className="h-4 w-4 mr-2" />
-                Chỉnh sửa
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="text-red-600" 
-                onClick={() => onDelete(appointment)}
+          {/* Active filters display */}
+          {selectedStatuses.length > 0 && selectedStatuses.length < Object.keys(statusConfig).length && (
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              <span className="text-sm text-gray-500">Đang lọc:</span>
+              {selectedStatuses.map((statusId) => (
+                <Badge
+                  key={statusId}
+                  variant="secondary"
+                  className="flex items-center gap-1 pl-2 pr-1.5 py-1"
+                >
+                  {statusConfig[statusId].icon}
+                  {statusConfig[statusId].text}
+                  <button
+                    onClick={() => toggleStatusFilter(statusId)}
+                    className="ml-1 rounded-full hover:bg-gray-200 p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={selectAllStatuses}
+                className="text-xs text-gray-500 hover:text-gray-700 p-1 h-auto"
               >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Xóa
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-      </CardFooter>
-    </Card>
+                Xóa bộ lọc
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Results count and summary */}
+        <div className="flex justify-between items-center mb-4">
+          <p className="text-sm text-gray-500">
+            Tìm thấy {filteredAppointments.length} lịch khám
+            {searchTerm && (
+              <span> cho tìm kiếm "{searchTerm}"</span>
+            )}
+          </p>
+          
+          {filteredAppointments.length === 0 && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => {
+                setSearchTerm("");
+                selectAllStatuses();
+                setDateFilter("all");
+              }}
+            >
+              Xóa bộ lọc
+            </Button>
+          )}
+        </div>
+
+        {/* Tabs navigation */}
+        <Tabs defaultValue="all" className="w-full">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="all">Tất cả</TabsTrigger>
+            <TabsTrigger value="1">Chờ xác nhận</TabsTrigger>
+            <TabsTrigger value="2">Đã xác nhận</TabsTrigger>
+            <TabsTrigger value="3">Đã hủy</TabsTrigger>
+            <TabsTrigger value="4">Từ chối</TabsTrigger>
+            <TabsTrigger value="5">Hoàn thành</TabsTrigger>
+          </TabsList>
+
+          {/* Tabs content */}
+          {Object.entries({
+            all: filteredAppointments,
+            1: filteredAppointments.filter(apt => apt.appointment.status_id === 1),
+            2: filteredAppointments.filter(apt => apt.appointment.status_id === 2),
+            3: filteredAppointments.filter(apt => apt.appointment.status_id === 3),
+            4: filteredAppointments.filter(apt => apt.appointment.status_id === 4),
+            5: filteredAppointments.filter(apt => apt.appointment.status_id === 5),
+          }).map(([tabValue, tabAppointments]) => (
+            <TabsContent key={tabValue} value={tabValue} className="space-y-4 mt-4">
+              {tabAppointments.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 bg-white rounded-lg shadow-sm border border-gray-200">
+                  <div className={`p-4 rounded-full mb-4 ${
+                    tabValue === "1" ? "bg-yellow-100 text-yellow-600" :
+                    tabValue === "2" ? "bg-green-100 text-green-600" :
+                    tabValue === "3" ? "bg-red-100 text-red-600" :
+                    tabValue === "4" ? "bg-rose-100 text-rose-600" :
+                    tabValue === "5" ? "bg-emerald-100 text-emerald-600" :
+                    "bg-blue-100 text-blue-600"
+                  }`}>
+                    {tabValue === "1" ? <TimerOff className="h-8 w-8" /> :
+                     tabValue === "2" ? <CalendarCheck className="h-8 w-8" /> :
+                     tabValue === "3" ? <Ban className="h-8 w-8" /> :
+                     tabValue === "4" ? <XCircle className="h-8 w-8" /> :
+                     tabValue === "5" ? <CheckCircle className="h-8 w-8" /> :
+                     <Stethoscope className="h-8 w-8" />}
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                    {tabValue === "1" ? "Không có lịch hẹn đang chờ xác nhận" :
+                     tabValue === "2" ? "Không có lịch hẹn đã xác nhận" :
+                     tabValue === "3" ? "Không có lịch hẹn đã hủy" :
+                     tabValue === "4" ? "Không có lịch hẹn đã từ chối" :
+                     tabValue === "5" ? "Không có lịch hẹn đã thanh toán" :
+                     "Không có lịch hẹn nào"}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {tabValue === "1" ? "Bệnh nhân chưa đặt lịch hẹn mới" :
+                     tabValue === "2" ? "Bạn chưa xác nhận lịch hẹn nào của bệnh nhân" :
+                     tabValue === "3" ? "Chưa có bệnh nhân nào đã hủy lịch hẹn" :
+                     tabValue === "4" ? "Bạn chưa từ chối lịch hẹn nào của bệnh nhân" :
+                     tabValue === "5" ? "Chưa có lịch khám nào đã thanh toán" :
+                     "Hiện tại bạn chưa có bệnh nhân nào đặt lịch. Vui lòng kiểm tra lại sau."}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {tabAppointments.map((appointment) => (
+                    <AppointmentCard
+                      key={appointment.appointment.id}
+                      appointment={appointment}
+                      getStatusBadge={getStatusBadge}
+                      isDoctor={auth?.role !== 3}
+                    />
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
+    </div>
   );
 };
 

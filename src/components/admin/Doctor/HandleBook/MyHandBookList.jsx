@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Loader, Trash, Eye, Plus, MoreHorizontal, Home } from "lucide-react";
+import { Trash, Eye, Plus, MoreHorizontal, Home } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -16,16 +16,12 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Pagination from "@/components/Pagination";
-import { deleteClinic, getAllClinics, getAllHealthHandBookByDoctorId } from "@/api/doctor.api";
+import {  deleteHeathHandBook, getAllHealthHandBookByDoctorId } from "@/api/doctor.api";
 import DeleteModal from "@/components/DeleteModal";
-import useAuthToken from "@/utils/userAuthToken";
 
 const MyHandBookList = () => {
-  const auth = useAuthToken()
   const {doctorId}  = useParams()
   const navigate = useNavigate();
-  const [clinics , setClinics] = useState()
-  const [loading, setLoading] = useState(true);
   const [error] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,59 +29,22 @@ const MyHandBookList = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [dataToDelete, setDataToDelete] = useState(null);
   const [myHandBooks, setMyHandBooks] = useState();
-  useEffect(() => {
-    if (Number(auth?.role) === 1) {
-      fetchAllClinics(); 
-    } else if (auth?.role === 2) {
-      fetchAllClinicsByDoctorId(); 
-    }
-  }, [auth?.role]);
 
   useEffect(() => {
     fetchAllMyHandbook()
   }, [])
-  const fetchAllClinics = async () => {
-    try {
-      let res = await getAllClinics();
-      console.log("res", res)
-      if (res && res.EC === 0) {
-        setClinics(res.DT);
-      }
-    } catch (error) {
-      console.log("Error fetching clinics:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  const fetchAllClinicsByDoctorId = async () => {
-   
-    try {
-      let res = await getAllClinics();  
-    
-      if (res && res.EC === 0) {
-        const filteredClinics = res.DT.filter(clinic => Number(clinic.doctor_id) === Number(doctorId));
-        setClinics(filteredClinics); 
-      }
-    } catch (error) {
-      console.log("Error fetching clinics:", error);
-    } finally {
-      setLoading(false);  
-    }
-  }
 
   const fetchAllMyHandbook = async () => {
     const res = await getAllHealthHandBookByDoctorId(doctorId);
-    console.log("Res" ,res)
     if (res.EC === 0) {
       setMyHandBooks(res.DT)
    }
   }
   
-  const filteredData = clinics?.filter((clinic) => {
-    const clinicName = clinic.name?.toLowerCase() || '';
-    const doctorName = clinic.doctor.userData?.full_name?.toLowerCase() || '';
+  const filteredData = myHandBooks?.filter((handbook) => {
+    const handbookName = handbook.handbook.title?.toLowerCase() || '';
     const search = searchTerm.toLowerCase();
-    return clinicName.includes(search) || doctorName.includes(search);
+    return handbookName.includes(search);
   });
   const endIndex = currentPage * itemsPerPage;
   const startIndex = endIndex - itemsPerPage;
@@ -93,21 +52,15 @@ const MyHandBookList = () => {
 
   const totalPages = Math.ceil(filteredData?.length / itemsPerPage);
 
-  const openDeleteModal = (clinic) => {
-    setDataToDelete(clinic);
+  const openDeleteModal = (handbook) => {
+    setDataToDelete(handbook);
     setShowDeleteModal(true);
   };
   
-  const handleDelete = () =>{
-    return deleteClinic(dataToDelete.id)
+  const handleDelete = () => {
+    return deleteHeathHandBook(dataToDelete.handbook.id)
   }
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader className="animate-spin text-blue-500" size={40} />
-      </div>
-    );
-  }
+
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
@@ -181,10 +134,10 @@ const MyHandBookList = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {myHandBooks?.map((handbook) => (
+                {currentData?.map((handbook) => (
                   <TableRow key={handbook.handbook?.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                     <TableCell className="text-center font-semibold">{handbook?.handbook.id}</TableCell>
-                    <TableCell className="text-left">{handbook?.handbook?.title}</TableCell>
+                    <TableCell className="text-left cursor-pointer"    onClick={() => navigate(`/cam-nang-suc-khoe/${handbook?.handbook.slug}`)}>{handbook?.handbook?.title}</TableCell>
                     <TableCell className="text-left">{handbook?.userData?.full_name
                     }</TableCell>
 
@@ -208,15 +161,7 @@ const MyHandBookList = () => {
                           sideOffset={8}
                           className="w-36 rounded-md p-2 shadow-lg ring-1 ring-gray-200 dark:ring-gray-700 transition-all"
                         >
-                          <div className="flex flex-col space-y-1">
-                            <Button
-                              variant="ghost"
-                              className="flex items-center justify-start gap-2 px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-blue-950"
-                              onClick={() => navigate(`/clinics/${handbook?.handbook.id}`)}
-                            >
-                              <Eye className="h-4 w-4" />
-                              <span>Xem</span>
-                            </Button>
+                          <div className="flex flex-col space-y-1">                         
                             <Button
                               variant="ghost"
                               className="flex items-center justify-start gap-2 px-2 py-1 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-blue-950"
@@ -240,9 +185,9 @@ const MyHandBookList = () => {
             totalPages={totalPages}
             onPageChange={setCurrentPage}
             showingFrom={startIndex + 1}
-            showingTo={Math.min(endIndex, filteredData.length)}
-            totalItems={filteredData.length}
-            itemName="Cơ sở y tế"
+            showingTo={Math.min(endIndex, filteredData?.length)}
+            totalItems={filteredData?.length}
+            itemName="Bài viết của tôi"
           />
         </CardContent>
       </Card>
@@ -252,7 +197,7 @@ const MyHandBookList = () => {
     handleClose={() => setShowDeleteModal(false)}
     data={dataToDelete}
     handleDelete={handleDelete}
-    fetch={auth?.role === 1 ? fetchAllClinics : fetchAllClinicsByDoctorId}
+    fetch={fetchAllMyHandbook}
   />
 }
 

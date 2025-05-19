@@ -107,10 +107,10 @@ const LoginForm = () => {
           <div className="flex items-center mb-6 md:mb-8">
             <Link
               to="/"
-              className="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
+              className="flex items-center text-blue-500 hover:text-blue-600 transition-colors"
             >
-              <Home className="h-4 w-4 mr-2" />
-              <span className="text-sm">Về trang chủ</span>
+              <Home className="h-4 w-4 mr-2 text-blue-500" />
+              <span className="text-sm">Trang chủ</span>
             </Link>
           </div>
 

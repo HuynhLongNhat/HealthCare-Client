@@ -1,11 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  User,
   Menu,
   X,
-  Calendar,
   Home,
   Stethoscope,
   Contact,
@@ -15,8 +13,12 @@ import {
   LogIn,
   Sun,
   Moon,
-  ChevronDown,
   FileText,
+  Users,
+  CalendarHeart,
+  PanelTop,
+  User,
+  CreditCard,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
@@ -77,18 +79,33 @@ const Header = () => {
   const navItems = [
     { to: "/", icon: Home, label: "Trang chủ" },
     { to: "/clinics", icon: Building2, label: "Cơ sở y tế" },
-    { to: "/specializations", icon: Calendar, label: "Chuyên khoa" },
-    { to: "/doctors", icon: Stethoscope, label: "Bác sĩ" },
-     { to: "/cam-nang-suc-khoe", icon: FileText, label: "Cẩm nang sức khỏe" },
+    { to: "/specializations", icon: Stethoscope, label: "Chuyên khoa" },
+    { to: "/doctors", icon: Users, label: "Bác sĩ" },
+    { to: "/cam-nang-suc-khoe", icon: FileText, label: "Cẩm nang sức khỏe" },
   ];
-
   const profileItems = auth
     ? [
         {
-          to: `/profile/${auth.userId}`,
+          to: `profile/${auth.userId}`,
           icon: Contact,
           label: "Thông tin cá nhân",
-        },
+      },
+            {
+            to: `${auth.userId}/lich-su-thanh-toan`,
+            icon: CreditCard,
+            label: "Lịch sử thanh toán",
+          },
+        ...(auth.role === 3
+        ? [
+        { 
+          to: `${auth.userId}/appointments`,
+          icon: CalendarHeart,
+          label: "Lịch khám của tôi",
+      },
+
+  ]
+        : []),
+
         ...(auth?.role === 2
           ? [
               {
@@ -126,10 +143,10 @@ const Header = () => {
               <img
                 src={logo}
                 alt="HealthCare Logo"
-                className="w-full h-full rounded-full object-cover border-2 border-primary shadow-lg"
+                className="w-full h-full rounded-full object-cover border-2 border-blue-300 shadow-lg"
               />
             </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-teal-500 bg-clip-text text-transparent hidden sm:block">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-700 to-blue-400 bg-clip-text text-transparent hidden sm:block">
               HealthCare
             </h1>
           </Link>
@@ -148,7 +165,7 @@ const Header = () => {
                 }`}
               >
                 <Link to={item.to}>
-                  <item.icon className="h-[15px] w-[15px]" />
+                  <item.icon className="h-[15px] w-[15px] text-blue-700" />
                   <span>{item.label}</span>
                 </Link>
               </Button>
@@ -158,18 +175,18 @@ const Header = () => {
           {/* Right side - User & Dark Mode */}
           <div className="flex items-center gap-3">
             {/* Dark Mode Toggle */}
-            <Button
+            {/* <Button
               variant="ghost"
               size="icon"
               className="rounded-full hover:bg-accent/30"
               onClick={toggleDarkMode}
             >
               {isDarkMode ? (
-                <Sun className="h-5 w-5" />
+                <Sun className="h-5 w-5 text-blue-500" />
               ) : (
-                <Moon className="h-5 w-5" />
+                <Moon className="h-5 w-5 text-blue-500" />
               )}
-            </Button>
+            </Button> */}
 
             {auth ? (
               <DropdownMenu>
@@ -178,17 +195,13 @@ const Header = () => {
                     <span className="hidden lg:inline font-medium text-sm">
                       {auth.full_name || auth.email.split("@")[0]}
                     </span>
-                    {auth.avatar ? (
-                      <Avatar className="h-8 w-8 border-2 border-primary/20">
-                        <AvatarImage src={auth.avatar} />
-                      </Avatar>
-                    ) : (
-                      <Avatar className="h-8 w-8 border-2 border-primary/20">
-                        <AvatarFallback className="bg-gradient-to-r from-primary to-teal-400 text-white">
-                          {auth.email.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
+
+                    <Avatar className="h-8 w-8 border-2 border-primary/20">
+                      <AvatarImage src={auth.avatar} />
+                      <AvatarFallback className=" bg-blue-800 text-white">
+                        {auth.full_name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -209,20 +222,20 @@ const Header = () => {
 
                   {profileItems.map((item) => (
                     <DropdownMenuItem key={item.to} asChild>
-                      <Link to={item.to} className="cursor-pointer gap-2">
-                        <item.icon className="h-4 w-4" />
+                      <Link to={item.to} className="cursor-pointer gap-2 mt-2">
+                        <item.icon className="h-4 w-4 text-blue-500" />
                         {item.label}
                       </Link>
                     </DropdownMenuItem>
                   ))}
-
+                
                   {auth?.role === 1 && (
                     <DropdownMenuItem asChild>
                       <Link
                         to="/admin/dashboard"
                         className="cursor-pointer gap-2"
                       >
-                        <Stethoscope className="h-4 w-4" />
+                        <User className="h-4 w-4 text-blue-500" />
                         Admin Dashboard
                       </Link>
                     </DropdownMenuItem>
@@ -233,7 +246,7 @@ const Header = () => {
                       onClick={() => setIsModalOpen(true)}
                       className="gap-2"
                     >
-                      <Key className="h-4 w-4" />
+                      <Key className="h-4 w-4 text-blue-500 mt-2" />
                       Đổi mật khẩu
                     </DropdownMenuItem>
                   )}
@@ -254,8 +267,8 @@ const Header = () => {
                 className="gap-2 hidden sm:flex"
                 onClick={() => navigate("/login")}
               >
-                <LogIn className="h-4 w-4" />
-                <span>Đăng nhập</span>
+                <LogIn className="h-4 w-4 text-blue-500" />
+                <span className="text-blue-500">Đăng nhập</span>
               </Button>
             )}
 
@@ -296,7 +309,7 @@ const Header = () => {
                   }`}
                 >
                   <Link to={item.to}>
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-4 w-4 text-blue-500" />
                     {item.label}
                   </Link>
                 </Button>
@@ -337,12 +350,12 @@ const Header = () => {
                       className="w-full justify-start gap-2"
                     >
                       <Link to={item.to}>
-                        <item.icon className="h-4 w-4" />
+                        <item.icon className="h-4 w-4 text-blue-500" />
                         {item.label}
                       </Link>
                     </Button>
                   ))}
-
+                 
                   {auth?.role === 1 && (
                     <Button
                       asChild
@@ -350,7 +363,7 @@ const Header = () => {
                       className="w-full justify-start gap-2"
                     >
                       <Link to="/admin/dashboard">
-                        <Stethoscope className="h-4 w-4" />
+                        <User className="h-4 w-4" />
                         Admin Dashboard
                       </Link>
                     </Button>
@@ -362,7 +375,7 @@ const Header = () => {
                       className="w-full justify-start gap-2"
                       onClick={() => setIsModalOpen(true)}
                     >
-                      <Key className="h-4 w-4" />
+                      <Key className="h-4 w-4 text-blue-500" />
                       Đổi mật khẩu
                     </Button>
                   )}

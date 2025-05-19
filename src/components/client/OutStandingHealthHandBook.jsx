@@ -46,7 +46,7 @@ const OutStandingHealthHandBook = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6 text-white">
                 <h3 className="text-2xl font-bold mb-2">
                   {handbooks[0].handbook.title}
-                </h3>             
+                </h3>
                 <div className="flex justify-between w-full text-white/80">
                   <div className="flex items-center">
                     <Avatar className="h-8 w-8 mr-2">
@@ -84,14 +84,15 @@ const OutStandingHealthHandBook = () => {
               }
             >
               <div className="w-1/3 overflow-hidden">
-                <img
-                  src={
-                    handbook.handbook.image ||
-                    "https://placehold.co/200x200/e2f4ff/0084d6?text=Article"
-                  }
-                  alt={handbook.handbook.title}
-                  className="w-full h-full object-cover"
-                />
+                <Avatar className="w-full h-full rounded-none">
+                  <AvatarImage
+                    src={handbook.handbook.avatar}
+                    className="w-full h-full object-cover rounded-none"
+                  />
+                  <AvatarFallback className="w-full h-full flex items-center justify-center bg-gray-300 text-white text-3xl font-semibold rounded-none">
+                    {handbook.handbook.title.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
               </div>
               <CardContent className="w-2/3 p-4">
                 <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">

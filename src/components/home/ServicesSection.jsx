@@ -2,7 +2,8 @@ import { Stethoscope, Building2, Microscope, Shield, Smile, CalendarCheck } from
 import { Card, CardContent } from "@/components/ui/card";
 
 export const ServicesSection = () => (
-  <section className="py-12 bg-gray-50">
+      <section className="py-16 bg-gradient-to-b from-white to-blue-50">
+
     <div className="container mx-auto px-4">
       <h2 className="text-2xl font-bold text-center mb-12">Dịch vụ y tế</h2>
 

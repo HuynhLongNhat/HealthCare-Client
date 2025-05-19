@@ -77,7 +77,7 @@ const SpecializationList = () => {
       return deleteSpecializations(dataToDelete.id)
     }
   return (
-    <div className="p-4">
+    <div className="p-4 mt-20">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>

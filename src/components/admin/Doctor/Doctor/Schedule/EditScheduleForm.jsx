@@ -47,7 +47,7 @@ const formSchema = z.object({
   }),
   time_start: z.string().min(1, "Vui lòng chọn giờ bắt đầu"),
   time_end: z.string().min(1, "Vui lòng chọn giờ kết thúc"),
-  status: z.enum(["AVAILABLE", "BOOKED", "CANCELED"], {
+  status: z.enum(["AVAILABLE", "BOOKED", "NOTWORKING"], {
     required_error: "Vui lòng chọn trạng thái",
   }),
 });
@@ -65,7 +65,6 @@ const EditAppointmentForm = ({ show, handleClose, data, fetch }) => {
   });
 
   useEffect(() => {
-    console.log("data" ,data)
     if (show && data) {
       form.reset({
         date: new Date(data.date),
@@ -100,9 +99,7 @@ const EditAppointmentForm = ({ show, handleClose, data, fetch }) => {
         time_end: values.time_end + ":00",
         status: values.status.toUpperCase(),
       };
-      console.log("payload" ,payload)
       const res = await updateScheduleById(doctorId, data.id, payload);
-      console.log("res" , res)
       if (res.EC === 0) {
         toast.success(res.EM)
         fetch();
@@ -274,10 +271,10 @@ const EditAppointmentForm = ({ show, handleClose, data, fetch }) => {
                           Đang bận
                         </div>
                       </SelectItem>
-                      <SelectItem value="CANCELED">
+                      <SelectItem value="NOTWORKING">
                         <div className="flex items-center">
                           <div className="w-2 h-2 rounded-full bg-red-500 mr-2" />
-                          Đã hủy
+                         Không làm việc
                         </div>
                       </SelectItem>
                     </SelectContent>

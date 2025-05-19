@@ -102,7 +102,7 @@ const DoctorList = () => {
   }
 
   return (
-    <div className="p-4">
+    <div className="p-4 mt-20">
       <Card>
         <CardHeader>
           <div className="mb-8">
@@ -233,6 +233,7 @@ const DoctorList = () => {
               </tbody>
             </table>
           </div>
+          {filteredDoctors.length > 0 && (
 
           <div className="mt-3">
             <Pagination
@@ -243,8 +244,9 @@ const DoctorList = () => {
               showingTo={Math.min(endIndex, filteredDoctors.length)}
               totalItems={filteredDoctors.length}
               itemName="Bác sĩ"
-            />
+              />
           </div>
+              )}
         </CardContent>
       </Card>
     </div>

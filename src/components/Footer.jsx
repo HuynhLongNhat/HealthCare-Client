@@ -7,60 +7,84 @@ import {
   Twitter,
   Linkedin,
   Heart,
+  Calendar,
 } from "lucide-react";
+
+const quickLinks = [
+  { name: "Trang chủ", href: "/" },
+  { name: "Về chúng tôi", href: "/about" },
+  { name: "Dịch vụ", href: "/services" },
+  { name: "Bác sĩ", href: "/doctors" },
+  { name: "Phòng khám", href: "/clinics" },
+  { name: "Blog sức khỏe", href: "/blog" },
+];
+
+const specialties = [
+  "Tim mạch",
+  "Thần kinh",
+  "Tiêu hóa",
+  "Nhi khoa",
+  "Da liễu",
+  "Xương khớp",
+  "Tai mũi họng",
+  "Mắt",
+];
+
+const legalLinks = [
+  { name: "Điều khoản dịch vụ", href: "/terms" },
+  { name: "Chính sách bảo mật", href: "/privacy" },
+  { name: "Chính sách cookie", href: "/cookies" },
+];
+
+const Newsletter = () => (
+  <div className="mt-6">
+    <p className="text-white mb-2">Nhận bản tin sức khỏe hàng tuần</p>
+    <div className="flex rounded-md overflow-hidden">
+      <input
+        type="email"
+        placeholder="Email của bạn"
+        className="flex-1 px-4 py-2 text-blue-900"
+      />
+      <button className="bg-white text-blue-800 px-4 flex items-center justify-center">
+        <Calendar className="h-5 w-5 mr-2" /> Gửi
+      </button>
+    </div>
+  </div>
+);
 
 const Footer = () => (
   <footer className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-    <div className="container mx-auto px-4 py-16">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-        {/* Company Info */}
-        <div className="space-y-5">
-          <div className="flex items-center">
-            <Heart className="text-pink-300 mr-2" size={24} />
-            <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-200">
-              HealthCare
-            </h3>
+    <div className="container mx-auto px-6 py-16 space-y-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Brand */}
+        <div className="space-y-4">
+          <div className="flex items-center text-2xl font-bold">
+            <Heart className="text-pink-300 mr-2" /> HealthCare
           </div>
-          <p className="text-blue-100 leading-relaxed">
+          <p className="text-blue-100">
             Nền tảng kết nối bệnh nhân với bác sĩ và phòng khám hàng đầu Việt Nam
           </p>
-          <div className="flex space-x-4">
-            <a href="#" className="p-2 bg-blue-700 rounded-full hover:bg-blue-500 transition" aria-label="Facebook">
-              <Facebook size={18} />
-            </a>
-            <a href="#" className="p-2 bg-blue-700 rounded-full hover:bg-pink-400 transition" aria-label="Instagram">
-              <Instagram size={18} />
-            </a>
-            <a href="#" className="p-2 bg-blue-700 rounded-full hover:bg-blue-400 transition" aria-label="Twitter">
-              <Twitter size={18} />
-            </a>
-            <a href="#" className="p-2 bg-blue-700 rounded-full hover:bg-blue-900 transition" aria-label="LinkedIn">
-              <Linkedin size={18} />
-            </a>
+          <div className="flex space-x-3">
+            {[Facebook, Instagram, Twitter, Linkedin].map((Icon, i) => (
+              <a
+                key={i}
+                href="#"
+                className="p-2 bg-blue-700 rounded-full hover:bg-opacity-80 transition"
+              >
+                <Icon size={18} />
+              </a>
+            ))}
           </div>
         </div>
 
         {/* Quick Links */}
         <div>
-          <h4 className="text-lg font-semibold mb-6 pb-2 border-b border-blue-400 inline-block">
-            Liên kết nhanh
-          </h4>
-          <ul className="space-y-3">
-            {[
-              { name: "Trang chủ", href: "/" },
-              { name: "Về chúng tôi", href: "/about" },
-              { name: "Dịch vụ", href: "/services" },
-              { name: "Bác sĩ", href: "/doctors" },
-              { name: "Phòng khám", href: "/clinics" },
-              { name: "Blog sức khỏe", href: "/blog" },
-            ].map((item) => (
-              <li key={item.name}>
-                <a
-                  href={item.href}
-                  className="text-blue-100 hover:text-white transition flex items-center group"
-                >
-                  <span className="w-1 h-1 bg-white rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                  {item.name}
+          <h4 className="font-semibold mb-4">Liên kết nhanh</h4>
+          <ul className="space-y-2">
+            {quickLinks.map((link) => (
+              <li key={link.name}>
+                <a href={link.href} className="text-blue-100 hover:text-white">
+                  • {link.name}
                 </a>
               </li>
             ))}
@@ -69,95 +93,55 @@ const Footer = () => (
 
         {/* Specialties */}
         <div>
-          <h4 className="text-lg font-semibold mb-6 pb-2 border-b border-blue-400 inline-block">
-            Chuyên khoa
-          </h4>
-          <ul className="space-y-3">
-            {[
-              "Tim mạch",
-              "Thần kinh",
-              "Tiêu hóa",
-              "Nhi khoa",
-              "Da liễu",
-              "Xương khớp",
-              "Tai mũi họng",
-              "Mắt",
-            ].map((specialty) => (
-              <li key={specialty}>
-                <a
-                  href="#"
-                  className="text-blue-100 hover:text-white transition flex items-center group"
-                >
-                  <span className="w-1 h-1 bg-white rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                  {specialty}
+          <h4 className="font-semibold mb-4">Chuyên khoa</h4>
+          <ul className="space-y-2">
+            {specialties.map((sp) => (
+              <li key={sp}>
+                <a href="#" className="text-blue-100 hover:text-white">
+                  • {sp}
                 </a>
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Contact */}
-        <div>
-          <h4 className="text-lg font-semibold mb-6 pb-2 border-b border-blue-400 inline-block">
-            Liên hệ
-          </h4>
-          <div className="space-y-4">
-            <div className="flex items-start">
-              <MapPin size={18} className="text-white mt-1 mr-3 flex-shrink-0" />
-              <span className="text-blue-100">Số 77, Đường Duy Tân, Cầu Giấy, Hà Nội</span>
+        {/* Contact & Newsletter */}
+        <div className="space-y-4">
+          <h4 className="font-semibold mb-4">Liên hệ</h4>
+          <div className="space-y-3 text-blue-100">
+            <div className="flex items-center">
+              <MapPin className="mr-3" size={18} />
+              Số 77, Đường Duy Tân, Cầu Giấy, Hà Nội
             </div>
             <div className="flex items-center">
-              <Phone size={18} className="text-white mr-3" />
-              <a
-                href="tel:19001077"
-                className="text-blue-100 hover:text-white transition"
-              >
+              <Phone className="mr-3" size={18} />
+              <a href="tel:19001077" className="hover:text-white">
                 1900 1077
               </a>
             </div>
             <div className="flex items-center">
-              <Mail size={18} className="text-white mr-3" />
-              <a
-                href="mailto:contact@77bookingcare.com"
-                className="text-blue-100 hover:text-white transition"
-              >
+              <Mail className="mr-3" size={18} />
+              <a href="mailto:contact@77bookingcare.com" className="hover:text-white">
                 contact@77bookingcare.com
               </a>
             </div>
           </div>
-
-          <div className="mt-6 p-4 bg-blue-700 rounded-lg">
-            <p className="text-sm text-blue-100">
-              Đăng ký nhận bản tin sức khỏe hàng tuần
-            </p>
-            <div className="mt-2 flex">
-              <input
-                type="email"
-                placeholder="Email của bạn"
-                className="px-3 py-2 bg-blue-100 text-blue-900 rounded-l-md focus:outline-none w-full"
-              />
-              <button className="bg-white text-blue-800 hover:bg-blue-100 px-4 py-2 rounded-r-md transition">
-                Gửi
-              </button>
-            </div>
-          </div>
+          <Newsletter />
         </div>
       </div>
 
-      <div className="border-t border-blue-400 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
-        <p className="text-blue-100 text-sm mb-4 md:mb-0">
-          &copy; 2024 Health Care. Bảo lưu mọi quyền.
-        </p>
+      {/* Divider */}
+      <div className="border-t border-blue-400"></div>
+
+      {/* Bottom bar */}
+      <div className="flex flex-col md:flex-row justify-between items-center text-blue-100 text-sm space-y-4 md:space-y-0">
+        <p>&copy; 2024 HealthCare. Bảo lưu mọi quyền.</p>
         <div className="flex space-x-6">
-          <a href="#" className="text-blue-100 hover:text-white text-sm transition">
-            Điều khoản dịch vụ
-          </a>
-          <a href="#" className="text-blue-100 hover:text-white text-sm transition">
-            Chính sách bảo mật
-          </a>
-          <a href="#" className="text-blue-100 hover:text-white text-sm transition">
-            Chính sách cookie
-          </a>
+          {legalLinks.map((link) => (
+            <a key={link.name} href={link.href} className="hover:text-white">
+              {link.name}
+            </a>
+          ))}
         </div>
       </div>
     </div>

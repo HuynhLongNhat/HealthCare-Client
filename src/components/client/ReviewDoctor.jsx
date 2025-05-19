@@ -113,7 +113,6 @@ const ReviewDoctor = () => {
   };
 
   const handleDelete = () => {
-
     return deleteRatingDoctor(dataToDelete.rating.id);
   };
   return (
@@ -170,26 +169,42 @@ const ReviewDoctor = () => {
               {ratings?.length}
             </span>
           </h3>
-  {auth === null ? (
-    
-<span
-  onClick={() => navigate("/login")}
-  className="text-blue-600 cursor-pointer hover:underline hover:text-blue-800 transition"
->
-  Đăng nhập để thêm đánh giá
-</span>
-  ) : (
-    <Button
-      onClick={() => setIsAddDialogOpen(true)}
-      variant="default"
-      className="mt-4 md:mt-0 bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
-    >
-      <Plus size={16} />
-      <span>Thêm đánh giá</span>
-    </Button>
-  )}
-</div>
-
+          {auth === null ? (
+            <div className="group inline-flex items-center">
+              <span
+                onClick={() => navigate("/login")}
+                className="text-blue-600 hover:text-blue-800 transition-colors duration-300 cursor-pointer font-medium flex items-center gap-1.5"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 group-hover:translate-x-0.5 transition-transform"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                  />
+                </svg>
+                <span className="border-b border-transparent group-hover:border-blue-600 transition-all duration-300">
+                  Đăng nhập để thêm đánh giá
+                </span>
+              </span>
+            </div>
+          ) : (
+            <Button
+              onClick={() => setIsAddDialogOpen(true)}
+              variant="default"
+              className="mt-4 md:mt-0 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2 px-4 py-2 rounded-lg"
+            >
+              <Plus size={18} className="stroke-[2.5]" />
+              <span className="font-medium">Thêm đánh giá</span>
+            </Button>
+          )}
+        </div>
 
         {ratings?.length > 0 ? (
           <div className="space-y-6">
@@ -221,27 +236,56 @@ const ReviewDoctor = () => {
                         {rating.userData.full_name}
                       </h4>
                       <div className="flex items-center gap-3 mt-1">
-                        <div className="flex gap-1">
-                          {renderStars(
-                            Math.round(
+                        <div className="flex items-center gap-2">
+                          <div className="flex gap-1">
+                            {renderStars(
+                              Math.round(
+                                (rating.rating.professionalism_rating +
+                                  rating.rating.attitude_rating +
+                                  rating.rating.price_rating) /
+                                  3
+                              )
+                            )}
+                          </div>
+                          <span className="text-sm font-medium text-gray-700">
+                            {(
                               (rating.rating.professionalism_rating +
                                 rating.rating.attitude_rating +
                                 rating.rating.price_rating) /
-                                3
-                            )
-                          )}
+                              3
+                            ).toFixed(1)}
+                            /5
+                          </span>
                         </div>
-                        <span className="text-sm text-gray-500">
-                          {new Date(rating.rating.createdAt).toLocaleDateString(
-                            "vi-VN"
+                        {rating.rating.createdAt &&
+                          rating.rating.createdAt ===
+                            rating.rating.updatedAt && (
+                            <span className="text-sm text-gray-500">
+                              Đã đăng lúc:&nbsp;
+                              <span className="">
+                                {moment(rating.rating.createdAt).format(
+                                "DD/MM/YYYY HH:mm:ss"
+                              )}
+                              </span>
+                            </span>
                           )}
-                        </span>
+                        {rating.rating.updatedAt &&
+                          rating.rating.updatedAt !==
+                            rating.rating.createdAt && (
+                            <span className="text-sm text-gray-500">
+                              Đã chỉnh sửa vào:&nbsp;
+                              {moment(rating.rating.updatedAt).format(
+                                "DD/MM/YYYY HH:mm:ss"
+                              )}
+                            </span>
+                          )}
                       </div>
                     </div>
                   </div>
 
                   {/* Edit and delete buttons - positioned far right */}
-                  {auth?.userId === rating?.rating?.patient_id && (
+                  {(auth?.role === 1 ||
+                    auth?.userId === rating?.rating?.patient_id) && (
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity sm:opacity-100">
                       <Button
                         onClick={() => handleEditRating(rating)}
@@ -249,7 +293,7 @@ const ReviewDoctor = () => {
                         size="icon"
                         className="text-gray-400 hover:text-blue-600 hover:bg-blue-50"
                       >
-                        <Edit size={16} className="h-4 w-4" />
+                        <Edit size={16} className="h-4 w-4 text-yellow-500" />
                       </Button>
                       <Button
                         onClick={() => openDeleteModal(rating)}
@@ -257,7 +301,7 @@ const ReviewDoctor = () => {
                         size="icon"
                         className="text-gray-400 hover:text-red-600 hover:bg-red-50"
                       >
-                        <Trash size={16} className="h-4 w-4" />
+                        <Trash size={16} className="h-4 w-4 text-red-500" />
                       </Button>
                     </div>
                   )}
@@ -313,19 +357,6 @@ const ReviewDoctor = () => {
                     {rating.rating.comment ||
                       "Người dùng không để lại bình luận."}
                   </p>
-                </div>
-
-                {/* Footer with updated time */}
-                <div className="flex justify-end items-center border-t border-gray-100 pt-4">
-                  {rating.rating.updatedAt &&
-                    rating.rating.updatedAt !== rating.rating.createdAt && (
-                      <span className="text-sm text-gray-500">
-                        Đã chỉnh sửa vào{" "}
-                        {moment(rating.rating.updatedAt).format(
-                          "DD/MM/YYYY HH:mm:ss"
-                        )}
-                      </span>
-                    )}
                 </div>
               </div>
             ))}

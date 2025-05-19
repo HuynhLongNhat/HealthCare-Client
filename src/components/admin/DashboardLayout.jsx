@@ -1,19 +1,28 @@
 import { Outlet } from "react-router-dom";
-import styles from "./DashboardLayout.module.css";
 import Header from "@/components/Header";
 import SidebarDashBoard from "./Dashboard/SidebarDashboard";
+
 const DashboardLayout = () => {
   return (
-    <>
-      <Header />
-      <div className={styles.dashboardLayout}>
-        <SidebarDashBoard />
-        <div className={styles.mainContent}>
+    <div className="flex flex-col h-screen">
+      {/* Header cố định */}
+      <header className="flex-shrink-0">
+        <Header />
+      </header>
+
+      {/* Nội dung chính: flex container */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <aside className="flex-shrink-0">
+          <SidebarDashBoard />
+        </aside>
+
+        {/* Main content cuộn */}
+        <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
           <Outlet />
-        </div>
+        </main>
       </div>
-  
-    </>
+    </div>
   );
 };
 
