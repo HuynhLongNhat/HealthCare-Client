@@ -3,10 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, X, ArrowLeft } from "lucide-react";
+import { Upload, X, ArrowLeft, Loader2, Check } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { createNewSpecializations, getSpecializationsById, updateSpecializations } from "@/api/doctor.api";
+import {  getSpecializationsById, updateSpecializations } from "@/api/doctor.api";
 import { toast } from "react-toastify";
 import {
   Form,
@@ -235,6 +235,7 @@ const UpdateSpecialization = () => {
                   type="button"
                   onClick={() => navigate(-1)}
                 >
+                  <X/>
                   Hủy
                 </Button>
                 <Button
@@ -242,7 +243,17 @@ const UpdateSpecialization = () => {
                   className="bg-blue-500 hover:bg-blue-600"
                   disabled={loading}
                 >
-                  {loading ? "Đang xử lý..." : "Cập nhật"}
+                    {loading ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                      <span className="text-[15px]">Đang xử lý...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="h-5 w-5 mr-2" />
+                      <span className="text-[15px]">Cập nhật</span>
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
@@ -252,5 +263,5 @@ const UpdateSpecialization = () => {
     </div>
   );
 };
-
+ 
 export default UpdateSpecialization;

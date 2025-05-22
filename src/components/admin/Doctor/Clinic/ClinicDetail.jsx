@@ -320,7 +320,7 @@ const ClinicDetail = () => {
                       <div className="flex flex-col sm:flex-row sm:items-center text-sm text-gray-500 mt-1 gap-2 sm:gap-4">
                         <span className="flex items-center">
                           <Stethoscope className="h-3.5 w-3.5 mr-1" />
-                          {clinicDetail.doctor.DT.doctor.specialization.name ||
+                          {clinicDetail?.doctor?.DT?.doctor?.specialization?.name ||
                             "Chưa cập nhật"}
                         </span>
                         <span className="flex items-center">

@@ -167,7 +167,6 @@ const InfoBooking = ({ booking, fetch }) => {
       
       if (res.EC === 0) {
         await confirmPayment(booking.appointment?.id)
-        // Update both booking and payment status
         await fetch() // This will update the booking through ViewBookingDetail
         await fetchPaymentByAppointment() // This will update payment status
         toast.success(res.EM)

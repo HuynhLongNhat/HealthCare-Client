@@ -98,7 +98,7 @@ const ClinicSection = () => {
                       </h3>
                       <div className="flex items-center text-sm text-gray-500">
                         <MapPin size={18} className="mr-2 text-blue-700" />
-                        <span>{clinic.address.split(",")[3]}</span>
+                        <span>{clinic.address.split(",")[3] || clinic.address.split(",")[2]  || clinic.address.split(",")[1]}</span>
                       </div>
                     </CardContent>
                   </Card>

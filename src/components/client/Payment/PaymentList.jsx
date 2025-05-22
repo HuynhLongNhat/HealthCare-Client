@@ -35,6 +35,7 @@ import { formatMoney } from "@/utils/helpers";
 import { Skeleton } from "@/components/ui/skeleton";
 import Pagination from "@/components/Pagination";
 import useAuthToken from "@/utils/userAuthToken";
+import PaymentStatistics from "./PaymentStatistics ";
 
 const PaymentList = () => {
   const auth = useAuthToken();
@@ -147,7 +148,10 @@ const PaymentList = () => {
           </ol>
         </nav>
       )}
-
+      {auth && auth.role !== 3 && (
+        <PaymentStatistics userId={userId} />
+        
+    )}
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

@@ -89,22 +89,27 @@ const Header = () => {
           to: `profile/${auth.userId}`,
           icon: Contact,
           label: "Thông tin cá nhân",
-      },
-            {
-            to: `${auth.userId}/lich-su-thanh-toan`,
-            icon: CreditCard,
-            label: "Lịch sử thanh toán",
-          },
-        ...(auth.role === 3
-        ? [
-        { 
-          to: `${auth.userId}/appointments`,
-          icon: CalendarHeart,
-          label: "Lịch khám của tôi",
-      },
+        },
 
-  ]
-        : []),
+        ...(auth.role !== 1
+          ? [
+              {
+                to: `${auth.userId}/lich-su-thanh-toan`,
+                icon: CreditCard,
+                label: "Lịch sử thanh toán",
+              },
+            ]
+          : []),
+
+        ...(auth.role === 3
+          ? [
+              {
+                to: `${auth.userId}/appointments`,
+                icon: CalendarHeart,
+                label: "Lịch khám của tôi",
+              },
+            ]
+          : []),
 
         ...(auth?.role === 2
           ? [
@@ -228,11 +233,11 @@ const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                   ))}
-                
+
                   {auth?.role === 1 && (
                     <DropdownMenuItem asChild>
                       <Link
-                        to="/admin/dashboard"
+                        to="/admin/users"
                         className="cursor-pointer gap-2"
                       >
                         <User className="h-4 w-4 text-blue-500" />
@@ -355,14 +360,14 @@ const Header = () => {
                       </Link>
                     </Button>
                   ))}
-                 
+
                   {auth?.role === 1 && (
                     <Button
                       asChild
                       variant="ghost"
                       className="w-full justify-start gap-2"
                     >
-                      <Link to="/admin/dashboard">
+                      <Link to="/admin/users">
                         <User className="h-4 w-4" />
                         Admin Dashboard
                       </Link>

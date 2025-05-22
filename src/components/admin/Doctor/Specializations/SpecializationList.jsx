@@ -18,6 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import Pagination from "@/components/Pagination";
 import { deleteSpecializations, getAllSpecializations } from "@/api/doctor.api";
 import DeleteModal from "@/components/DeleteModal";
+import SpecializationStatistic from "./SpecializationStatistic";
 
 const SpecializationList = () => {
   const navigate = useNavigate();
@@ -78,6 +79,7 @@ const SpecializationList = () => {
     }
   return (
     <div className="p-4 mt-20">
+      <SpecializationStatistic/>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>

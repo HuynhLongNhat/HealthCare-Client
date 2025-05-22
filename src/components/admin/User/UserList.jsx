@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/popover";
 import { createDoctor, deleteDoctor } from "@/api/doctor.api";
 import DeleteModal from "@/components/DeleteModal";
+import UserStatistics from "./UserStatistics";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -62,6 +63,7 @@ const UserList = () => {
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
+      String(user?.id).includes(searchTerm)  ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -126,7 +128,8 @@ const UserList = () => {
 
   return (
     <div className="mt-20">
-      <Card>
+      <UserStatistics users={users } />
+      <Card className="mt-5">
         <CardHeader>
           <div className="mb-8">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">

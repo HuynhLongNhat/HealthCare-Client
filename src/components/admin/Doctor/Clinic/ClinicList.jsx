@@ -23,6 +23,7 @@ import Pagination from "@/components/Pagination";
 import { deleteClinic, getAllClinics } from "@/api/doctor.api";
 import DeleteModal from "@/components/DeleteModal";
 import useAuthToken from "@/utils/userAuthToken";
+import ClinicStatistics from "./ClinicStatistics";
 
 const ClinicList = () => {
 
@@ -145,7 +146,9 @@ return deleteClinic(dataToDelete.id);
       )}
 
       <Card className="bg-white shadow-lg rounded-xl border-0">
+
         <CardHeader className="border-b border-gray-100 p-6">
+                    <ClinicStatistics clinics={clinics}/>
           <div className="flex items-center space-x-3">
             <Building2 className="h-8 w-8 text-blue-500" />
             <div>

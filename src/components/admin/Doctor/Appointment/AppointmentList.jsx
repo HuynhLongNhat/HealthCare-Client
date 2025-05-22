@@ -48,6 +48,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import AppointmentStatistic from "./AppointmentStatistic";
 
 const statusConfig = {
   1: {
@@ -240,31 +241,23 @@ const AppointmentList = () => {
   }
 
   return (
-    <div className="container mx-auto py-6">
-      <Card className="shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-t-lg">
+    <div className="container mx-auto py-6 mt-10">
+      <AppointmentStatistic appointments={appointments} />
+      <Card className="shadow-lg mt-10">
+        <CardHeader className="  rounded-t-lg">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <CardTitle className="text-white text-2xl font-bold">
+              <CardTitle className=" text-2xl font-bold">
                 Quản lý lịch khám bệnh
               </CardTitle>
-              <CardDescription className="text-blue-100">
+              <CardDescription className="">
                 Tổng hợp và quản lý tất cả lịch khám bệnh trong hệ thống
               </CardDescription>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" className="bg-white/10 hover:bg-white/20 text-white">
-                <CalendarClock className="h-4 w-4 mr-2" />
-                Lịch khám
-              </Button>
-              <Button variant="outline" className="bg-white/10 hover:bg-white/20 text-white">
-                <Stethoscope className="h-4 w-4 mr-2" />
-                Bác sĩ
-              </Button>
-            </div>
+           
           </div>
         </CardHeader>
-
+     
         <CardContent className="p-6">
           {/* Filter Section */}
           <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mb-6">

@@ -7,6 +7,7 @@ import Select from "react-select";
 import Pagination from "@/components/Pagination";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import DoctorStatistic from "./DoctorStatistic";
 
 const DoctorList = () => {
   const [doctors, setDoctors] = useState([]);
@@ -113,7 +114,7 @@ const DoctorList = () => {
               Quản lý thông tin bác sĩ
             </p>
           </div>
-
+   <DoctorStatistic/>
           <div className="flex flex-col md:flex-row justify-between items-center mb-6">
             <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-4">
               {/* Lọc chức vụ */}

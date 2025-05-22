@@ -162,7 +162,9 @@ const ListClinics = () => {
                 <div className="flex items-center text-sm text-gray-500">
                   <MapPin size={16} className="mr-1" />
                   <span className="text-center line-clamp-2">
-                    {clinic.address?.split(",")[3]?.trim() || "Địa chỉ chưa rõ"}
+                    {clinic.address?.split(",")[3]?.trim() || clinic.address?.split(",")[2]?.trim() || clinic.address?.split(",")[1]?.trim() ||
+                    
+                    "Địa chỉ chưa rõ"}
                   </span>
                 </div>
               </CardContent>

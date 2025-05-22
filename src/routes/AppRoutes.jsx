@@ -25,7 +25,6 @@ import NotFoundPage from "@/pages/NotFoundPage";
 import ListSpecialization from "@/components/client/ListSpecialization";
 import ListClinics from "@/components/client/ListClinics";
 import ListDoctor from "@/components/client/ListDoctor";
-import DashboardDoctor from "@/components/admin/Dashboard/DashboardDoctor";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
@@ -114,18 +113,23 @@ const AppRoutes = () => {
             />
 
             <Route path="/doctor/:doctorId/update" element={<UpdateDoctor />} />
- 
-              <Route
+
+            <Route
               path="/doctor/:doctorId/meetings/create"
               element={<CreateMeeting />}
             />
-            <Route path="/:userId/lich-su-thanh-toan" element={<PaymentList />} />
-             <Route path="/:userId/lich-su-thanh-toan/:paymentId" element={<PaymentDetail />} />
+            <Route
+              path="/:userId/lich-su-thanh-toan"
+              element={<PaymentList />}
+            />
+            <Route
+              path="/:userId/lich-su-thanh-toan/:paymentId"
+              element={<PaymentDetail />}
+            />
 
             <Route path="/success" element={<PaymentSuccess />} />
 
             <Route path="/cancel" element={<PaymentFail />} />
-
           </Route>
           <Route
             path="/admin"
@@ -135,13 +139,14 @@ const AppRoutes = () => {
               </PrivateRoute>
             }
           >
-            <Route index element={<DashboardAdmin />} />
-            <Route path="dashboard" element={<DashboardAdmin />} />
-            <Route path="users" element={<UserList />} />
+            {/* <Route index element={<DashboardAdmin />} />
+
+            <Route path="dashboard" element={<DashboardAdmin />} /> */}
+
+            <Route index path="users" element={<UserList />} />
             <Route path="users/create" element={<CreateNewUser />} />
             <Route path="users/:userId" element={<UserProfile />} />
             <Route path="payment-history" element={<PaymentList />} />
-
           </Route>
 
           {/* Doctor + Admin Shared Section */}
@@ -153,7 +158,6 @@ const AppRoutes = () => {
               </PrivateRoute>
             }
           >
-            <Route path="dashboard" element={<DashboardDoctor />} />
             {/* <Route index element={<DoctorList />} /> */}
             <Route path="clinics" element={<ClinicList />} />
             <Route path="appointments" element={<AppointmentList />} />

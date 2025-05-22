@@ -39,7 +39,7 @@ const SidebarDashBoard = () => {
   }, []);
 
   const menuAdmin = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
+    // { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
     { icon: Users, label: "Users", path: "/admin/users" },
     {
       icon: Stethoscope,

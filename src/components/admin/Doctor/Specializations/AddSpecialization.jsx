@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, X, ArrowLeft } from "lucide-react";
+import { Upload, X, ArrowLeft, Loader2, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { createNewSpecializations } from "@/api/doctor.api";
@@ -81,6 +81,7 @@ const AddSpecialization = () => {
       });
 
       if (res && res.EC === 0) {
+          setLoading(false);
         toast.success(res.EM);
         navigate(-1);
       } else if (res && res.EC === -1) {
@@ -216,6 +217,7 @@ const AddSpecialization = () => {
                   type="button"
                   onClick={() => navigate(-1)}
                 >
+                  <X/>
                   Hủy
                 </Button>
                 <Button
@@ -223,7 +225,17 @@ const AddSpecialization = () => {
                   className="bg-blue-500 hover:bg-blue-600"
                   disabled={loading}
                 >
-                  {loading ? "Đang xử lý..." : "Thêm chuyên khoa"}
+                     {loading ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                      <span className="text-[15px]">Đang xử lý...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="h-5 w-5 mr-2" />
+                      <span className="text-[15px]">Thêm mới</span>
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
