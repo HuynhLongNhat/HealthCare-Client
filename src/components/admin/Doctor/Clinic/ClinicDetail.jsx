@@ -3,15 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import {
-  MapPin,
-  Stethoscope,
-  Edit,
-  Info,
-  Loader,
-  Home,
-} from "lucide-react";
+import { MapPin, Stethoscope, Edit, Info, Loader, Home } from "lucide-react";
 import { getClinicDetail } from "@/api/doctor.api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -76,84 +68,76 @@ const ClinicDetail = () => {
           <li className="text-gray-500">{clinicDetail?.name}</li>
         </ol>
       </nav>
-      <div className="relative mt-5 rounded-lg h-72 sm:h-96 w-full bg-gradient-to-r from-blue-700 to-indigo-600 overflow-hidden shadow-xl">
+      <div className="relative rounded-2xl w-full bg-white overflow-hidden shadow-lg border border-gray-100">
+        {/* Edit button for authorized users - positioned more discreetly */}
         {(auth?.role === 1 || auth?.userId === clinicDetail.doctor_id) &&
           clinicDetail && (
             <div className="absolute top-4 right-4 z-20">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                className="flex items-center px-3 py-1.5 text-sm bg-white/90 hover:bg-white text-blue-600 backdrop-blur-sm border-white/50 shadow-sm hover:shadow-md transition-all"
+                className="flex items-center p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all"
                 onClick={() =>
                   navigate(
                     `/doctor/${auth.userId}/clinics/${clinicDetail.id}/update`
                   )
                 }
               >
-                <Edit className="h-[14px] w-[14px] mr-1" />
+                <Edit className="h-4 w-4 text-blue-500" />
+                <span className="sr-only">Chỉnh sửa</span>
               </Button>
             </div>
           )}
 
-        {/* Hình ảnh phòng khám */}
-        {clinicDetail?.avatar && (
-          <div className="absolute inset-0 overflow-hidden">
-            <img
-              src={clinicDetail.avatar}
-              alt={clinicDetail.name}
-              className="w-full h-full object-cover object-center opacity-70 transform scale-100 hover:scale-105 transition-transform duration-1000 ease-out"
-            />
-          </div>
-        )}
+        {/* Two-column layout */}
+        <div className="flex flex-col md:flex-row">
+          {/* Image section - more subtle presentation */}
+          {clinicDetail?.avatar && (
+            <div className="md:w-1/3 h-64  relative overflow-hidden">
+              <img
+                src={clinicDetail.avatar}
+                alt={clinicDetail.name}
+                className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+            </div>
+          )}
 
-        {/* Lớp phủ gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent backdrop-blur-[1px]" />
+          {/* Content section - clean typography */}
+          <div className="flex-1 p-6 md:p-8 space-y-4">
+            {/* Badge row */}
 
-        {/* Hình ảnh phòng khám */}
-        {clinicDetail?.avatar && (
-          <div className="absolute inset-0 overflow-hidden">
-            <img
-              src={clinicDetail.avatar}
-              alt={clinicDetail.name}
-              className="w-full h-full object-cover object-center opacity-70 transform scale-100 hover:scale-105 transition-transform duration-1000 ease-out"
-            />
-          </div>
-        )}
+            {/* Clinic name - prominent but not overwhelming */}
+            <h1 className="text-2xl md:text-3xl font-bold text-blue-600">
+              {clinicDetail?.name || "Phòng khám"}
+            </h1>
 
-        {/* Lớp phủ gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent backdrop-blur-[1px]" />
+            {/* Location section - clean and readable */}
+            <div className="space-y-2">
+              <div className="flex items-start">
+                <MapPin className="h-5 w-5 text-blue-500 mt-0.5 mr-2 flex-shrink-0" />
+                <div>
+                  <p className="text-gray-700 font-medium">Địa chỉ:</p>
+                  <p className="text-gray-600">
+                    {clinicDetail?.address}
+                    {clinicDetail?.district && `, ${clinicDetail.district}`}
+                    {clinicDetail?.province && `, ${clinicDetail.province}`}
+                  </p>
+                </div>
+              </div>
 
-        {/* Nội dung thông tin */}
-        <div className="absolute bottom-0 left-0 right-0 z-10 p-6 sm:p-8">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-md">
-              Phòng khám
-            </Badge>
-            {clinicDetail?.type && (
-              <Badge
-                variant="outline"
-                className="text-white border-white/50 bg-white/10 backdrop-blur-sm"
-              >
-                {clinicDetail.type}
-              </Badge>
-            )}
-          </div>
+              {/* Additional info sections can be added here */}
+            </div>
 
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mt-3 mb-2 drop-shadow-lg">
-            {clinicDetail?.name || "Phòng khám"}
-          </h1>
+            {/* Decorative divider */}
+            <div className="pt-4">
+              <div className="border-t border-gray-200"></div>
+            </div>
 
-          <div className="flex items-start text-white/95 mt-3">
-            <MapPin className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
-            <p className="text-base sm:text-lg leading-snug">
-              {clinicDetail?.address}
-              {clinicDetail?.district && `, ${clinicDetail.district}`}
-              {clinicDetail?.province && `, ${clinicDetail.province}`}
-            </p>
+            {/* Action buttons */}
           </div>
         </div>
       </div>
-
       {/* Main content */}
       <div className=" mx-auto py-8">
         <Tabs defaultValue="overview" className="w-full">
@@ -205,7 +189,7 @@ const ClinicDetail = () => {
                       ),
                       li: ({ ...props }) => (
                         <li
-                          className="ml-4 list-disc text-gray-800 leading-relaxed mb-1"
+                          className="ml-10 list-disc text-gray-800 leading-relaxed mb-1"
                           {...props}
                         />
                       ),
@@ -320,19 +304,19 @@ const ClinicDetail = () => {
                       <div className="flex flex-col sm:flex-row sm:items-center text-sm text-gray-500 mt-1 gap-2 sm:gap-4">
                         <span className="flex items-center">
                           <Stethoscope className="h-3.5 w-3.5 mr-1" />
-                          {clinicDetail?.doctor?.DT?.doctor?.specialization?.name ||
-                            "Chưa cập nhật"}
+                          {clinicDetail?.doctor?.DT?.doctor?.specialization
+                            ?.name || "Chưa cập nhật"}
                         </span>
                         <span className="flex items-center">
-                         <MapPin className="h-4 w-4 mr-2 text-blue-600 flex-shrink-0" />
-                      <span className="truncate">
-                        {clinicDetail.doctor.DT?.userData?.address
-                          ? clinicDetail.doctor.DT?.userData.address
-                              .split(",")
-                              .slice(3)
-                              .join(", ")
-                          : "Chưa cập nhật địa chỉ"}
-                      </span>
+                          <MapPin className="h-4 w-4 mr-2 text-blue-600 flex-shrink-0" />
+                          <span className="truncate">
+                            {clinicDetail.doctor.DT?.userData?.address
+                              ? clinicDetail.doctor.DT?.userData.address
+                                  .split(",")
+                                  .slice(3)
+                                  .join(", ")
+                              : "Chưa cập nhật địa chỉ"}
+                          </span>
                         </span>
                       </div>
                     </div>

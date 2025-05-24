@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User, Star, Save, Home } from "lucide-react";
+import { User, Star, Save, Home, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -333,6 +333,7 @@ const UpdateDoctor = () => {
                 onClick={() => navigate(-1)}
                 disabled={isSubmitting}
               >
+                <X className="h-4 w-4"/>
                 Hủy
               </Button>
               <Button

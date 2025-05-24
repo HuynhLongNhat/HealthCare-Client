@@ -130,7 +130,7 @@ const ListClinics = () => {
 
       {/* Grid List */}
       {filteredClinics.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
           {filteredClinics.map((clinic) => (
             <Card
               key={clinic.id}
@@ -139,12 +139,12 @@ const ListClinics = () => {
             >
               <CardContent className="p-4 flex flex-col items-center space-y-3">
                 {/* Image */}
-                <div className="w-full h-44 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                <div className="w-full h-44 rounded-lg overflow-hidden  flex items-center justify-center">
                   {clinic.avatar ? (
                     <img
                       src={clinic.avatar}
                       alt={clinic.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                   ) : (
                     <span className="text-gray-400 text-4xl font-bold">
@@ -160,9 +160,10 @@ const ListClinics = () => {
 
                 {/* Address */}
                 <div className="flex items-center text-sm text-gray-500">
-                  <MapPin size={16} className="mr-1" />
+                  <MapPin size={16} className="mr-1 text-blue-600" />
                   <span className="text-center line-clamp-2">
-                    {clinic.address?.split(",")[3]?.trim() || clinic.address?.split(",")[2]?.trim() || clinic.address?.split(",")[1]?.trim() ||
+                    {<span>{clinic.address.split(",").pop().trim()}</span>
+ ||
                     
                     "Địa chỉ chưa rõ"}
                   </span>

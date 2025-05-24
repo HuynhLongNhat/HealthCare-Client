@@ -1,22 +1,42 @@
 import { useState, useRef, useEffect } from "react";
-import { IoMdClose } from "react-icons/io";
-import { FiSend, FiMessageSquare } from "react-icons/fi";
-import { BsThreeDots } from "react-icons/bs";
+import {
+  Send,
+  X,
+  Bot,
+  Loader2,
+  ChevronDown,
+  UserCircle2,
+  MessageCircle,
+} from "lucide-react";
 import { handleAsk } from "@/api/chatbot.api";
-import chatbot from "../../public/chatbot.png";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
+import chatbotAvatar from "../../public/chatbot.png";
+import ResponseFormatter from "./ResponseFormatter";
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
-      text: "Xin chào! Đây là chatbot của HealthCare. Tôi có thể giúp gì cho bạn?",
+      text: "Xin chào! Mình là trợ lí AI của HealthCare. Mình có thể giúp gì cho bạn?",
       isBot: true,
-      time: new Date().toISOString() // Thêm thời gian cho message đầu tiên
+      time: new Date().toISOString(),
     },
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -24,41 +44,45 @@ const ChatBot = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [messages, isOpen]);
 
   const formatTime = (isoString) => {
     const date = new Date(isoString);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   const handleSend = async () => {
     if (!inputMessage.trim()) return;
 
-    const userMessage = { 
-      text: inputMessage, 
+    const userMessage = {
+      text: inputMessage,
       isBot: false,
-      time: new Date().toISOString() // Thêm thời gian khi user gửi
+      time: new Date().toISOString(),
     };
+
     setMessages((prev) => [...prev, userMessage]);
     setInputMessage("");
     setIsTyping(true);
 
     try {
       const res = await handleAsk({ question: inputMessage });
-      console.log("res", res);
+      console.log("Res" ,res)
       const botMessage = {
-        text: res.answer || "Xin lỗi, tôi chưa có câu trả lời.",
+        text:  <ResponseFormatter content={res.answer }/> || "Xin lỗi, tôi chưa có câu trả lời cho câu hỏi này.",
         isBot: true,
-        time: res.metadata?.timestamp || new Date().toISOString() // Sử dụng thời gian từ server hoặc tạo mới
+        time: res.metadata?.timestamp || new Date().toISOString(),
       };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       setMessages((prev) => [
         ...prev,
-        { 
-          text: "Có lỗi xảy ra, vui lòng thử lại sau.", 
+        {
+          text: "Có lỗi xảy ra, vui lòng thử lại sau.",
           isBot: true,
-          time: new Date().toISOString()
+          time: new Date().toISOString(),
         },
       ]);
     } finally {
@@ -75,122 +99,163 @@ const ChatBot = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 font-sans">
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="h-16 w-16 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 transform hover:scale-105"
-          aria-label="Open chat"
-        >
-          <img src={chatbot} alt="Chatbot" className="w-16 h-16 object-contain" />
-        </button>
-      )}
+      <AnimatePresence>
+        {!isOpen ? (
+          <Avatar
+            className="h-16 w-16 border-2 border-white/20"
+            onClick={() => setIsOpen(true)}
+          >
+            <AvatarImage src={chatbotAvatar} alt="Trợ lý AI" />
+            <AvatarFallback className="bg-primary-foreground text-primary">
+              <Bot className="h-16 w-16" />
+            </AvatarFallback>
+          </Avatar>
+        ) : (
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="w-[380px] h-[530px] bg-background rounded-xl shadow-xl flex flex-col overflow-hidden border"
+          >
+            <Card className="w-full h-full flex flex-col shadow-none border-0">
+              <CardHeader className="bg-blue-400 p-4 flex-row items-center justify-between space-y-0">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-12 w-12 ">
+                    <AvatarImage src={chatbotAvatar} alt="Trợ lý AI" />
+                    <AvatarFallback className="bg-primary-foreground text-primary">
+                      <Bot className="h-12 w-12" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <h3 className="font-semibold text-primary-foreground">
+                      Trợ lý AI HealthCare
+                    </h3>
+                   
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsOpen(false)}
+                  className="text-primary-foreground hover:bg-primary-foreground/10"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </CardHeader>
 
-      {isOpen && (
-        <div className="w-[360px] h-[540px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fadeIn border border-gray-200">
-          {/* Header */}
-          <div className="bg-blue-600 p-4 flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center shadow-md">
-                <img src={chatbot} alt="Chatbot" className="w-10 h-10 object-contain" />
-              </div>
-              <h3 className="text-white font-semibold text-lg">HealthCare Chat</h3>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-white hover:text-gray-200 transition-colors"
-              aria-label="Close chat"
-            >
-              <IoMdClose className="w-6 h-6" />
-            </button>
-          </div>
+              <CardContent className="flex-1 p-0 overflow-hidden">
+                <ScrollArea className="h-full">
+                  <div className="flex flex-col gap-3 p-4">
+                    {messages.map((message, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: message.isBot ? -10 : 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className={cn(
+                          "flex items-end gap-2 max-w-[90%]",
+                          message.isBot
+                            ? "self-start"
+                            : "self-end flex-row-reverse"
+                        )}
+                      >
+                        {message.isBot && (
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={chatbotAvatar} alt="Trợ lý AI" />
+                            <AvatarFallback className="bg-primary text-primary-foreground">
+                              <Bot className="h-4 w-4" />
+                            </AvatarFallback>
+                          </Avatar>
+                        )}
 
-          {/* Messages */}
-          <div className="flex-1 px-4 py-3 overflow-y-auto bg-gradient-to-br from-gray-50 to-gray-100">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex mb-3 ${message.isBot ? "justify-start" : "justify-end"}`}
-              >
-                <div className={`max-w-[75%] ${message.isBot ? "" : "flex flex-col items-end"}`}>
-                  <div
-                    className={`px-4 py-2 text-sm whitespace-pre-line rounded-2xl ${
-                      message.isBot
-                        ? "bg-white text-gray-800 shadow border border-gray-200"
-                        : "bg-blue-600 text-white"
-                    } animate-slideIn`}
+                        {!message.isBot && (
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback className="bg-secondary text-secondary-foreground">
+                              <UserCircle2 className="h-4 w-4" />
+                            </AvatarFallback>
+                          </Avatar>
+                        )}
+
+                        <div className="flex flex-col gap-1">
+                          <div
+                            className={cn(
+                              "px-4 py-2.5 rounded-2xl text-sm",
+                              message.isBot
+                                ? "bg-muted border border-border"
+                                : "bg-blue-500 text-white "
+                            )}
+                          >
+                            {message.text}
+                          </div>
+                          <span className="text-xs text-muted-foreground px-1">
+                            {formatTime(message.time)}
+                          </span>
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    {isTyping && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-end gap-2 self-start"
+                      >
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={chatbotAvatar} alt="Trợ lý AI" />
+                          <AvatarFallback className="bg-primary text-primary-foreground">
+                            <Bot className="h-4 w-4" />
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="bg-muted border border-border rounded-full px-4 py-2.5 flex items-center">
+                          <div className="flex gap-1">
+                            <span className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                            <span className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                            <span className="w-2 h-2 bg-primary rounded-full animate-bounce"></span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+                </ScrollArea>
+              </CardContent>
+
+              <CardFooter className="p-3 border-t">
+                <form
+                  className="flex w-full items-center gap-2"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSend();
+                  }}
+                >
+                  <Input
+                    ref={inputRef}
+                    type="text"
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    placeholder="Nhập tin nhắn..."
+                    className="flex-1 rounded-full bg-muted border-muted focus-visible:ring-primary"
+                  />
+                  <Button
+                    type="submit"
+                    size="icon"
+                    disabled={!inputMessage.trim() || isTyping}
+                   variant="ghost"
                   >
-                    {message.text}
-                  </div>
-                  <div className={`text-xs mt-1 text-gray-500 ${message.isBot ? "text-left" : "text-right"}`}>
-                    {formatTime(message.time)}
-                  </div>
-                </div>
-              </div>
-            ))}
-            {isTyping && (
-              <div className="flex justify-start mb-3">
-                <div className="bg-white px-3 py-2 rounded-2xl shadow border border-gray-200">
-                  <BsThreeDots className="w-6 h-6 text-gray-500 animate-bounce" />
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input */}
-          <div className="p-3 bg-white border-t border-gray-200">
-            <div className="flex space-x-2 items-center">
-              <input
-                type="text"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Nhập tin nhắn..."
-                className="flex-1 px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                aria-label="Type your message"
-              />
-              <button
-                onClick={handleSend}
-                disabled={!inputMessage.trim() || isTyping}
-                className="bg-blue-600 p-2 rounded-full text-white hover:bg-blue-700 transition-all disabled:opacity-50"
-                aria-label="Send message"
-              >
-                <FiSend className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Animation styles */}
-      <style jsx>{`
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
-        .animate-slideIn {
-          animation: slideIn 0.25s ease-in-out;
-        }
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateX(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
+                    {isTyping ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4 text-blue-800" />
+                    )}
+                  </Button>
+                </form>
+              </CardFooter>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

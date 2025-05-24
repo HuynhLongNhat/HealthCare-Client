@@ -44,7 +44,7 @@ const clinicFormSchema = z.object({
 const EditHandBook = () => {
   const {slug} = useParams()
   const auth = useAuthToken();
-  const { doctorId } = useParams();
+  
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState(null);
@@ -185,7 +185,7 @@ const EditHandBook = () => {
           </li>
           <li
             className="text-blue-500 cursor-pointer"
-            onClick={() => navigate(`/doctor/${doctorId}/handbooks`)}
+            onClick={() => navigate(`/doctor/${auth.userId}/handbooks`)}
           >
             Bài viết của tôi
           </li>

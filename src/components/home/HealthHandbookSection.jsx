@@ -92,7 +92,7 @@ const HealthHandbookSection = () => {
                       <div className="h-48 w-full overflow-hidden bg-gray-200 rounded-xl">
                         <Avatar className="w-full h-full rounded-none">
                           <AvatarImage
-                            src={handbook.handbook.avatar}
+                            src={handbook.handbook.image}
                             className="w-full h-full object-cover rounded-none"
                           />
                           <AvatarFallback className="w-full h-full flex items-center justify-center bg-gray-300 text-white text-5xl font-semibold rounded-none">

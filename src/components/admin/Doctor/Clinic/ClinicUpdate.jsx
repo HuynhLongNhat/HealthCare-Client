@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import {
-  ArrowLeft,
   Building2,
   Check,
   FileText,
   Home,
   Image,
   MapPin,
-  Plus,
   Trash2,
   Upload,
   UploadCloud,

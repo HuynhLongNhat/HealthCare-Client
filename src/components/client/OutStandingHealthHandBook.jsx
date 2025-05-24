@@ -49,8 +49,8 @@ const OutStandingHealthHandBook = () => {
                 </h3>
                 <div className="flex justify-between w-full text-white/80">
                   <div className="flex items-center">
-                    <Avatar className="h-8 w-8 mr-2">
-                      <AvatarImage
+                    <Avatar className="h-12 w-12 mr-2">
+                      <AvatarImage 
                         src={handbooks[0].doctor.DT.userData.profile_picture}
                       />
                       <AvatarFallback className="bg-blue-500 text-white">
@@ -86,8 +86,8 @@ const OutStandingHealthHandBook = () => {
               <div className="w-1/3 overflow-hidden">
                 <Avatar className="w-full h-full rounded-none">
                   <AvatarImage
-                    src={handbook.handbook.avatar}
-                    className="w-full h-full object-cover rounded-none"
+                    src={handbook.handbook.image}
+                    className="w-full h-full object-contain rounded-none"
                   />
                   <AvatarFallback className="w-full h-full flex items-center justify-center bg-gray-300 text-white text-3xl font-semibold rounded-none">
                     {handbook.handbook.title.charAt(0).toUpperCase()}

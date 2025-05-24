@@ -60,6 +60,10 @@ export const updateRoleUser = (userId, userData) => {
   return axios.put(`/${userId}`, userData);
 };
 
+export const getUserById = (userId) => {
+  return axios.get(`/${userId}`);
+};
+
 export const createNewUser = (userData) => {
   return axios.post(`/create`, userData);
 };

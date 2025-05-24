@@ -31,7 +31,7 @@ import DeleteModal from "@/components/DeleteModal";
 import useAuthToken from "@/utils/userAuthToken";
 
 const MeetingList = () => {
-  const auth = useAuthToken()
+  const auth = useAuthToken();
   const { doctorId } = useParams();
   const [meetings, setMeetings] = useState([]);
   const [filteredMeetings, setFilteredMeetings] = useState([]);
@@ -118,23 +118,23 @@ const MeetingList = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">
+          <h2 className="text-2xl font-bold text-blue-600 tracking-tight">
             Lịch tư vấn sức khỏe
           </h2>
           <p className="text-gray-500 mt-1">
             Danh sách các cuộc họp tư vấn sức khỏe trực tuyến
           </p>
         </div>
-        {auth && ((auth.role === 1) || Number(auth.userId) === Number(doctorId)) && (
-
-
-          <Button
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white gap-2 hover:from-blue-700 hover:to-indigo-700 transition-all"
-            onClick={() => setIsCreateMeetingOpen(true)}
-          >
-            <Plus className="h-4 w-4" />
-            Tạo cuộc họp mới
-          </Button>)}
+        {auth &&
+          (auth.role === 1 || Number(auth.userId) === Number(doctorId)) && (
+            <Button
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white gap-2 hover:from-blue-700 hover:to-indigo-700 transition-all"
+              onClick={() => setIsCreateMeetingOpen(true)}
+            >
+              <Plus className="h-4 w-4" />
+              Tạo cuộc họp mới
+            </Button>
+          )}
       </div>
 
       <div className="relative">
@@ -352,37 +352,39 @@ const MeetingCard = ({ meeting, status, onJoin, onDelete }) => {
       <CardFooter className="p-4 pt-0">
         <div className="w-full space-y-2">
           <div className="flex gap-2 w-full">
-            <Button
-              className={`flex-1 gap-2 ${statusConfig.buttonClass}`}
-              onClick={() => onJoin(meeting.meeting_url)}
-            >
-              <Video className="h-4 w-4" />
-              {statusConfig.buttonText}
-            </Button>
-           <div className="flex items-center gap-2">
-  <Button
-    onClick={() => copyMeetLink(meeting?.meeting_url)}
-    variant="outline"
-    size="sm"
-    className="text-gray-700 hover:bg-gray-100 dark:hover:bg-black"
-    title="Sao chép link"
-  >
-    <Copy className="w-4 h-4 dark:text-white dark:hover:text-black" />
-  </Button>
+            {status === "ongoing" && (
+              <Button
+                className={`flex-1 gap-2 ${statusConfig.buttonClass}`}
+                onClick={() => onJoin(meeting.meeting_url)}
+              >
+                <Video className="h-4 w-4" />
+                {statusConfig.buttonText}
+              </Button>
+            )}
+            <div className="flex items-center gap-2 ml-auto">
+              <Button
+                onClick={() => copyMeetLink(meeting?.meeting_url)}
+                variant="outline"
+                size="sm"
+                className="text-gray-700 hover:bg-gray-100 dark:hover:bg-black"
+                title="Sao chép link"
+              >
+                <Copy className="w-4 h-4 dark:text-white dark:hover:text-black" />
+              </Button>
 
-  {auth &&
-    (auth.role === 1 || Number(auth.userId) === Number(doctorId)) && (
-      <Button
-        variant="outline"
-        size="sm" 
-        className="text-red-500 hover:text-red-700 hover:bg-red-50 border-red-200 transition-colors"
-        onClick={() => onDelete(meeting)}
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
-    )}
-</div>
-
+              {auth &&
+                (auth.role === 1 ||
+                  Number(auth.userId) === Number(doctorId)) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50 border-red-200 transition-colors"
+                    onClick={() => onDelete(meeting)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+            </div>
           </div>
         </div>
       </CardFooter>

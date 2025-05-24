@@ -3,7 +3,6 @@ import { Loader2, Home, User, Check, ArrowLeft } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
-import { forgotPassword } from "@/service/authService";
 import {
   Form,
   FormControl,
@@ -19,6 +18,7 @@ import * as z from "zod";
 import { motion } from "framer-motion";
 import loginBg from "@/assets/login-bg.svg";
 import loginTree from "@/assets/login-tree.svg";
+import { forgotPassword } from "@/api/auth.api";
 const formSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
 });

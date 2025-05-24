@@ -80,11 +80,11 @@ const ClinicSection = () => {
                     className="hover:shadow-2xl transition-shadow overflow-hidden h-full flex flex-col cursor-pointer"
                     onClick={() => navigate(`/clinics/${clinic.id}`)}
                   >
-                    <div className="h-48 w-full overflow-hidden bg-gray-200 rounded-xl">
+                    <div className="h-48 w-full overflow-hidden  rounded-xl">
                       <Avatar className="w-full h-full rounded-none">
                         <AvatarImage
                           src={clinic.avatar}
-                          className="w-full h-full object-cover rounded-none"
+                          className="w-full h-full  rounded-none object-contain"
                         />
                         <AvatarFallback className="w-full h-full flex items-center justify-center bg-gray-300 text-white text-5xl font-semibold rounded-none">
                           {clinic.name.charAt(0).toUpperCase()}
@@ -92,14 +92,11 @@ const ClinicSection = () => {
                       </Avatar>
                     </div>
 
-                    <CardContent className="p-6 flex-grow">
+                    <CardContent className="p-6 flex-grow text-center">
                       <h3 className="font-semibold text-lg mb-2">
                         {clinic.name}
                       </h3>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <MapPin size={18} className="mr-2 text-blue-700" />
-                        <span>{clinic.address.split(",")[3] || clinic.address.split(",")[2]  || clinic.address.split(",")[1]}</span>
-                      </div>
+                      
                     </CardContent>
                   </Card>
                 </div>

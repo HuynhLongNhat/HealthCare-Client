@@ -78,7 +78,7 @@ const DoctorProfile = () => {
                 <img
                   src={doctorProfile.userData.profile_picture}
                   alt="Avatar"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">

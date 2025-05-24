@@ -10,7 +10,6 @@ import {
   Lock,
   CheckCircle,
 } from "lucide-react";
-import { resetPassword } from "@/service/authService";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -28,6 +27,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { toast } from "react-toastify";
 import { Loader2 } from "lucide-react";
+import { resetPassword } from "@/api/auth.api";
 
 // Define form schema
 const formSchema = z
@@ -67,10 +67,10 @@ const ResetPassword = () => {
   });
 
   useEffect(() => {
-    // if (!token) {
-    //   toast.error("Token không hợp lệ hoặc đã hết hạn");
-    //   navigate("/login");
-    // }
+    if (!token) {
+      toast.error("Token không hợp lệ hoặc đã hết hạn");
+      navigate("/login");
+    }
   }, [token, navigate]);
 
   const onSubmit = async (values) => {
