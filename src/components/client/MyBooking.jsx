@@ -63,12 +63,12 @@ const statusConfig = {
 };
 
 const MyBooking = () => {
-  const { userId } = useParams();
+  const auth = useAuthToken();
+  const { doctorId ,userId} = useParams();
   const [myBookings, setMyBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [dateFilter, setDateFilter] = useState("all");
-  const auth = useAuthToken();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(4);
@@ -78,26 +78,34 @@ const MyBooking = () => {
 
   useEffect(() => {
     fetchAllMyBooking();
-  }, [userId]);
+  }, [auth ]);
 
   useEffect(() => {
     // Reset về trang 1 khi bộ lọc thay đổi
     setCurrentPage(1);
   }, [selectedStatuses, searchTerm, dateFilter]);
 
-  const fetchAllMyBooking = async () => {
-    setLoading(true);
-    try {
-      const res = await getAllMyBooking(userId);
-      if (res.EC === 0) {
-        setMyBookings(res.DT);
-      }
-    } catch (error) {
-      console.error("Error fetching bookings:", error);
-    } finally {
-      setLoading(false);
+const fetchAllMyBooking = async () => {
+  setLoading(true);
+  try {
+ 
+    const id = auth?.role === 2 ? doctorId : auth?.role === 3 ? userId : null;
+    if (!id) {
+      console.warn("Không có ID phù hợp để fetch booking.");
+      return;
     }
-  };
+
+    const res = await getAllMyBooking(id);
+    if (res.EC === 0) {
+      setMyBookings(res.DT);
+    }
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const filterByDate = (appointments, filterType) => {
     const now = new Date();

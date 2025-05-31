@@ -362,6 +362,7 @@ const MeetingCard = ({ meeting, status, onJoin, onDelete }) => {
               </Button>
             )}
             <div className="flex items-center gap-2 ml-auto">
+                {(status === "ongoing" || status === "upcoming") &&  (
               <Button
                 onClick={() => copyMeetLink(meeting?.meeting_url)}
                 variant="outline"
@@ -371,7 +372,7 @@ const MeetingCard = ({ meeting, status, onJoin, onDelete }) => {
               >
                 <Copy className="w-4 h-4 dark:text-white dark:hover:text-black" />
               </Button>
-
+)}
               {auth &&
                 (auth.role === 1 ||
                   Number(auth.userId) === Number(doctorId)) && (

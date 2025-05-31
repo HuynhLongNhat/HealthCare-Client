@@ -64,7 +64,7 @@ const CreateMeeting = ({ open, onOpenChange, fetch }) => {
     try {
       const meetingData = {
         roomName: values.roomName,
-        meetingUrl: `https://meet.jit.si/${uuidv4().substring(
+        meetingUrl: `https://meet.jit.si/${values.roomName}-${uuidv4().substring(
         0,
         8
       )}`,
@@ -73,17 +73,12 @@ const CreateMeeting = ({ open, onOpenChange, fetch }) => {
       };
 
      const res = await createMeetingByDoctor(doctorId , meetingData)
-     console.log("Res" ,res)
-     
-
-      // In a real app, you would call your API here
-      // await createMeeting(meetingData);
-
+      if (res.EC === 0) {
       toast.success("Tạo cuộc họp thành công");
       form.reset();
-
       onOpenChange(false);
       fetch();
+    }      
     } catch (error) {
       console.error("Error creating meeting:", error);
       toast.error("Không thể tạo cuộc họp: " + error.message);

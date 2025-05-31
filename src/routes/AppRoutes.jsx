@@ -60,6 +60,7 @@ const AppRoutes = () => {
               path="specializations/:specializationId"
               element={<DetailSpecialization />}
             />
+             
             <Route
               path="/cam-nang-suc-khoe/:slug"
               element={<HealthHandbookDetail />}

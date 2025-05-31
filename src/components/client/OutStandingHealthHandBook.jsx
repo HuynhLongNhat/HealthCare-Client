@@ -34,7 +34,7 @@ const OutStandingHealthHandBook = () => {
               navigate(`/cam-nang-suc-khoe/${handbooks[0].handbook.slug}`)
             }
           >
-            <div className="h-80 overflow-hidden relative">
+            <div className="h-full overflow-hidden relative">
               <img
                 src={
                   handbooks[0].handbook.image ||

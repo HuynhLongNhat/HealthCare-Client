@@ -27,7 +27,7 @@ const DoctorProfile = () => {
 
   useEffect(() => {
     fetchDoctorById();
-  }, []);
+  }, [doctorId]);
 
   const fetchDoctorById = async () => {
     try {
@@ -180,7 +180,7 @@ const DoctorProfile = () => {
         <TabsList
           className={`grid w-full gap-2 grid-cols-2 md:grid-cols-4 ${
             auth &&
-            (auth.role === 1 || auth.userId === doctorProfile.doctor.user_id)
+            ( auth.userId === doctorProfile.doctor.user_id)
               ? "lg:grid-cols-5"
               : "lg:grid-cols-4"
           }`}
@@ -195,7 +195,7 @@ const DoctorProfile = () => {
             Đánh giá
           </TabsTrigger>
           {auth &&
-            (auth.role === 1 ||
+            (
               auth.userId === doctorProfile.doctor.user_id) && (
               <TabsTrigger value="appointments" className="text-center">
                 Lịch khám

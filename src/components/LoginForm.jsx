@@ -69,9 +69,8 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-    const { email, password } = data;
     try {
-      const res = await loginUser({ email, password });
+      const res = await loginUser(data);
       if (res && res.EC === 0) {
         const { accessToken, user } = res.DT;
           localStorage.setItem("token", accessToken);
@@ -79,7 +78,7 @@ const LoginForm = () => {
         toast.success(res.EM);
         navigate("/");
       }
-      if ((res && res.EC === -1) || res.EC === -2) {
+      if ((res && res.EC === -1) || res.EC === -2 || res.EC === -3) {
         toast.error(res.EM);
       }
     } catch (error) {

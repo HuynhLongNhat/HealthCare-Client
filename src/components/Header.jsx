@@ -16,33 +16,58 @@ import {
   FileText,
   Users,
   CalendarHeart,
-  PanelTop,
   User,
   CreditCard,
+  ChevronDown,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "./ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Separator } from "./ui/separator";
 import ChangePasswordModal from "./ChangePassword";
 import useAuthToken from "@/utils/userAuthToken";
 import logo from "@/assets/logo-min.jpg";
-
+import { useDispatch, useSelector } from "react-redux";
+import { getUserById } from "@/api/auth.api";
+import { setUser } from "@/store/user.slice";
 const Header = () => {
   const navigate = useNavigate();
+  const userData = useSelector((state) => state.user.user);
+  const dispatch = useDispatch();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const auth = useAuthToken();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  console.log("auth" ,auth)
+  // const [isDarkMode, setIsDarkMode] = useState(false);
+  
+    const displayName = userData?.full_name || auth?.full_name || auth?.email?.split("@")[0] || "GUEST";
+  const displayEmail = userData?.email || auth?.email || "GUEST";
+  const avatar =
+    userData?.avatar || auth?.avatar || "";
+
+
+    useEffect(() => {
+    if (auth?.id) {
+      const fetchUserData = async () => {
+        try {
+          const res = await getUserById(auth.id);
+          if (res && res.data) {
+            dispatch(setUser(res.data));
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+      fetchUserData();
+    }
+  }, [auth?.id, dispatch]);
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -57,19 +82,20 @@ const Header = () => {
       (!localStorage.getItem("theme") &&
         window.matchMedia("(prefers-color-scheme: dark)").matches)
     ) {
-      setIsDarkMode(true);
+      // setIsDarkMode(true);
       document.documentElement.classList.add("dark");
     }
   }, []);
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
+    // setIsDarkMode(!isDarkMode);
     document.documentElement.classList.toggle("dark");
     localStorage.setItem(
       "theme",
       document.documentElement.classList.contains("dark") ? "dark" : "light"
     );
   };
+  
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -83,6 +109,7 @@ const Header = () => {
     { to: "/doctors", icon: Users, label: "Bác sĩ" },
     { to: "/cam-nang-suc-khoe", icon: FileText, label: "Cẩm nang sức khỏe" },
   ];
+  
   const profileItems = auth
     ? [
         {
@@ -135,161 +162,267 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed w-full top-0 z-50 transition-all duration-300 bg-white border-b `}
+      className={"fixed w-full top-0 z-50 transition-all duration-500 bg-white border-b dark:bg-gray-900 dark:border-gray-800 " }
     >
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo - Left side */}
           <Link
             to="/"
-            className="flex items-center gap-3 group transition-transform hover:scale-[0.98]"
+            className="flex items-center gap-3 group"
           >
-            <div className="relative w-10 h-10 flex items-center justify-center">
+            <motion.div 
+              className="relative w-10 h-10 flex items-center justify-center"
+              whileHover={{ rotate: 10, scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
               <img
                 src={logo}
                 alt="HealthCare Logo"
                 className="w-full h-full rounded-full object-cover border-2 border-blue-300 shadow-lg"
               />
-            </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-700 to-blue-400 bg-clip-text text-transparent hidden sm:block">
+            </motion.div>
+            <motion.h1 
+              className="text-xl font-bold bg-gradient-to-r from-blue-700 to-blue-400 bg-clip-text text-transparent hidden sm:block"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+            >
               HealthCare
-            </h1>
+            </motion.h1>
           </Link>
 
           {/* Main Navigation - Center */}
-          <nav className="hidden md:flex items-center gap-0.5 mx-4">
-            {navItems.map((item) => (
-              <Button
+          <nav className="hidden md:flex items-center gap-1 mx-4">
+            {navItems.map((item, index) => (
+              <motion.div
                 key={item.to}
-                asChild
-                variant="ghost"
-                className={`gap-1.5 rounded-lg px-4 ${
-                  location.pathname === item.to
-                    ? "bg-accent text-primary font-medium"
-                    : "hover:bg-accent/30 text-foreground/80"
-                }`}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05, duration: 0.3 }}
               >
-                <Link to={item.to}>
-                  <item.icon className="h-[15px] w-[15px] text-blue-700" />
-                  <span>{item.label}</span>
-                </Link>
-              </Button>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className={`gap-1.5 rounded-lg px-4 transition-all duration-300 ${
+                    location.pathname === item.to
+                      ? "bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 text-blue-700 dark:text-blue-400 font-medium shadow-sm"
+                      : "hover:bg-blue-50/50 dark:hover:bg-blue-900/20 text-foreground/80"
+                  }`}
+                >
+                  <Link to={item.to} className="flex items-center">
+                    <item.icon className={`h-[15px] w-[15px] ${location.pathname === item.to ? 'text-blue-700 dark:text-blue-400' : 'text-blue-600/70 dark:text-blue-500/70'}`} />
+                    <span className="relative">
+                      {item.label}
+                      {location.pathname === item.to && (
+                        <motion.span
+                          className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-500 rounded-full"
+                          layoutId="underline"
+                        />
+                      )}
+                    </span>
+                  </Link>
+                </Button>
+              </motion.div>
             ))}
           </nav>
 
           {/* Right side - User & Dark Mode */}
           <div className="flex items-center gap-3">
             {/* Dark Mode Toggle */}
-            {/* <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full hover:bg-accent/30"
-              onClick={toggleDarkMode}
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
             >
-              {isDarkMode ? (
-                <Sun className="h-5 w-5 text-blue-500" />
-              ) : (
-                <Moon className="h-5 w-5 text-blue-500" />
-              )}
-            </Button> */}
+              {/* <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                onClick={toggleDarkMode}
+              >
+                {isDarkMode ? (
+                  <Sun className="h-5 w-5 text-yellow-500" />
+                ) : (
+                  <Moon className="h-5 w-5 text-blue-500" />
+                )}
+              </Button> */}
+            </motion.div>
 
             {auth ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <div className="flex items-center gap-2 hover:bg-accent/30 px-2 py-1.5 rounded-lg cursor-pointer">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <motion.div 
+                    className="flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2 py-1.5 rounded-lg cursor-pointer transition-colors duration-200"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
                     <span className="hidden lg:inline font-medium text-sm">
-                      {auth.full_name || auth.email.split("@")[0]}
+                      {displayName}
                     </span>
-
-                    <Avatar className="h-8 w-8 border-2 border-primary/20">
-                      <AvatarImage src={auth.avatar} />
-                      <AvatarFallback className=" bg-blue-800 text-white">
-                        {auth.full_name.charAt(0).toUpperCase()}
+                    <Avatar className="h-8 w-8 border-2 border-primary/20 transition-transform">
+                      <AvatarImage src={avatar} />
+                      <AvatarFallback className="bg-gradient-to-br from-blue-700 to-blue-500 text-white">
+                        {auth.full_name?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </motion.div>
+                </PopoverTrigger>
+                <PopoverContent
                   align="end"
-                  className="w-56 rounded-lg shadow-lg"
+                  className="w-56 rounded-lg shadow-lg p-0 overflow-hidden border-blue-100 dark:border-blue-900"
                 >
-                  <div className="px-2 py-1.5">
-                    <p className="text-sm font-medium">{auth.email}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {auth.role === 1
-                        ? "Quản trị viên"
-                        : auth.role === 2
-                        ? "Bác sĩ"
-                        : "Bệnh nhân"}
-                    </p>
-                  </div>
-                  <DropdownMenuSeparator />
-
-                  {profileItems.map((item) => (
-                    <DropdownMenuItem key={item.to} asChild>
-                      <Link to={item.to} className="cursor-pointer gap-2 mt-2">
-                        <item.icon className="h-4 w-4 text-blue-500" />
-                        {item.label}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
-
-                  {auth?.role === 1 && (
-                    <DropdownMenuItem asChild>
-                      <Link
-                        to="/admin/users"
-                        className="cursor-pointer gap-2"
-                      >
-                        <User className="h-4 w-4 text-blue-500" />
-                        Admin Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
-
-                  {!auth?.googleId && !auth?.facebookId && (
-                    <DropdownMenuItem
-                      onClick={() => setIsModalOpen(true)}
-                      className="gap-2"
-                    >
-                      <Key className="h-4 w-4 text-blue-500 mt-2" />
-                      Đổi mật khẩu
-                    </DropdownMenuItem>
-                  )}
-
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className="gap-2 text-destructive focus:text-destructive"
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <LogOut className="h-4 w-4" />
-                    Đăng xuất
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <div className="px-1  py-2 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30">
+                      <p className="text-sm font-medium">{ displayEmail}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {auth.role === 1
+                          ? "Quản trị viên"
+                          : auth.role === 2
+                          ? "Bác sĩ"
+                          : "Bệnh nhân"}
+                      </p>
+                    </div>
+                    <div className="p-1">
+                      {profileItems.map((item, index) => (
+                        <motion.div
+                          key={item.to}
+                          initial={{ opacity: 0, x: -5 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05, duration: 0.2 }}
+                        >
+                          <Button
+                            variant="ghost"
+                            asChild
+                            className="w-full justify-start gap-2 text-sm rounded-md"
+                          >
+                            <Link to={item.to} className="cursor-pointer">
+                              <item.icon className="h-4 w-4 text-blue-500" />
+                              {item.label}
+                            </Link>
+                          </Button>
+                        </motion.div>
+                      ))}
+
+                      {auth?.role === 1 && (
+                        <motion.div
+                          initial={{ opacity: 0, x: -5 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: profileItems.length * 0.05, duration: 0.2 }}
+                        >
+                          <Button
+                            variant="ghost"
+                            asChild
+                            className="w-full justify-start gap-2 text-sm rounded-md"
+                          >
+                            <Link to="/admin/users" className="cursor-pointer">
+                              <User className="h-4 w-4 text-blue-500" />
+                              Admin Dashboard
+                            </Link>
+                          </Button>
+                        </motion.div>
+                      )}
+
+                      {!auth?.googleId && !auth?.facebookId && (
+                        <motion.div
+                          initial={{ opacity: 0, x: -5 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ 
+                            delay: (profileItems.length + (auth?.role === 1 ? 1 : 0)) * 0.05, 
+                            duration: 0.2 
+                          }}
+                        >
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start gap-2 text-sm rounded-md"
+                            onClick={() => setIsModalOpen(true)}
+                          >
+                            <Key className="h-4 w-4 text-blue-500" />
+                            Đổi mật khẩu
+                          </Button>
+                        </motion.div>
+                      )}
+
+                      <Separator className="my-1 bg-blue-100 dark:bg-blue-800" />
+                      
+                      <motion.div
+                        initial={{ opacity: 0, x: -5 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ 
+                          delay: (profileItems.length + (auth?.role === 1 ? 1 : 0) + (!auth?.googleId && !auth?.facebookId ? 1 : 0)) * 0.05, 
+                          duration: 0.2 
+                        }}
+                      >
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start gap-2 text-sm rounded-md text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          onClick={handleLogout}
+                        >
+                          <LogOut className="h-4 w-4" />
+                          Đăng xuất
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                </PopoverContent>
+              </Popover>
             ) : (
-              <Button
-                variant="outline"
-                className="gap-2 hidden sm:flex"
-                onClick={() => navigate("/login")}
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
               >
-                <LogIn className="h-4 w-4 text-blue-500" />
-                <span className="text-blue-500">Đăng nhập</span>
-              </Button>
+                <Button
+                  variant="outline"
+                  className="text-black hover:text-blue-500"
+                  onClick={() => navigate("/login")}
+                >
+                  <LogIn className="h-4 w-4" />
+                  <span>Đăng nhập</span>
+                </Button>
+              </motion.div>
             )}
 
             {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               className="md:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              {isMobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
-            </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                <AnimatePresence mode="wait">
+                  {isMobileMenuOpen ? (
+                    <motion.div
+                      key="close"
+                      initial={{ rotate: -90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <X className="h-5 w-5 text-blue-600" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="menu"
+                      initial={{ rotate: 90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: -90, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Menu className="h-5 w-5 text-blue-600" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Button>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -301,40 +434,80 @@ const Header = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             className="md:hidden overflow-hidden"
           >
-            <div className="space-y-1 px-4 pb-3 pt-2 bg-background shadow-inner">
+            <motion.div
+              className="space-y-1 px-4 pb-3 pt-2 bg-background shadow-inner"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                visible: { 
+                  transition: { staggerChildren: 0.07, delayChildren: 0.1 } 
+                },
+                hidden: {}
+              }}
+            >
               {navItems.map((item) => (
-                <Button
+                <motion.div
                   key={item.to}
-                  asChild
-                  variant="ghost"
-                  className={`w-full justify-start gap-2 ${
-                    location.pathname === item.to ? "bg-accent" : ""
-                  }`}
+                  variants={{
+                    visible: { opacity: 1, y: 0 },
+                    hidden: { opacity: 0, y: -20 }
+                  }}
+                  transition={{ duration: 0.2 }}
                 >
-                  <Link to={item.to}>
-                    <item.icon className="h-4 w-4 text-blue-500" />
-                    {item.label}
-                  </Link>
-                </Button>
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className={`w-full justify-start gap-2 transition-all duration-200 ${
+                      location.pathname === item.to 
+                        ? "bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 text-blue-700 dark:text-blue-400 font-medium" 
+                        : ""
+                    }`}
+                  >
+                    <Link 
+                      to={item.to}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <item.icon className={`h-4 w-4 ${location.pathname === item.to ? 'text-blue-600' : 'text-blue-500/70'}`} />
+                      {item.label}
+                    </Link>
+                  </Button>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
-            <Separator />
+            <Separator className="bg-blue-100 dark:bg-blue-800" />
 
-            <div className="space-y-1 px-4 pb-3 pt-2 bg-background">
+            <motion.div 
+              className="space-y-1 px-4 pb-3 pt-2 bg-background"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                visible: { 
+                  transition: { staggerChildren: 0.07, delayChildren: 0.3 } 
+                },
+                hidden: {}
+              }}
+            >
               {auth ? (
                 <>
-                  <div className="flex items-center gap-3 px-2 py-2.5">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage src={auth.avatar} />
-                      <AvatarFallback className="bg-gradient-to-r from-primary to-teal-400">
-                        {auth.email.charAt(0).toUpperCase()}
+                  <motion.div 
+                    className="flex items-center gap-3 px-2 py-2.5"
+                    variants={{
+                      visible: { opacity: 1, y: 0 },
+                      hidden: { opacity: 0, y: -20 }
+                    }}
+                  >
+                    <Avatar className="h-8 w-8 border-2 border-primary/20">
+                      <AvatarImage src={avatar} />
+                      <AvatarFallback className="bg-gradient-to-br from-blue-700 to-blue-500 text-white">
+                        {auth.full_name?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="text-sm font-medium">{auth.email}</p>
+                      <p className="text-sm font-medium">{displayEmail}</p>
                       <p className="text-xs text-muted-foreground">
                         {auth.role === 1
                           ? "Quản trị viên"
@@ -343,70 +516,113 @@ const Header = () => {
                           : "Bệnh nhân"}
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <Separator className="my-1" />
+                  <Separator className="my-1 bg-blue-100 dark:bg-blue-800" />
 
                   {profileItems.map((item) => (
-                    <Button
+                    <motion.div
                       key={item.to}
-                      asChild
-                      variant="ghost"
-                      className="w-full justify-start gap-2"
+                      variants={{
+                        visible: { opacity: 1, y: 0 },
+                        hidden: { opacity: 0, y: -20 }
+                      }}
                     >
-                      <Link to={item.to}>
-                        <item.icon className="h-4 w-4 text-blue-500" />
-                        {item.label}
-                      </Link>
-                    </Button>
+                      <Button
+                        asChild
+                        variant="ghost"
+                        className="w-full justify-start gap-2"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Link to={item.to}>
+                          <item.icon className="h-4 w-4 text-blue-500" />
+                          {item.label}
+                        </Link>
+                      </Button>
+                    </motion.div>
                   ))}
 
                   {auth?.role === 1 && (
-                    <Button
-                      asChild
-                      variant="ghost"
-                      className="w-full justify-start gap-2"
+                    <motion.div
+                      variants={{
+                        visible: { opacity: 1, y: 0 },
+                        hidden: { opacity: 0, y: -20 }
+                      }}
                     >
-                      <Link to="/admin/users">
-                        <User className="h-4 w-4" />
-                        Admin Dashboard
-                      </Link>
-                    </Button>
+                      <Button
+                        asChild
+                        variant="ghost"
+                        className="w-full justify-start gap-2"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Link to="/admin/users">
+                          <User className="h-4 w-4 text-blue-500" />
+                          Admin Dashboard
+                        </Link>
+                      </Button>
+                    </motion.div>
                   )}
 
                   {!auth?.googleId && !auth?.facebookId && (
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-2"
-                      onClick={() => setIsModalOpen(true)}
+                    <motion.div
+                      variants={{
+                        visible: { opacity: 1, y: 0 },
+                        hidden: { opacity: 0, y: -20 }
+                      }}
                     >
-                      <Key className="h-4 w-4 text-blue-500" />
-                      Đổi mật khẩu
-                    </Button>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start gap-2"
+                        onClick={() => {
+                          setIsModalOpen(true);
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <Key className="h-4 w-4 text-blue-500" />
+                        Đổi mật khẩu
+                      </Button>
+                    </motion.div>
                   )}
 
-                  <Separator className="my-1" />
+                  <Separator className="my-1 bg-blue-100 dark:bg-blue-800" />
 
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start gap-2 text-destructive hover:text-destructive"
-                    onClick={handleLogout}
+                  <motion.div
+                    variants={{
+                      visible: { opacity: 1, y: 0 },
+                      hidden: { opacity: 0, y: -20 }
+                    }}
                   >
-                    <LogOut className="h-4 w-4" />
-                    Đăng xuất
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Đăng xuất
+                    </Button>
+                  </motion.div>
                 </>
               ) : (
-                <Button
-                  variant="outline"
-                  className="w-full gap-2"
-                  onClick={() => navigate("/login")}
+                <motion.div
+                  variants={{
+                    visible: { opacity: 1, y: 0 },
+                    hidden: { opacity: 0, y: -20 }
+                  }}
                 >
-                  <LogIn className="h-4 w-4" />
-                  Đăng nhập
-                </Button>
+                  <Button
+                    variant="default"
+                    className="w-full gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-md"
+                    onClick={() => {
+                      navigate("/login");
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Đăng nhập
+                  </Button>
+                </motion.div>
               )}
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -25,6 +25,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "react-toastify";
+import useAuthToken from "@/utils/userAuthToken";
 
 // Schema validation
 const passwordSchema = z
@@ -44,6 +45,7 @@ const passwordSchema = z
   });
 
 const ChangePasswordModal = ({ open, onOpenChange }) => {
+  const auth = useAuthToken();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -62,7 +64,7 @@ const ChangePasswordModal = ({ open, onOpenChange }) => {
   const onSubmit = async (values) => {
     setLoading(true);
     try {
-      const res = await changePassword({
+      const res = await changePassword(auth.userId,{
         oldPassword: values.currentPassword,
         newPassword: values.newPassword,
       });

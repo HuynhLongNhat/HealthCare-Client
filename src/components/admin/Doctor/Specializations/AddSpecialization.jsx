@@ -95,7 +95,7 @@ const AddSpecialization = () => {
   };
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
+    <div className="p-4 max-w-4xl mx-auto mt-20">
       <Card>
         <CardHeader className="flex flex-row items-center gap-4">
           <Button
@@ -106,7 +106,7 @@ const AddSpecialization = () => {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h2 className="text-2xl font-bold">Thêm chuyên khoa mới</h2>
+            <h2 className="text-2xl text-blue-500 font-bold">Thêm chuyên khoa mới</h2>
             <p className="text-muted-foreground">
               Thêm thông tin chi tiết cho chuyên khoa mới
             </p>

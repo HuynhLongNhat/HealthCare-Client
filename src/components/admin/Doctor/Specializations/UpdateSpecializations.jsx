@@ -113,7 +113,7 @@ const UpdateSpecialization = () => {
   };
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
+    <div className="p-4 max-w-4xl mx-auto mt-20">
       <Card>
         <CardHeader className="flex flex-row items-center gap-4">
           <Button
@@ -124,7 +124,7 @@ const UpdateSpecialization = () => {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h2 className="text-2xl font-bold">Chỉnh sửa thông tin chuyên khoa </h2>
+            <h2 className="text-2xl text-blue-500 font-bold">Chỉnh sửa thông tin chuyên khoa </h2>
             <p className="text-muted-foreground">
           Cập nhật thông tin cho chuyên khoa
             </p>

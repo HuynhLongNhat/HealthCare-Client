@@ -69,7 +69,6 @@ const ChatBot = () => {
 
     try {
       const res = await handleAsk({ question: inputMessage });
-      console.log("Res" ,res)
       const botMessage = {
         text:  <ResponseFormatter content={res.answer }/> || "Xin lỗi, tôi chưa có câu trả lời cho câu hỏi này.",
         isBot: true,

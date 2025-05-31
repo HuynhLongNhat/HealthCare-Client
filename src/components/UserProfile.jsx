@@ -23,8 +23,11 @@ import {  Link, useParams } from "react-router-dom";
 import { getDistricts, getProvinces, getWards } from "@/api/address.api";
 import { Button } from "./ui/button";
 import useAuthToken from "@/utils/userAuthToken";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/store/user.slice";
 
 const UserProfile = () => {
+  const dispatch = useDispatch()
   const { userId } = useParams();
   const auth = useAuthToken();
   const [isLoading, setIsLoading] = useState(false);
@@ -248,8 +251,9 @@ const UserProfile = () => {
       const response = await updateUserProfile(userId, updateData);
       if (response?.EC === 0) {
         await fetchUserProfile();
-        toast.success("Cập nhật thông tin thành công");
+        toast.success(response.EM);
         setIsEditing(false);
+        dispatch(setUser(response.DT));
       }
       if (response.EC === -1) {
         toast.error(response.EM);

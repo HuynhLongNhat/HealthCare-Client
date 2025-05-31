@@ -7,25 +7,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 
-const DeleteModal = ({ show, handleClose, data, handleDelete, fetch }) => {
-  const confirmDelete = async () => {
-    try {
-      const res = await handleDelete();
-      if (res && res?.EC === 0) {
-        toast.success(res.EM);
-        handleClose();
-        fetch();
-      } else if (res && res?.EC === -1) {
-        toast.error(res.EM);
-        handleClose();
-      }
-    } catch (error) {
-      console.error("Error deleting", error);
-      toast.error("Đã xảy ra lỗi trong quá trình xóa.");
-    }
+const DeleteModal = ({ show, handleClose, data, handleDelete }) => {
+  const confirmDelete =  () => {
+     handleDelete()
   };
 
   return (
@@ -34,7 +20,7 @@ const DeleteModal = ({ show, handleClose, data, handleDelete, fetch }) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-red-600 text-lg">
             <AlertTriangle className="w-5 h-5" />
-            Xác nhận xóa {data?.name || data?.full_name || data?.room_name || data?.medication_name}
+            Xác nhận xóa {data?.name || data?.full_name || data?.room_name}
           </DialogTitle>
           <DialogDescription className="text-sm text-gray-600 mt-2">
             Bạn có chắc chắn muốn tiếp tục? <br />

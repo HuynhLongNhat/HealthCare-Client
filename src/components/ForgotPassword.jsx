@@ -38,11 +38,11 @@ const ForgotPassword = () => {
     const { email } = data;
     try {
       const res = await forgotPassword({ email });
-      if (res && res.data.EC === 0) {
-        toast.success(res.data.EM);
+      if (res && res.EC === 0) {
+        toast.success(res.EM);
         form.reset();
-      } else {
-        toast.error(res.data.EM);
+      } else if ( res.EC === -1 || res.EC === -2) {
+        toast.error(res.EM);
         form.reset();
       }
     } catch (error) {

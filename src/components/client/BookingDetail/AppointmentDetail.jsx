@@ -10,6 +10,7 @@ import {
   CheckCircle,
   X,
   CircleSlash,
+  FileText,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ import PatientInfo from "./PatientInfo";
 import DoctorInfo from "./DoctorInfo";
 import ClinicInfo from "./ClinicInfo";
 import NoAppointment from "./NoAppointment";
+import MedicalExaminationResults from "./Prescription/Prescription/MedicalExaminationResults";
 
 const statusConfig = {
   1: {
@@ -92,23 +94,29 @@ const AppointmentDetail = ({ booking , fetch }) => {
       </div>
 
       <Tabs defaultValue="info" className="w-full">
-        <TabsList className="mb-4 w-full grid grid-cols-4 gap-2">
+        <TabsList className="mb-4 w-full grid grid-cols-5 gap-2">
           <TabsTrigger value="info" className="flex items-center gap-2">
-            <Info className="h-4 w-4" />
+            <Info className="h-4 w-4 text-blue-600" />
             Thông tin chung
           </TabsTrigger>
           <TabsTrigger value="patient" className="flex items-center gap-2">
-            <User className="h-4 w-4" />
+            <User className="h-4 w-4 text-blue-600" />
             Bệnh nhân
           </TabsTrigger>
+
+           <TabsTrigger value="medical_examination_results" className="flex items-center gap-2">
+            <FileText  className="h-4 w-4 text-blue-600" />
+           Kết quả khám bệnh
+          </TabsTrigger>
           <TabsTrigger value="doctor" className="flex items-center gap-2">
-            <Stethoscope className="h-4 w-4" />
+            <Stethoscope className="h-4 w-4 text-blue-600" />
             Bác sĩ
           </TabsTrigger>
           <TabsTrigger value="clinic" className="flex items-center gap-2">
-            <Building className="h-4 w-4" />
+            <Building className="h-4 w-4 text-blue-600" />
             Phòng khám
           </TabsTrigger>
+          
         </TabsList>
 
         {/* Tab Contents */}
@@ -119,7 +127,10 @@ const AppointmentDetail = ({ booking , fetch }) => {
         <TabsContent value="patient">
           <PatientInfo booking={booking} />
         </TabsContent>
-
+     
+    <TabsContent value="medical_examination_results" className="space-y-6">
+        <MedicalExaminationResults booking={booking} />
+      </TabsContent>
         <TabsContent value="doctor">
           <DoctorInfo booking={booking} />
         </TabsContent>
@@ -127,6 +138,8 @@ const AppointmentDetail = ({ booking , fetch }) => {
         <TabsContent value="clinic">
           <ClinicInfo booking={booking} />
         </TabsContent>
+
+         
       </Tabs>
     </div>
   );

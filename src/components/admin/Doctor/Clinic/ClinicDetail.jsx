@@ -93,7 +93,7 @@ const ClinicDetail = () => {
         <div className="flex flex-col md:flex-row">
           {/* Image section - more subtle presentation */}
           {clinicDetail?.avatar && (
-            <div className="md:w-1/3 h-64  relative overflow-hidden">
+            <div className="md:w-1/3  w-full h-64  relative overflow-hidden">
               <img
                 src={clinicDetail.avatar}
                 alt={clinicDetail.name}
@@ -225,7 +225,7 @@ const ClinicDetail = () => {
                           <img
                             src={image.imageUrl}
                             alt={`Ảnh ${index + 1}`}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                           />
                           <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-40 text-white text-sm p-2 text-center">
                             Ảnh {index + 1}

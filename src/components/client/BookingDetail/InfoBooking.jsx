@@ -159,6 +159,7 @@ const InfoBooking = ({ booking, fetch }) => {
     try {
       const res = await createPaymentHistory({
         patient_id: booking?.patientData?.id,
+        doctor_id : booking?.doctorData.userData.id ,
         amount: booking.doctorData.doctor.consultation_fee,
         transfer_content: `Thanh toán khám bệnh cho bác sĩ ${booking.doctorData.userData.full_name}`,
         payment_date: new Date(),
@@ -167,8 +168,8 @@ const InfoBooking = ({ booking, fetch }) => {
       
       if (res.EC === 0) {
         await confirmPayment(booking.appointment?.id)
-        await fetch() // This will update the booking through ViewBookingDetail
-        await fetchPaymentByAppointment() // This will update payment status
+        await fetch() 
+        await fetchPaymentByAppointment() 
         toast.success(res.EM)
       }
     } catch (error) {

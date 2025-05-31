@@ -26,8 +26,8 @@ export const logoutUser = (refreshToken) => {
   return axios.post("/logout", { refreshToken });
 };
 
-export const changePassword = (userData) => {
-  return axios.post("/change-password", userData);
+export const changePassword = (userId,userData) => {
+  return axios.post(`/${userId}/change-password`, userData);
 };
 
 export const forgotPassword = (userData) => {

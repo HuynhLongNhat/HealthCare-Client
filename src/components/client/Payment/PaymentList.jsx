@@ -57,6 +57,7 @@ const PaymentList = () => {
     try {
       setIsLoading(true);
       const res = await getAllMyPayment(userId);
+      console.log("all my payment" , res)
       if (res.EC === 0) {
         setMyPayments(res.DT);
       } else {
@@ -241,7 +242,7 @@ const PaymentList = () => {
                   Người thanh toán
                 </TableHead>
                 <TableHead className="font-semibold text-gray-700">
-                  Nội dung
+               Người nhận
                 </TableHead>
                 <TableHead className="font-semibold text-gray-700">
                   Ngày thanh toán
@@ -307,7 +308,7 @@ const PaymentList = () => {
                       {payment.appointmentData?.patientData?.full_name || "N/A"}
                     </TableCell>
                     <TableCell className="max-w-[200px] truncate">
-                      {payment.paymentData.transfer_content}
+                      {payment.appointmentData?.doctorData.userData.full_name}
                     </TableCell>
                     <TableCell>
                       {payment.paymentData.payment_date

@@ -37,3 +37,40 @@ export const createPaymentLink = async (data) => {
    
 };
 
+export const createDiagnosis = async (data) => {
+    return axios.post("/diagnosis", data);
+};
+
+export const getDiagnosisByAppointmentId = async (appointmentId) => {
+    return axios.get(`/${appointmentId}/diagnosis`);
+};
+
+export const deleteDiagnosis = async (diagnosisId) => {
+    return axios.delete(`/diagnosis/${diagnosisId}`);
+};
+
+export const updateDiagnosis = async (diagnosisId , data) => {
+    return axios.put(`/diagnosis/${diagnosisId}`,data);
+};
+
+
+export const createPrescription = async (data) => {
+    return axios.post("/prescription", data);
+};
+
+export const getPrescriptionByAppointmentId = async (appointmentId) => {
+    return axios.get(`/${appointmentId}/prescription`);
+};
+
+export const deletePrescription = async (prescriptionId) => {
+    return axios.delete(`/prescription/${prescriptionId}`);
+};
+export const updatePrescription = async (prescription_detailsId , data) => {
+    return axios.put(`/prescription/${prescription_detailsId}`,data);
+};
+
+
+
+export const sendPrescription = async (prescriptionId,data) => {
+    return axios.post(`/prescription/${prescriptionId}/send`, data);
+};
