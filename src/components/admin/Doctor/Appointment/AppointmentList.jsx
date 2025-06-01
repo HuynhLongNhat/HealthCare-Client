@@ -247,7 +247,7 @@ const AppointmentList = () => {
         <CardHeader className="  rounded-t-lg">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <CardTitle className=" text-2xl font-bold">
+              <CardTitle className=" text-2xl font-bold text-blue-600">
                 Quản lý lịch khám bệnh
               </CardTitle>
               <CardDescription className="">

@@ -59,7 +59,7 @@ const DoctorStatistic = () => {
   }
 
   return (
-    <div className="p-4 mt-20">
+    <div className="p-4 ">
       <Card>
         <CardHeader>
           <div className="flex items-center space-x-2">

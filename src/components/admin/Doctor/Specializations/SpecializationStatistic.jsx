@@ -43,22 +43,26 @@ const SpecializationStatistic = () => {
   };
 
   const exportToCSV = () => {
-    if (!stats.length) return;
-    
-    const headers = "Tên chuyên khoa,Tăng trưởng (%)\n";
-    const csvContent = stats.reduce((acc, stat) => {
-      return acc + `${stat.name},${stat.growthRate.toFixed(2)}\n`;
-    }, headers);
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `thong-ke-chuyen-khoa-${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  if (!stats.length) return;
+
+  const headers = "Tên chuyên khoa,Tăng trưởng (%)\n";
+  const csvContent = stats.reduce((acc, stat) => {
+    return acc + `${stat.name},${stat.growthRate.toFixed(2)}\n`;
+  }, headers);
+
+  // Thêm BOM ở đầu để hỗ trợ tiếng Việt khi mở bằng Excel
+  const BOM = "\uFEFF";
+  const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `thong-ke-chuyen-khoa-${new Date().toISOString().slice(0,10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 
   // Top 5 chuyên khoa tăng trưởng nhanh nhất
   const topGrowing = [...stats]

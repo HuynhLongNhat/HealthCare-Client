@@ -106,6 +106,8 @@ const DoctorList = () => {
     <div className="p-4 mt-20">
       <Card>
         <CardHeader>
+             <DoctorStatistic/>
+
           <div className="mb-8">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               Quản lý bác sĩ
@@ -114,7 +116,6 @@ const DoctorList = () => {
               Quản lý thông tin bác sĩ
             </p>
           </div>
-   <DoctorStatistic/>
           <div className="flex flex-col md:flex-row justify-between items-center mb-6">
             <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-4">
               {/* Lọc chức vụ */}
