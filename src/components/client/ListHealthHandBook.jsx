@@ -1,19 +1,15 @@
 import  { useState, useEffect } from "react";
-import { Search, TrendingUp, Clock, User, Calendar, Home } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Link, useNavigate } from "react-router-dom";
+import { Search, Clock, User, Home } from "lucide-react";
+import { Link } from "react-router-dom";
 import { getAllHealthHandBook } from "@/api/doctor.api";
 import AuthorSection from "./AuthorSection";
 import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
 import LatestArticlesSection from "./LatestArticlesSection";
-import OutStandingHealthHandBook from "./OutstandingHealthHandBook";
+import OutStandingHealthHandBook from "./OutStandingHealthHandBook";
 
 const ListHealthHandBook = () => {
-  const navigate = useNavigate();
   const [handbooks, setHandbooks] = useState([]);
-  const [featuredHandbooks, setFeaturedHandbooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +23,6 @@ const ListHealthHandBook = () => {
       const res = await getAllHealthHandBook();
       if (res.EC === 0) {
         setHandbooks(res.DT);
-        setFeaturedHandbooks(res.DT.slice(0, 4));
       }
     } catch (error) {
       console.error("Failed to fetch health handbooks", error);
