@@ -40,7 +40,7 @@ const DoctorSection = () => {
      <section className="py-12 bg-gradient-to-b from-white to-blue-50">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-800">Bác sĩ </h2>
+          <h2 className="text-3xl font-bold text-gray-800">Bác sĩ </h2>
           <Button
             variant="ghost"
             className="text-blue-600 hover:text-blue-700 font-medium text-lg flex items-center group"

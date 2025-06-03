@@ -44,7 +44,6 @@ const Header = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const auth = useAuthToken();
-  console.log("auth" ,auth)
   // const [isDarkMode, setIsDarkMode] = useState(false);
   
     const displayName = userData?.full_name || auth?.full_name || auth?.email?.split("@")[0] || "GUEST";
@@ -107,7 +106,7 @@ const Header = () => {
     { to: "/clinics", icon: Building2, label: "Cơ sở y tế" },
     { to: "/specializations", icon: Stethoscope, label: "Chuyên khoa" },
     { to: "/doctors", icon: Users, label: "Bác sĩ" },
-    { to: "/cam-nang-suc-khoe", icon: FileText, label: "Cẩm nang sức khỏe" },
+    { to: "/cam-nang-suc-khoe", icon: FileText, label: "Cẩm nang" },
   ];
   
   const profileItems = auth

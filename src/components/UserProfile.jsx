@@ -19,15 +19,16 @@ import axios from "axios";
 import moment from "moment";
 import { toast } from "react-toastify";
 import { getUserProfile, updateUserProfile } from "@/api/auth.api";
-import {  Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { getDistricts, getProvinces, getWards } from "@/api/address.api";
 import { Button } from "./ui/button";
 import useAuthToken from "@/utils/userAuthToken";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/store/user.slice";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const UserProfile = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { userId } = useParams();
   const auth = useAuthToken();
   const [isLoading, setIsLoading] = useState(false);
@@ -305,17 +306,12 @@ const UserProfile = () => {
         <div className="md:w-1/3 relative bg-gradient-to-b from-blue-600 to-indigo-700 dark:from-gray-700 dark:to-gray-800 p-6 md:p-8 flex flex-col items-center">
           <div className="relative group mb-6">
             <div className="w-32 h-32 rounded-full border-4 border-white/20 overflow-hidden">
-              {avatar ? (
-                <img
-                  src={avatar}
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
-                  <UserCircle className="text-gray-400 w-20 h-20" />
-                </div>
-              )}
+              <Avatar className="h-full w-full border-2 border-primary/20 transition-transform">
+                <AvatarImage src={avatar} />
+                <AvatarFallback className="bg-gradient-to-br text-3xl from-blue-700 to-blue-500 text-white">
+                  {auth?.full_name?.charAt(0).toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
             </div>
 
             {isEditing && (

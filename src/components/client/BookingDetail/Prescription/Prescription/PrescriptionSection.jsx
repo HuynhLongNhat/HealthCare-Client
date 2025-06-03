@@ -24,7 +24,7 @@ doc.setFontSize(12);
 doc.text("ĐƠN THUỐC - Khám bệnh và kê đơn điều trị", 10, 30);
 
 const PrescriptionSection = ({ booking }) => {
-
+ 
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
   const auth = useAuthToken();
   const { appointmentId } = useParams();
@@ -119,12 +119,18 @@ const PrescriptionSection = ({ booking }) => {
       20,
       82
     );
+    const dob = booking?.patientData?.dob;
+    const formattedDob =
+      dob && moment(dob).isValid()
+        ? moment(dob).format("DD/MM/YYYY")
+        : "Chưa có thông tin";
+
+    doc.text(`Ngày sinh: ${formattedDob}`, 20, 87);
     doc.text(
-      `Ngày sinh: ${moment(booking?.patientData.dob).format("DD/MM/YYYY")}`,
-      20,
+      `Giới tính: ${booking.patientData.gender || "Chưa có thông tin"}`,
+      120,
       87
     );
-    doc.text(`Giới tính: ${booking.patientData.gender}`, 120, 87);
     doc.text(
       `Địa chỉ liên hệ: ${
         booking?.patientData?.address || "Chưa có thông tin"
@@ -224,15 +230,12 @@ const PrescriptionSection = ({ booking }) => {
     doc.setFont("Roboto-Regular", "italic");
     doc.text("(Ký, ghi rõ họ tên)", 60, finalY + 5, { align: "center" });
 
-    
-
     // 9. Lưu file
     const patientName = booking?.patientData?.full_name || "benh-nhan";
     const fileDate = moment().format("DDMMYYYY");
     doc.save(`don-thuoc-${patientName}-${fileDate}.pdf`);
   };
 
- 
   return (
     <div className="space-y-6">
       <Card className="border-0 shadow-sm">
@@ -242,46 +245,54 @@ const PrescriptionSection = ({ booking }) => {
               <Pill className="h-5 w-5 text-blue-600" />
               Đơn thuốc
             </CardTitle>
- <div className="flex gap-3 px-1 py-2">
-  {auth && (auth.role === 1 || auth.userId === booking?.doctorData?.userData?.id) && (
-    <Button
-      variant="info"
-      size="sm"
-      onClick={handleAddMedication}
-      className="flex items-center gap-2 px-3"
-      title="Thêm thuốc vào đơn" // Thêm title để vẫn có tooltip cơ bản của trình duyệt
-    >
-      <PlusCircle className="h-4 w-4" />
-      <span>Thêm thuốc</span>
-    </Button>
-  )}
-  
-  {prescription?.prescription_details?.length > 0 && (
-    <>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={generatePDF}
-        className="flex items-center gap-2 px-3 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700"
-        title="Tải xuống file PDF"
-      >
-        <FileDown className="h-4 w-4" />
-        <span>Tải PDF</span>
-      </Button>
+            <div className="flex gap-3 px-1 py-2">
+              {auth &&
+                (auth.role === 1 ||
+                  auth.userId === booking?.doctorData?.userData?.id) && (
+                  <Button
+                    variant="info"
+                    size="sm"
+                    onClick={handleAddMedication}
+                    className="flex items-center gap-2 px-3"
+                    title="Thêm thuốc vào đơn" // Thêm title để vẫn có tooltip cơ bản của trình duyệt
+                  >
+                    <PlusCircle className="h-4 w-4" />
+                    <span>Thêm thuốc</span>
+                  </Button>
+                )}
 
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setIsSendModalOpen(true)}
-        className="flex items-center gap-2 px-3 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700"
-        title="Gửi đơn thuốc cho bệnh nhân"
-      >
-        <Send className="h-4 w-4" />
-        <span>Gửi đơn</span>
-      </Button>
-    </>
-  )}
-</div>
+              {prescription?.prescription_details?.length > 0 && (
+                <>
+                  {auth &&
+                    (auth.role === 1 ||
+                      auth.userId === booking?.doctorData?.userData?.id) && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={generatePDF}
+                          className="flex items-center gap-2 px-3 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700"
+                          title="Tải xuống file PDF"
+                        >
+                          <FileDown className="h-4 w-4" />
+                          <span>Tải PDF</span>
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setIsSendModalOpen(true)}
+                          className="flex items-center gap-2 px-3 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 hover:text-blue-700"
+                          title="Gửi đơn thuốc cho bệnh nhân"
+                        >
+                          <Send className="h-4 w-4" />
+                          <span>Gửi đơn</span>
+                        </Button>
+                      </>
+                    )}
+                </>
+              )}
+            </div>
           </div>
         </CardHeader>
         <CardContent className="p-6">
@@ -322,14 +333,14 @@ const PrescriptionSection = ({ booking }) => {
         fetch={fetchPrescriptionByAppointmentId}
       />
 
-      {isSendModalOpen && 
+      {isSendModalOpen && (
         <SendPrescriptionModal
-        open={isSendModalOpen}
-        onOpenChange={setIsSendModalOpen}
-        booking={booking}
-       prescription={prescription}
-      />
-      }
+          open={isSendModalOpen}
+          onOpenChange={setIsSendModalOpen}
+          booking={booking}
+          prescription={prescription}
+        />
+      )}
     </div>
   );
 };
