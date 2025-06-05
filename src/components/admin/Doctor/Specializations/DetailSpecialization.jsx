@@ -7,10 +7,10 @@ import {
   Info,
   Stethoscope,
   Home,
-  MapPinCheck,
   Star,
   CheckCircle,
   MapPin,
+  ChevronRight,
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -63,7 +63,7 @@ const DetailSpecialization = () => {
 
   return (
     <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg mb-3">
-      <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
+      {/* <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
         <ol className="list-reset flex">
           <li>
             <Link to="/" className="text-blue-600 hover:underline">
@@ -77,12 +77,50 @@ const DetailSpecialization = () => {
             className="text-blue-500 cursor-pointer"
             onClick={() => navigate("/specializations")}
           >
-            Danh sách chuyên khoa
+            Chuyên khoa y tế
           </li>
           <li>
             <span className="mx-2">/</span>
           </li>
           <li className="text-gray-500">{specialization.name}</li>
+        </ol>
+      </nav> */}
+
+      
+     <nav className="mb-6" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2 text-sm">
+          <li className="flex items-center">
+            <Link
+              to="/"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
+            >
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
+            </Link>
+          </li>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
+          </li>
+          <li className="flex items-center cursor-pointer" onClick={() => navigate("/specializations")}>
+            <span className="text-blue-700 hover:text-blue-800 font-medium">Chuyên khoa y tế</span>
+          </li>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
+          </li>
+          <li className="flex items-center">
+            <span className="text-gray-700 font-medium">{specialization?.name}</span>
+          </li>
         </ol>
       </nav>
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Building2, Check, FileText, Home, Image, MapPin, Plus, Trash2, Upload, UploadCloud, X } from "lucide-react";
+import { ArrowLeft, Building2, Check, ChevronRight, FileText, Home, Image, MapPin, Plus, Trash2, Upload, UploadCloud, X } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -186,7 +186,7 @@ const ClinicCreate = () => {
 
   return (
     <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg mb-3">
-      <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
+      {/* <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
         <ol className="list-reset flex">
           <li>
             <Link to="/" className="text-blue-600 hover:underline">
@@ -200,7 +200,7 @@ const ClinicCreate = () => {
             className="text-blue-500 cursor-pointer"
             onClick={() => navigate("/clinics")}
           >
-            Danh sách cơ sở y tế
+            Cơ sở y tế
           </li>
           <li>
             <span className="mx-2">/</span>
@@ -215,6 +215,43 @@ const ClinicCreate = () => {
             <span className="mx-2">/</span>
           </li>
           <li className="text-gray-500">Tạo mới </li>
+        </ol>
+      </nav> */}
+      
+     <nav className="mb-6" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2 text-sm">
+          <li className="flex items-center">
+            <Link
+              to="/"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
+            >
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
+            </Link>
+          </li>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
+          </li>
+          <li className="flex items-center cursor-pointer"   onClick={() => navigate(`/clinics`)}>
+            <span className="text-blue-700 hover:text-blue-800 font-medium">Cơ sở y tế</span>
+          </li>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
+          </li>
+          <li className="flex items-center">
+            <span className="text-gray-700 font-medium">Tạo mới</span>
+          </li>
         </ol>
       </nav>
       <Card className="border-none shadow-lg mt-5">

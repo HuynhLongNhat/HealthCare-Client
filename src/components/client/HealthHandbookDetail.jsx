@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Calendar, Clock, Home, Edit, Eye, Badge } from "lucide-react";
+import { Calendar, Clock, Home, Edit, Eye, Badge, ChevronRight } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -70,34 +70,43 @@ const HealthHandbookDetail = () => {
   return (
     <>
       <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg">
-        {/* Breadcrumb */}
-        <nav className="text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
-          <ol className="list-reset flex items-center">
-            <li>
-              <Link
-                to="/"
-                className="text-blue-600 hover:underline flex items-center"
-              >
-                <Home size={18} className="mr-1" />
-              </Link>
-            </li>
-            <li>
-              <span className="mx-2">/</span>
-            </li>
-            <li>
-              <Link
-                to="/"
-                className="text-blue-600 hover:underline flex items-center"
-              >
-                Cẩm nang sức khỏe
-              </Link>
-            </li>
-            <li>
-              <span className="mx-2">/</span>
-            </li>
-            <li className="text-gray-500">{handbook?.title}</li>
-          </ol>
-        </nav>
+        {/* Breadcrumb */}    
+     <nav className="mb-6" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2 text-sm">
+          <li className="flex items-center">
+            <Link
+              to="/"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
+            >
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
+            </Link>
+          </li>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
+          </li>
+          <li className="flex items-center cursor-pointer" onClick={() => navigate("/cam-nang-suc-khoe")}>
+            <span className="text-blue-700 hover:text-blue-800 font-medium">Cẩm nang sức khỏe</span>
+          </li>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
+          </li>
+          <li className="flex items-center">
+            <span className="text-gray-700 font-medium">{handbook?.title}</span>
+          </li>
+        </ol>
+      </nav>
         <div className="rounded-md relative w-full h-[40vh] md:h-[50vh] overflow-hidden bg-gradient-to-b from-blue-900/70 to-blue-900/90 flex items-center">
           {auth &&  auth.userId === handbook.userData.id &&
             (

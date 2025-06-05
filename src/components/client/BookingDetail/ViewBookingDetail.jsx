@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { Home } from "lucide-react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { ChevronRight, Home } from "lucide-react";
 
 import { getBookingDetail } from "@/api/appointment.api";
 import useAuthToken from "@/utils/userAuthToken";
@@ -10,9 +10,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { setBooking } from "@/store/appointment.slice";
 
 const ViewBookingDetail = () => {
+  const navigate = useNavigate();
   const { appointmentId } = useParams();
-   const dispatch = useDispatch()
-  const booking = useSelector((state) => state.appointment.currentBooking)
+  const dispatch = useDispatch();
+  const booking = useSelector((state) => state.appointment.currentBooking);
   const [loading, setLoading] = useState(true);
   const auth = useAuthToken();
   useEffect(() => {
@@ -20,20 +21,20 @@ const ViewBookingDetail = () => {
   }, [appointmentId]);
 
   const fetchBookingDetail = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await getBookingDetail(appointmentId)
+      const res = await getBookingDetail(appointmentId);
       if (res.EC === 0) {
-        dispatch(setBooking(res.DT))
+        dispatch(setBooking(res.DT));
       } else {
-        console.error("Error fetching booking details:", res.EM)
+        console.error("Error fetching booking details:", res.EM);
       }
     } catch (error) {
-      console.error("Error fetching booking details:", error)
+      console.error("Error fetching booking details:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
   if (loading) {
     return (
       <div className="container mx-auto p-6 mt-20 flex justify-center items-center min-h-[50vh]">
@@ -45,62 +46,65 @@ const ViewBookingDetail = () => {
   if (!booking) {
     return (
       <>
-        <NoAppointment/>
+        <NoAppointment />
       </>
-     )
+    );
   }
 
   return (
     <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg">
       {/* Breadcrumb */}
-      <nav className="text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
-        <ol className="list-reset flex items-center">
-          <li>
+
+      <nav className="mb-6" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2 text-sm">
+          <li className="flex items-center">
             <Link
               to="/"
-              className="text-blue-600 hover:underline flex items-center"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
             >
-              <Home size={18} className="mr-1" />
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
             </Link>
           </li>
-          <li>
-            <span className="mx-2">/</span>
-          </li>
-          <li>
-            {auth.role === 3 && (
-              <Link
-                to={`/${auth.userId}/appointments`}
-                className="text-blue-600 hover:underline"
-              >
-                Lịch khám của tôi
-              </Link>
-            )}
+          {auth.role === 3 && (
+            <>
+              <li className="flex items-center">
+                <ChevronRight
+                  size={16}
+                  className="text-gray-400 mx-1"
+                  aria-hidden="true"
+                />
+              </li>
 
-            {auth.role === 2 && (
-              <Link
-                to={`/doctor/${auth.userId}`}
-                className="text-blue-600 hover:underline"
+              <li
+                className="flex items-center cursor-pointer"
+                onClick={() => navigate(`/${auth.userId}/appointments`)}
               >
-                Lịch khám của tôi
-              </Link>
-            )}
+                <span className="text-blue-700 hover:text-blue-800 font-medium">
+                  Lịch khám của tôi
+                </span>
+              </li>
+            </>
+          )}
 
-            
-            {auth.role === 1 && (
-              <Link
-                to={`/doctor/appointments`}
-                className="text-blue-600 hover:underline"
-              >
-                Lịch khám của tôi
-              </Link>
-            )}
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
           </li>
-          <li>
-            <span className="mx-2">/</span>
+          <li className="flex items-center">
+            <span className="text-gray-700 font-medium">
+              Lịch khám #{booking.appointment.id}
+            </span>
           </li>
-          <li className="text-gray-500">Chi tiết lịch khám</li>
         </ol>
       </nav>
+
       <AppointmentDetail fetch={fetchBookingDetail} booking={booking} />
     </div>
   );

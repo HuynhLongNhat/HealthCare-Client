@@ -42,7 +42,7 @@ const formSchema = z.object({
 const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-   const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -53,12 +53,16 @@ const LoginForm = () => {
   });
 
   useEffect(() => {
-    const token = searchParams.get('token');
+    const token = searchParams.get("token");
     if (token) {
       try {
         localStorage.setItem("token", token);
-        window.history.replaceState({}, document.title, window.location.pathname);
-        navigate('/');
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname
+        );
+        navigate("/");
         toast.success("Đăng nhập thành công");
       } catch (error) {
         console.error("Lỗi xử lý đăng nhập:", error);
@@ -73,8 +77,8 @@ const LoginForm = () => {
       const res = await loginUser(data);
       if (res && res.EC === 0) {
         const { accessToken, user } = res.DT;
-          localStorage.setItem("token", accessToken);
-          localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("token", accessToken);
+        localStorage.setItem("user", JSON.stringify(user));
         toast.success(res.EM);
         navigate("/");
       }
@@ -106,10 +110,13 @@ const LoginForm = () => {
           <div className="flex items-center mb-6 md:mb-8">
             <Link
               to="/"
-              className="flex items-center text-blue-500 hover:text-blue-600 transition-colors"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
             >
-              <Home className="h-4 w-4 mr-2 text-blue-500" />
-              <span className="text-sm">Trang chủ</span>
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
             </Link>
           </div>
 
@@ -118,7 +125,7 @@ const LoginForm = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Đăng nhập</h2>
+            <h2 className="text-3xl font-bold text-blue-600 mb-2">Đăng nhập</h2>
             <p className="text-gray-600 mb-8">Chào mừng bạn quay trở lại! 👋</p>
 
             {/* Social Login Buttons */}

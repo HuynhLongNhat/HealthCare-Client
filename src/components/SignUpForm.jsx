@@ -108,20 +108,22 @@ const SignupForm = () => {
           <div className="flex items-center mb-6 md:mb-8">
             <Link
               to="/"
-              className="flex items-center text-blue-500 hover:text-blue-600 transition-colors"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
             >
-              <Home className="h-4 w-4 mr-2 text-blue-500" />
-              <span className="text-sm">Trang chủ</span>
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
             </Link>
           </div>
-
 
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 mb-2">
               Đăng ký
             </h2>
             <p className="text-gray-600 mb-6 md:mb-8">
@@ -145,7 +147,6 @@ const SignupForm = () => {
                             {...field}
                             placeholder="Nhập tên đăng nhập"
                             className="w-full px-10 py-6 border rounded-lg focus:outline-blue-500 focus:outline-2 transition-colors"
-
                             disabled={isLoading}
                           />
                         </FormControl>
@@ -154,7 +155,7 @@ const SignupForm = () => {
                     </FormItem>
                   )}
                 />{" "}
-                   <FormField
+                <FormField
                   control={form.control}
                   name="full_name"
                   render={({ field }) => (
@@ -167,7 +168,6 @@ const SignupForm = () => {
                             {...field}
                             placeholder="Nhâp họ và tên"
                             className="w-full px-10 py-6 border rounded-lg focus:outline-blue-500 focus:outline-2 transition-colors"
-
                             disabled={isLoading}
                           />
                         </FormControl>
@@ -333,7 +333,7 @@ const SignupForm = () => {
             </p>
           </motion.div>
         </div>
- <div className="hidden md:flex md:w-1/2 lg:w-1/2 bg-gradient-to-br items-center justify-center">
+        <div className="hidden md:flex md:w-1/2 lg:w-1/2 bg-gradient-to-br items-center justify-center">
           <motion.div
             className="flex w-1/2 items-center justify-center p-8"
             initial={{ x: -100, opacity: 0 }}
@@ -355,8 +355,7 @@ const SignupForm = () => {
           </div>
         </div>
       </div>
-      </div>
-
+    </div>
   );
 };
 

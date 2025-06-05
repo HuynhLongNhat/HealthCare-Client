@@ -24,7 +24,7 @@ const SpecializationStatistic = () => {
     try {
       setLoading(true);
       const response = await getAllSpecializations();
-      
+      // Kiểm tra nếu response và response.DT tồn tại
       if (response && response.DT) {
         // Thêm dữ liệu tăng trưởng giả lập (0-20%)
         const formattedStats = response.DT.map(spec => ({
@@ -82,7 +82,7 @@ const SpecializationStatistic = () => {
       {/* Header */}
       <Card className="border-0 shadow-sm">
         <CardHeader className="pb-2">
-          <CardTitle className="text-2xl font-bold text-gray-800">Thống Kê Chuyên Khoa</CardTitle>
+          <CardTitle className="text-3xl font-bold text-blue-600">Thống Kê Chuyên Khoa</CardTitle>
           <CardDescription className="text-gray-600">
             Phân tích số lượng và tốc độ tăng trưởng các chuyên khoa
           </CardDescription>

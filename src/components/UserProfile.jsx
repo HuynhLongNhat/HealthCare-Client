@@ -14,6 +14,7 @@ import {
   Globe,
   UserCircle,
   Home,
+  ChevronRight,
 } from "lucide-react";
 import axios from "axios";
 import moment from "moment";
@@ -288,22 +289,35 @@ const UserProfile = () => {
 
   return (
     <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg">
-      <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
-        <ol className="list-reset flex">
-          <li>
-            <Link to="/" className="text-blue-600 hover:underline">
-              <Home size={18} />
+      <nav className="mb-6" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2 text-sm">
+          <li className="flex items-center">
+            <Link
+              to="/"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
+            >
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
             </Link>
           </li>
-          <li>
-            <span className="mx-2">/</span>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
           </li>
-          <li className="text-gray-500">Thông tin cá nhân</li>
+          <li className="flex items-center">
+            <span className="text-gray-700 font-medium">Thông tin cá nhân</span>
+          </li>
         </ol>
       </nav>
       <div className="max-w-7xl mt-5 mx-auto  dark:bg-gray-800 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
         {/* Sidebar */}
-        <div className="md:w-1/3 relative bg-gradient-to-b from-blue-600 to-indigo-700 dark:from-gray-700 dark:to-gray-800 p-6 md:p-8 flex flex-col items-center">
+        <div className="md:w-1/3 relative bg-gradient-to-b from-blue-500 to-indigo-600 dark:from-gray-700 dark:to-gray-800 p-6 md:p-8 flex flex-col items-center">
           <div className="relative group mb-6">
             <div className="w-32 h-32 rounded-full border-4 border-white/20 overflow-hidden">
               <Avatar className="h-full w-full border-2 border-primary/20 transition-transform">
@@ -364,7 +378,7 @@ const UserProfile = () => {
           {isEditing ? (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="flex justify-between items-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
+                <h3 className="text-2xl font-bold text-blue-600 dark:text-white">
                   Chỉnh sửa hồ sơ
                 </h3>
                 <Button variant="ghost" onClick={cancelEdit}>
@@ -580,7 +594,7 @@ const UserProfile = () => {
           ) : (
             <div className="space-y-8">
               <div className="flex justify-between items-center">
-                <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
+                <h3 className="text-2xl font-bold text-blue-600 dark:text-white">
                   Thông tin cá nhân
                 </h3>
                 {Number(userId) === Number(auth?.userId) && (

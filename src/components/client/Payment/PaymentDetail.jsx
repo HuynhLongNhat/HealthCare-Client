@@ -34,6 +34,7 @@ import {
   CircleSlash,
   CheckCircle,
   X,
+  ChevronRight,
 } from "lucide-react";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -186,27 +187,42 @@ const PaymentDetail = () => {
     <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg mb-3">
       {/* Breadcrumb */}
       {auth?.role !== 1 && (
-        <nav
-          className="flex items-center space-x-1 text-sm text-gray-600 mb-1"
-          aria-label="Breadcrumb"
-        >
-          <Link
-            to="/"
-            className="flex items-center text-blue-600 hover:text-blue-800 transition"
-          >
-            <Home size={16} className="mr-1.5" />
-            <span>Trang chủ</span>
-          </Link>
-          <span className="text-gray-400">/</span>
-          <span
-            className="text-blue-600 hover:text-blue-800 cursor-pointer transition"
-            onClick={() => navigate(`/${userId}/lich-su-thanh-toan`)}
-          >
-            Lịch sử thanh toán
-          </span>
-          <span className="text-gray-400">/</span>
-          <span className="text-gray-500">Chi tiết thanh toán</span>
-        </nav>
+     <nav className="mb-6" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2 text-sm">
+          <li className="flex items-center">
+            <Link
+              to="/"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
+            >
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
+            </Link>
+          </li>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
+          </li>
+          <li className="flex items-center cursor-pointer"onClick={() => navigate(`/${userId}/lich-su-thanh-toan`)}>
+            <span className="text-blue-700 hover:text-blue-800 font-medium">Lịch sử thanh toán</span>
+          </li>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
+          </li>
+          <li className="flex items-center">
+              <span className="text-gray-700 font-medium">Hóa đơn  #HD-{paymentDetail.paymentData?.id}</span>
+          </li>
+        </ol>
+      </nav>
       )}
 
       {/* Main Content */}

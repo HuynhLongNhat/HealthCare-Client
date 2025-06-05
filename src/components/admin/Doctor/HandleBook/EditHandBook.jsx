@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import {
   Building2,
   Check,
+  ChevronRight,
   FileText,
   Home,
   Image,
@@ -13,7 +14,7 @@ import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import * as z from "zod";
-import {  createNewHealthHandbook, getDetailHealthHandBook, updateHealthHandBook } from "@/api/doctor.api";
+import {  getDetailHealthHandBook, updateHealthHandBook } from "@/api/doctor.api";
 import { toast } from "react-toastify";
 import MarkdownEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
@@ -49,7 +50,6 @@ const EditHandBook = () => {
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState(null);
-
   const form = useForm({
     resolver: zodResolver(clinicFormSchema),
     defaultValues: {
@@ -164,7 +164,7 @@ const EditHandBook = () => {
 
   return (
     <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg mb-3">
-      <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
+      {/* <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
         <ol className="list-reset flex">
           <li>
             <Link to="/" className="text-blue-600 hover:underline">
@@ -193,6 +193,53 @@ const EditHandBook = () => {
             <span className="mx-2">/</span>
           </li>
           <li className="text-gray-500">Cập nhật </li>
+        </ol>
+      </nav> */}
+      
+     <nav className="mb-6" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2 text-sm">
+          <li className="flex items-center">
+            <Link
+              to="/"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
+            >
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
+            </Link>
+          </li>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
+          </li>
+          <li className="flex items-center cursor-pointer" onClick={() => navigate("/cam-nang-suc-khoe")}>
+            <span className="text-blue-700 hover:text-blue-800 font-medium">Cẩm nang sức khỏe</span>
+          </li>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
+          </li>
+          <li className="flex items-center cursor-pointer" onClick={() => navigate(`/cam-nang-suc-khoe/${slug}`)}>
+            <span className="text-blue-700 font-medium">{form.watch("title")}</span>
+          </li>
+           <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
+          </li>
+          <li className="flex items-center">
+            <span className="text-gray-700 font-medium">Cập nhật</span>
+          </li>
         </ol>
       </nav>
       <Card className="border-none shadow-lg mt-5">

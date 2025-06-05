@@ -19,6 +19,7 @@ import {
   User,
   CreditCard,
   ChevronDown,
+  BookOpenText,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
@@ -106,7 +107,7 @@ const Header = () => {
     { to: "/clinics", icon: Building2, label: "Cơ sở y tế" },
     { to: "/specializations", icon: Stethoscope, label: "Chuyên khoa" },
     { to: "/doctors", icon: Users, label: "Bác sĩ" },
-    { to: "/cam-nang-suc-khoe", icon: FileText, label: "Cẩm nang" },
+    { to: "/cam-nang-suc-khoe", icon: BookOpenText, label: "Cẩm nang" },
   ];
   
   const profileItems = auth

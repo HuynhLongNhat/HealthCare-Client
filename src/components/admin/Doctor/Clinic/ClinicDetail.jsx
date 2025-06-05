@@ -3,7 +3,15 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Stethoscope, Edit, Info, Loader, Home } from "lucide-react";
+import {
+  MapPin,
+  Stethoscope,
+  Edit,
+  Info,
+  Loader,
+  Home,
+  ChevronRight,
+} from "lucide-react";
 import { getClinicDetail } from "@/api/doctor.api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -46,26 +54,40 @@ const ClinicDetail = () => {
 
   return (
     <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg mb-3">
-      <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
-        <ol className="list-reset flex">
-          <li>
-            <Link to="/" className="text-blue-600 hover:underline">
-              <Home size={18} />
+      <nav className="mb-6" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2 text-sm">
+          <li className="flex items-center">
+            <Link
+              to="/"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
+            >
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
             </Link>
           </li>
-          <li>
-            <span className="mx-2">/</span>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
           </li>
-          <li
-            className="text-blue-500 cursor-pointer"
-            onClick={() => navigate("/clinics")}
-          >
-            Danh sách cơ sở y tế
+          <li className="flex items-center cursor-pointer" onClick={() => navigate("/clinics")}>
+            <span className="text-blue-700 hover:text-blue-800 font-medium">Cơ sở y tế</span>
           </li>
-          <li>
-            <span className="mx-2">/</span>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
           </li>
-          <li className="text-gray-500">{clinicDetail?.name}</li>
+          <li className="flex items-center">
+            <span className="text-gray-700 font-medium">{clinicDetail?.name}</span>
+          </li>
         </ol>
       </nav>
       <div className="relative rounded-2xl w-full bg-white overflow-hidden shadow-lg border border-gray-100">

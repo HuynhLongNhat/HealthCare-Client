@@ -66,12 +66,12 @@ const ResetPassword = () => {
     },
   });
 
-  useEffect(() => {
-    if (!token) {
-      toast.error("Token không hợp lệ hoặc đã hết hạn");
-      navigate("/login");
-    }
-  }, [token, navigate]);
+  // useEffect(() => {
+  //   if (!token) {
+  //     toast.error("Token không hợp lệ hoặc đã hết hạn");
+  //     navigate("/login");
+  //   }
+  // }, [token, navigate]);
 
   const onSubmit = async (values) => {
     setLoading(true);
@@ -103,39 +103,21 @@ const ResetPassword = () => {
       setLoading(false);
     }
   };
-
-  // if (!token) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-50">
-  //       <motion.div
-  //         initial={{ opacity: 0, y: -20 }}
-  //         animate={{ opacity: 1, y: 0 }}
-  //         className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg shadow-lg"
-  //         role="alert"
-  //       >
-  //         <strong className="font-bold">Lỗi!</strong>
-  //         <span className="block sm:inline ml-2">
-  //           Token không hợp lệ hoặc đã hết hạn.
-  //         </span>
-  //       </motion.div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="container mx-auto px-4 py-8 lg:w-6xl">
       <div className="w-full rounded-2xl flex flex-col lg:flex-row">
         <div className="w-full lg:w-1/2 p-4 sm:p-6 md:p-8">
           <div className="flex items-center mb-6 md:mb-8">
-             <div className="flex items-center mb-6 md:mb-8">
             <Link
               to="/"
-              className="flex items-center text-blue-500 hover:text-blue-600 transition-colors"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
             >
-              <Home className="h-4 w-4 mr-2 text-blue-500" />
-              <span className="text-sm">Trang chủ</span>
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
             </Link>
-          </div>
           </div>
 
           <motion.div
@@ -143,7 +125,7 @@ const ResetPassword = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-blue-600 mb-4">
               Khôi phục mật khẩu
             </h2>
             <p className="text-gray-600 mb-6 w-[270px] sm:w-full">

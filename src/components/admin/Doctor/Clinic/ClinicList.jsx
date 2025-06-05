@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Loader, Trash, Eye, Plus, MoreHorizontal, Home, Search, Building2 } from "lucide-react";
+import { Loader, Trash, Eye, Plus, MoreHorizontal, Home, Search, Building2, ChevronRight } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -129,20 +129,49 @@ return deleteClinic(dataToDelete.id);
       className="container mx-auto p-6 mt-16 mb-3"
     >
       {auth.role !== 1 && (
-        <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
-          <Link to="/" className="hover:text-blue-700 text-blue-600 transition-colors">
-            <Home size={18} />
-          </Link>
-          <span>/</span>
-          <span 
-            className="text-blue-600 hover:text-blue-700 cursor-pointer transition-colors"
-            onClick={() => navigate("/clinics")}
-          >
-            Danh sách cơ sở y tế
-          </span>
-          <span>/</span>
-          <span className="text-gray-400">Cơ sở của tôi</span>
-        </nav>
+        // <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
+        //   <Link to="/" className="hover:text-blue-700 text-blue-600 transition-colors">
+        //     <Home size={18} />
+        //   </Link>
+        //   <span>/</span>
+        //   <span 
+        //     className="text-blue-600 hover:text-blue-700 cursor-pointer transition-colors"
+        //     onClick={() => navigate("/clinics")}
+        //   >
+        //     Cơ sở y tế
+        //   </span>
+        //   <span>/</span>
+        //   <span className="text-gray-400">Cơ sở của tôi</span>
+        // </nav>
+
+        
+     <nav className="mb-6" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2 text-sm">
+          <li className="flex items-center">
+            <Link
+              to="/"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
+            >
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
+            </Link>
+          </li>
+       
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
+          </li>
+          <li className="flex items-center">
+            <span className="text-gray-700 font-medium">Cơ sở của tôi</span>
+          </li>
+        </ol>
+      </nav>
       )}
 
       <Card className="bg-white shadow-lg rounded-xl border-0">
@@ -152,8 +181,8 @@ return deleteClinic(dataToDelete.id);
           <div className="flex items-center space-x-3">
             <Building2 className="h-8 w-8 text-blue-500" />
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Danh sách cơ sở y tế
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Cơ sở y tế
               </h1>
               <p className="text-gray-500 mt-1">
                 Quản lý và theo dõi thông tin các cơ sở y tế

@@ -84,7 +84,7 @@ const SpecializationList = () => {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Danh sách chuyên khoa
+              Chuyên khoa y tế
             </h1>
             <p className="text-gray-600 dark:text-gray-300 my-2">
               Quản lý thông tin các chuyên khoa y tế

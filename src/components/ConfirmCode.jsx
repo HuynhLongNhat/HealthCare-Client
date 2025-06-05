@@ -146,15 +146,16 @@ const ConfirmCode = () => {
       <div className="w-full rounded-2xl flex flex-col lg:flex-row">
         <div className="w-full lg:w-1/2 p-4 sm:p-6 md:p-8">
           <div className="flex items-center mb-6 md:mb-8">
-             <div className="flex items-center mb-6 md:mb-8">
             <Link
               to="/"
-              className="flex items-center text-blue-500 hover:text-blue-600 transition-colors"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
             >
-              <Home className="h-4 w-4 mr-2 text-blue-500" />
-              <span className="text-sm">Trang chủ</span>
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
             </Link>
-          </div>
           </div>
 
           <motion.div
@@ -162,7 +163,7 @@ const ConfirmCode = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">
+            <h2 className="text-3xl font-bold text-blue-600 mb-2">
               {" "}
               Xác thực tài khoản
             </h2>
@@ -179,67 +180,72 @@ const ConfirmCode = () => {
                 noValidate
               >
                 <FormField
-  control={form.control}
-  name="verificationCode"
-  render={({ field }) => (
-    <FormItem>
-      <div className="mb-6 text-center">
-        <FormLabel className="block text-sm font-medium text-gray-700 mb-1">
-          Mã xác minh
-        </FormLabel>
-        <p className="text-xs text-gray-500">Nhập 6 chữ số đã gửi đến email của bạn</p>
-      </div>
+                  control={form.control}
+                  name="verificationCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="mb-6 text-center">
+                        <FormLabel className="block text-sm font-medium text-gray-700 mb-1">
+                          Mã xác minh
+                        </FormLabel>
+                        <p className="text-xs text-gray-500">
+                          Nhập 6 chữ số đã gửi đến email của bạn
+                        </p>
+                      </div>
 
-      <div className="flex justify-center gap-3">
-        {[0, 1, 2, 3, 4, 5].map((index) => (
-          <FormControl key={index}>
-            <motion.div
-              whileTap={{ scale: 0.95 }}
-              transition={{ duration: 0.1 }}
-              className="relative"
-            >
-              <input
-                ref={(el) => inputRefs[index][1](el)}
-                type="text"
-                inputMode="numeric"
-                value={field.value[index]}
-                onChange={(e) => handleCodeChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                onPaste={index === 0 ? handlePaste : undefined}
-                onFocus={(e) => e.target.select()}
-                className={`
+                      <div className="flex justify-center gap-3">
+                        {[0, 1, 2, 3, 4, 5].map((index) => (
+                          <FormControl key={index}>
+                            <motion.div
+                              whileTap={{ scale: 0.95 }}
+                              transition={{ duration: 0.1 }}
+                              className="relative"
+                            >
+                              <input
+                                ref={(el) => inputRefs[index][1](el)}
+                                type="text"
+                                inputMode="numeric"
+                                value={field.value[index]}
+                                onChange={(e) =>
+                                  handleCodeChange(index, e.target.value)
+                                }
+                                onKeyDown={(e) => handleKeyDown(index, e)}
+                                onPaste={index === 0 ? handlePaste : undefined}
+                                onFocus={(e) => e.target.select()}
+                                className={`
                   w-14 h-14 md:w-16 md:h-16
                   text-2xl font-semibold text-center
                   bg-white border-2 rounded-lg
                   focus:outline-none focus:ring-2 focus:ring-offset-2
                   transition-all duration-150
-                  ${field.value[index] 
-                    ? 'border-blue-500 text-blue-600 focus:ring-blue-200 shadow-blue-100 shadow-inner' 
-                    : 'border-gray-300 text-gray-800 focus:ring-gray-200 hover:border-gray-400'
+                  ${
+                    field.value[index]
+                      ? "border-blue-500 text-blue-600 focus:ring-blue-200 shadow-blue-100 shadow-inner"
+                      : "border-gray-300 text-gray-800 focus:ring-gray-200 hover:border-gray-400"
                   }
-                  ${isLoading ? 'bg-gray-50 cursor-not-allowed' : ''}
+                  ${isLoading ? "bg-gray-50 cursor-not-allowed" : ""}
                 `}
-                disabled={isLoading}
-                maxLength={1}
-              />
-              
-              {/* Animation indicator */}
-              {field.value[index] && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute inset-x-0 -bottom-1 mx-auto w-6 h-1 bg-blue-500 rounded-full"
-                />
-              )}
-            </motion.div>
-          </FormControl>
-        ))}
-      </div>
+                                disabled={isLoading}
+                                maxLength={1}
+                              />
 
-      <FormMessage className="mt-3 text-center text-sm font-medium text-rose-500" />
-    </FormItem>
-  )}
-/>
+                              {/* Animation indicator */}
+                              {field.value[index] && (
+                                <motion.div
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className="absolute inset-x-0 -bottom-1 mx-auto w-6 h-1 bg-blue-500 rounded-full"
+                                />
+                              )}
+                            </motion.div>
+                          </FormControl>
+                        ))}
+                      </div>
+
+                      <FormMessage className="mt-3 text-center text-sm font-medium text-rose-500" />
+                    </FormItem>
+                  )}
+                />
 
                 <Button
                   type="submit"

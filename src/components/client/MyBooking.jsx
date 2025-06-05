@@ -9,6 +9,7 @@ import {
   Search,
   CircleSlash,
   Filter,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -281,22 +282,35 @@ const fetchAllMyBooking = async () => {
       }`}
     >
       {auth && auth.role === 3 && (
-        <nav className="text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
-          <ol className="list-reset flex items-center">
-            <li>
-              <Link
-                to="/"
-                className="text-blue-600 hover:underline flex items-center"
-              >
-                <Home size={18} className="mr-1" />
-              </Link>
-            </li>
-            <li>
-              <span className="mx-2">/</span>
-            </li>
-            <li className="text-gray-500">Lịch khám của tôi</li>
-          </ol>
-        </nav>
+      <nav className="mb-6" aria-label="Breadcrumb">
+  <ol className="flex items-center space-x-2 text-sm">
+    <li className="flex items-center">
+      <Link
+        to="/"
+        className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
+      >
+        <Home 
+          size={16} 
+          className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors" 
+        />
+        <span className="font-medium">Trang chủ</span>
+      </Link>
+    </li>
+    <li className="flex items-center">
+      <ChevronRight 
+        size={16} 
+        className="text-gray-400 mx-1" 
+        aria-hidden="true" 
+      />
+    </li>
+    <li className="flex items-center">
+      <span className="text-gray-700 font-medium">Lịch khám của tôi</span>
+    </li>
+  </ol>
+</nav>
+
+
+
       )}
 
       <div className="mb-8">

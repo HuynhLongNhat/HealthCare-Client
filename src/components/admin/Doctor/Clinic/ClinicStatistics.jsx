@@ -19,9 +19,16 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const StatCard = ({ icon: Icon, title, value, trend, color, secondaryValue }) => {
+const StatCard = ({
+  icon: Icon,
+  title,
+  value,
+  trend,
+  color,
+  secondaryValue,
+}) => {
   const isPositive = trend?.value >= 0;
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -34,8 +41,18 @@ const StatCard = ({ icon: Icon, title, value, trend, color, secondaryValue }) =>
           <Icon size={22} className="text-white" />
         </div>
         {trend && (
-          <div className={`flex items-center px-2 py-1 rounded-full text-xs font-medium ${isPositive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-            {isPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+          <div
+            className={`flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+              isPositive
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            {isPositive ? (
+              <ArrowUpRight size={14} />
+            ) : (
+              <ArrowDownRight size={14} />
+            )}
             <span className="ml-1">{Math.abs(trend.value)}%</span>
           </div>
         )}
@@ -68,8 +85,8 @@ const ChartCard = ({ data }) => {
           >
             <defs>
               <linearGradient id="colorGrowth" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1}/>
-                <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
+                <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
@@ -93,27 +110,29 @@ const ChartCard = ({ data }) => {
 const ClinicStatistics = ({ clinics }) => {
   const stats = useMemo(() => {
     const totalClinics = clinics?.length || 0;
-    
+
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
-    const newClinics = clinics?.filter(clinic => {
-      const createdDate = new Date(clinic.createdAt);
-      return createdDate >= thirtyDaysAgo;
-    }).length || 0;
-    
+
+    const newClinics =
+      clinics?.filter((clinic) => {
+        const createdDate = new Date(clinic.createdAt);
+        return createdDate >= thirtyDaysAgo;
+      }).length || 0;
+
     const uniqueDoctors = new Set();
-    clinics?.forEach(clinic => {
+    clinics?.forEach((clinic) => {
       if (clinic.doctor_id) {
         uniqueDoctors.add(clinic.doctor_id);
       }
     });
-    
+
     return {
       total: totalClinics,
       new: newClinics,
       doctorsCount: uniqueDoctors.size,
-      growthRate: totalClinics > 0 ? Math.round((newClinics / totalClinics) * 100) : 0
+      growthRate:
+        totalClinics > 0 ? Math.round((newClinics / totalClinics) * 100) : 0,
     };
   }, [clinics]);
 
@@ -131,12 +150,13 @@ const ClinicStatistics = ({ clinics }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-gray-800">Thống kê tổng quan</h2>
-        <div className="text-sm text-gray-500">Cập nhật lần cuối: Hôm nay</div>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          Thống kê cơ sở y tế
+        </h1>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
+        <StatCard
           icon={Building2}
           title="Tổng số cơ sở y tế"
           value={stats.total}
@@ -144,7 +164,7 @@ const ClinicStatistics = ({ clinics }) => {
           color="bg-indigo-500"
           secondaryValue="cơ sở"
         />
-        <StatCard 
+        <StatCard
           icon={Calendar}
           title="Cơ sở mới (30 ngày)"
           value={stats.new}
@@ -152,7 +172,7 @@ const ClinicStatistics = ({ clinics }) => {
           color="bg-emerald-500"
           secondaryValue="cơ sở mới"
         />
-        <StatCard 
+        <StatCard
           icon={Users}
           title="Bác sĩ quản lý"
           value={stats.doctorsCount}
@@ -160,7 +180,7 @@ const ClinicStatistics = ({ clinics }) => {
           color="bg-violet-500"
           secondaryValue="bác sĩ"
         />
-        <StatCard 
+        <StatCard
           icon={Activity}
           title="Tỷ lệ phát triển"
           value={`${stats.growthRate}%`}

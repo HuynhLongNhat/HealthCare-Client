@@ -41,7 +41,7 @@ const ForgotPassword = () => {
       if (res && res.EC === 0) {
         toast.success(res.EM);
         form.reset();
-      } else if ( res.EC === -1 || res.EC === -2) {
+      } else if (res.EC === -1 || res.EC === -2) {
         toast.error(res.EM);
         form.reset();
       }
@@ -57,15 +57,16 @@ const ForgotPassword = () => {
       <div className="w-full rounded-2xl flex flex-col lg:flex-row">
         <div className="w-full lg:w-1/2 p-4 sm:p-6 md:p-8">
           <div className="flex items-center mb-6 md:mb-8">
-            <div className="flex items-center mb-6 md:mb-8">
-            <Link
-              to="/"
-              className="flex items-center text-blue-500 hover:text-blue-600 transition-colors"
-            >
-              <Home className="h-4 w-4 mr-2 text-blue-500" />
-              <span className="text-sm">Trang chủ</span>
-            </Link>
-          </div>
+              <Link
+                to="/"
+                className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
+              >
+                <Home
+                  size={16}
+                  className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+                />
+                <span className="font-medium">Trang chủ</span>
+              </Link>
           </div>
 
           <motion.div
@@ -73,7 +74,7 @@ const ForgotPassword = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-blue-600 mb-2">
               Quên mật khẩu
             </h2>
             <p className="text-gray-600 mb-6 w-[270px] sm:w-full ">

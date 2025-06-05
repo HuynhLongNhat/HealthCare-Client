@@ -21,6 +21,7 @@ import {
   ArrowUpDown,
   Calendar,
   CheckCircle2,
+  ChevronRight,
   Clock,
   Filter,
   Home,
@@ -57,7 +58,7 @@ const PaymentList = () => {
     try {
       setIsLoading(true);
       const res = await getAllMyPayment(userId);
-      console.log("all my payment" , res)
+      console.log("all my payment", res);
       if (res.EC === 0) {
         setMyPayments(res.DT);
       } else {
@@ -71,45 +72,47 @@ const PaymentList = () => {
   };
 
   const filteredPayments = myPayments
-  .filter((payment) => {
-    const paymentDate = new Date(payment.paymentData?.payment_date);
-    const paymentDateOnly = new Date(paymentDate.getFullYear(), paymentDate.getMonth(), paymentDate.getDate());
+    .filter((payment) => {
+      const paymentDate = new Date(payment.paymentData?.payment_date);
+      const paymentDateOnly = new Date(
+        paymentDate.getFullYear(),
+        paymentDate.getMonth(),
+        paymentDate.getDate()
+      );
 
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
 
-    const thisWeekStart = new Date(today);
-    thisWeekStart.setDate(today.getDate() - today.getDay());
+      const thisWeekStart = new Date(today);
+      thisWeekStart.setDate(today.getDate() - today.getDay());
 
-    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const thisYearStart = new Date(now.getFullYear(), 0, 1);
+      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const thisYearStart = new Date(now.getFullYear(), 0, 1);
 
-    switch (dateFilter) {
-      case "today":
-        return paymentDateOnly.getTime() === today.getTime();
-      case "yesterday":
-        return paymentDateOnly.getTime() === yesterday.getTime();
-      case "week":
-        return paymentDate >= thisWeekStart;
-      case "month":
-        return paymentDate >= thisMonthStart;
-      case "year":
-        return paymentDate >= thisYearStart;
-      default:
-        return true; // 'all', 'newest', 'oldest' => không lọc ngày
-    }
-  })
-  .sort((a, b) => {
-    const dateA = new Date(a.paymentData?.payment_date);
-    const dateB = new Date(b.paymentData?.payment_date);
+      switch (dateFilter) {
+        case "today":
+          return paymentDateOnly.getTime() === today.getTime();
+        case "yesterday":
+          return paymentDateOnly.getTime() === yesterday.getTime();
+        case "week":
+          return paymentDate >= thisWeekStart;
+        case "month":
+          return paymentDate >= thisMonthStart;
+        case "year":
+          return paymentDate >= thisYearStart;
+        default:
+          return true; // 'all', 'newest', 'oldest' => không lọc ngày
+      }
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.paymentData?.payment_date);
+      const dateB = new Date(b.paymentData?.payment_date);
 
-    if (dateFilter === "oldest") return dateA - dateB;
-    return dateB - dateA; // mặc định newest và các loại filter như today/week/month...
-  });
-
-
+      if (dateFilter === "oldest") return dateA - dateB;
+      return dateB - dateA; // mặc định newest và các loại filter như today/week/month...
+    });
 
   const handlePaymentClick = (paymentId) => {
     navigate(`/${userId}/lich-su-thanh-toan/${paymentId}`);
@@ -129,30 +132,36 @@ const PaymentList = () => {
   return (
     <div className="container mx-auto p-4 md:p-6 mt-16 bg-white rounded-lg">
       {auth?.role !== 1 && (
-        <nav className="text-sm text-gray-600 mb-6" aria-label="Breadcrumb">
-          <ol className="inline-flex items-center space-x-1 md:space-x-2">
-            <li className="inline-flex items-center">
+        <nav className="mb-6" aria-label="Breadcrumb">
+          <ol className="flex items-center space-x-2 text-sm">
+            <li className="flex items-center">
               <Link
                 to="/"
-                className="inline-flex items-center text-blue-600 hover:text-blue-800"
+                className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
               >
-                <Home size={16} className="mr-1" />
-                Trang chủ
+                <Home
+                  size={16}
+                  className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+                />
+                <span className="font-medium">Trang chủ</span>
               </Link>
             </li>
-            <li>
-              <div className="flex items-center">
-                <span className="mx-1 text-gray-400">/</span>
-                <span className="ml-1 text-gray-500">Lịch sử thanh toán</span>
-              </div>
+            <li className="flex items-center">
+              <ChevronRight
+                size={16}
+                className="text-gray-400 mx-1"
+                aria-hidden="true"
+              />
+            </li>
+            <li className="flex items-center">
+              <span className="text-gray-700 font-medium">
+                Lịch sử thanh toán
+              </span>
             </li>
           </ol>
         </nav>
       )}
-      {auth && auth.role !== 3 && (
-        <PaymentStatistics userId={userId} />
-        
-    )}
+      {auth && auth.role !== 3 && <PaymentStatistics userId={userId} />}
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -242,7 +251,7 @@ const PaymentList = () => {
                   Người thanh toán
                 </TableHead>
                 <TableHead className="font-semibold text-gray-700">
-               Người nhận
+                  Người nhận
                 </TableHead>
                 <TableHead className="font-semibold text-gray-700">
                   Ngày thanh toán
@@ -329,10 +338,11 @@ const PaymentList = () => {
                           Thành công
                         </Badge>
                       )}
-                      {payment.paymentData.status?.status_name === "CANCELLED" && (
+                      {payment.paymentData.status?.status_name ===
+                        "CANCELLED" && (
                         <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
                           <XCircle className="h-3 w-3 mr-1" />
-                         Hủy bỏ
+                          Hủy bỏ
                         </Badge>
                       )}
                       {payment.paymentData.status?.status_name ===

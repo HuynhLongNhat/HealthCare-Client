@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
   Briefcase,
+  ChevronRight,
   Edit,
   Home,
   MapPinCheck,
@@ -44,31 +45,51 @@ const DoctorProfile = () => {
 
   return (
     <div className="container mx-auto p-6 mt-20 bg-white shadow-md rounded-lg mb-3">
-      <nav className="text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
-        <ol className="list-reset flex">
-          <li>
-            <Link to="/" className="text-blue-600 hover:underline">
-              <Home size={18} />
+      <nav className="mb-6" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2 text-sm">
+          <li className="flex items-center">
+            <Link
+              to="/"
+              className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
+            >
+              <Home
+                size={16}
+                className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+              />
+              <span className="font-medium">Trang chủ</span>
             </Link>
           </li>
-          <li>
-            <span className="mx-2">/</span>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
           </li>
           <li
-            className="text-blue-500 cursor-pointer"
+            className="flex items-center cursor-pointer"
             onClick={() => navigate("/doctors")}
           >
-            Danh sách bác sĩ
+            <span className="text-blue-700 hover:text-blue-800 font-medium">
+              Đội ngũ bác sĩ
+            </span>
           </li>
-          <li>
-            <span className="mx-2">/</span>
+          <li className="flex items-center">
+            <ChevronRight
+              size={16}
+              className="text-gray-400 mx-1"
+              aria-hidden="true"
+            />
           </li>
-          <li className="text-gray-500">
-            {doctorProfile?.userData?.full_name}
+          <li className="flex items-center">
+            <span className="text-gray-700 font-medium">
+              {" "}
+              {doctorProfile?.doctor?.position || "Bác sĩ"} {" "}
+              {doctorProfile?.userData?.full_name}
+            </span>
           </li>
         </ol>
       </nav>
-
       <div className="relative bg-blue-50 rounded-xl mb-4 shadow">
         <div className="flex flex-col md:flex-row gap-6 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           {/* Avatar bác sĩ với hiệu ứng đẹp */}
@@ -179,8 +200,7 @@ const DoctorProfile = () => {
       <Tabs defaultValue="info" className="w-full">
         <TabsList
           className={`grid w-full gap-2 grid-cols-2 md:grid-cols-4 ${
-            auth &&
-            ( auth.userId === doctorProfile.doctor.user_id)
+            auth && auth.userId === doctorProfile.doctor.user_id
               ? "lg:grid-cols-5"
               : "lg:grid-cols-4"
           }`}
@@ -194,17 +214,14 @@ const DoctorProfile = () => {
           <TabsTrigger value="reviews" className="text-center">
             Đánh giá
           </TabsTrigger>
-          {auth &&
-            (
-              auth.userId === doctorProfile.doctor.user_id) && (
-              <TabsTrigger value="appointments" className="text-center">
-                Lịch khám
-              </TabsTrigger>
-            )}
-              <TabsTrigger value="meetings" className="text-center">
-             Tư vấn sức khỏe
-              </TabsTrigger>
-            
+          {auth && auth.userId === doctorProfile.doctor.user_id && (
+            <TabsTrigger value="appointments" className="text-center">
+              Lịch khám
+            </TabsTrigger>
+          )}
+          <TabsTrigger value="meetings" className="text-center">
+            Tư vấn sức khỏe
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="info">
@@ -218,7 +235,7 @@ const DoctorProfile = () => {
         </TabsContent>
         <TabsContent value="appointments">
           {/* <AppointmentManager /> */}
-          <MyBooking/>
+          <MyBooking />
         </TabsContent>
         <TabsContent value="meetings">
           <MeetingList />
