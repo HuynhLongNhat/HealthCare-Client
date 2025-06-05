@@ -14,6 +14,7 @@ const OutStandingHealthHandBook = () => {
   }, []);
   const fetchOutStatingHealthHandBook = async () => {
     const res = await getOutStandinglHealthHandBook();
+    console.log(res);
     if (res.EC === 0) {
       setHandbooks(res.DT);
     }
@@ -57,6 +58,7 @@ const OutStandingHealthHandBook = () => {
                         {handbooks[0].doctor.DT.userData.full_name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
+                    <span className="mx-1">{handbooks[0].doctor.DT.doctor.position}</span>       
                     <span>{handbooks[0].doctor.DT.userData.full_name}</span>
                   </div>
                   <div className="flex items-center">

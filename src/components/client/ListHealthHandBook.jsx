@@ -2,14 +2,10 @@ import { useState, useEffect } from "react";
 import {
   Search,
   Clock,
-  User,
   Home,
   ChevronRight,
-  File,
-  Book,
-  BookOpen,
-  Notebook,
   BookOpenText,
+  Users,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getAllHealthHandBook } from "@/api/doctor.api";
@@ -127,7 +123,7 @@ const ListHealthHandBook = () => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div className="flex items-center gap-x-3">
               <Clock className="w-6 h-6 text-blue-600" />
-              <h2 className="text-2xl font-bold text-gray-800">
+              <h2 className="text-2xl font-bold text-blue-600">
                 Bài viết mới nhất
               </h2>
             </div>
@@ -137,7 +133,7 @@ const ListHealthHandBook = () => {
               </Badge>
               {searchTerm && (
                 <span className="text-sm text-gray-500">
-                  Tìm kiếm: "{searchTerm}"
+                  Tìm kiếm: &ldquo;{searchTerm}&ldquo;
                 </span>
               )}
             </div>
@@ -185,9 +181,9 @@ const ListHealthHandBook = () => {
         <section>
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-x-3">
-              <User className="w-6 h-6 text-blue-600" />
-              <h2 className="text-2xl font-bold text-gray-800">
-                Đội ngũ chuyên gia
+              <Users className="w-6 h-6 text-blue-600" />
+              <h2 className="text-2xl font-bold text-blue-600">
+                Tác giả nội dung
               </h2>
             </div>
           </div>

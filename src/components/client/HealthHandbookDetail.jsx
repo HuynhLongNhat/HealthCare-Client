@@ -24,6 +24,7 @@ const HealthHandbookDetail = () => {
   }, [slug]);
   const fetchDetailHealthHandBook = async () => {
     const res = await getDetailHealthHandBook(slug);
+    console.log(res);
     if (res.EC === 0) {
       setHandbook(res.DT);
     }
@@ -34,6 +35,7 @@ const HealthHandbookDetail = () => {
 
   const fetchAllMyHandbook = async () => {
     const res = await getAllHealthHandBookByDoctorId(handbook?.author_id);
+
     if (res.EC === 0) {
       setMyHandBooks(res.DT);
     }
@@ -142,6 +144,7 @@ const HealthHandbookDetail = () => {
                       {handbook?.userData?.full_name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
+                    <span>{handbook?.doctor?.position}</span>
                   <span>{handbook?.userData?.full_name}</span>
                 </div>
                 <div className="flex items-center">

@@ -58,7 +58,6 @@ const PaymentList = () => {
     try {
       setIsLoading(true);
       const res = await getAllMyPayment(userId);
-      console.log("all my payment", res);
       if (res.EC === 0) {
         setMyPayments(res.DT);
       } else {
