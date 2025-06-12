@@ -24,12 +24,10 @@ const SpecializationStatistic = () => {
     try {
       setLoading(true);
       const response = await getAllSpecializations();
-      // Kiểm tra nếu response và response.DT tồn tại
       if (response && response.DT) {
-        // Thêm dữ liệu tăng trưởng giả lập (0-20%)
         const formattedStats = response.DT.map(spec => ({
           ...spec,
-          growthRate: Math.random() * 20 // Tăng trưởng từ 0-20%
+          growthRate: Math.random() * 20 
         }));
         
         setStats(formattedStats);
