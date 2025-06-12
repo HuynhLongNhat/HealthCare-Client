@@ -110,7 +110,7 @@ const HealthHandbookSection = () => {
                       <CardFooter className="px-6 pb-6 pt-0 border-t border-gray-100 flex justify-between text-sm text-gray-500">
                         <div className="flex items-center">
                           <User size={14} className="mr-1" />
-                          <span>{handbook.doctor.DT.userData.full_name}</span>
+                          <span>{handbook.doctor.DT.userData?.full_name}</span>
                         </div>
                         <div className="flex items-center">
                           <Clock size={14} className="mr-1" />
