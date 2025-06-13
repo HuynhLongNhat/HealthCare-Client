@@ -52,7 +52,7 @@ const OutStandingHealthHandBook = () => {
                   <div className="flex items-center">
                     <Avatar className="h-12 w-12 mr-2">
                       <AvatarImage 
-                        src={handbooks[0].doctor.DT.userData.profile_picture}
+                        src={handbooks[0].doctor.DT?.userData?.profile_picture}
                       />
                       <AvatarFallback className="bg-blue-500 text-white">
                         {handbooks[0].doctor.DT.userData.full_name.charAt(0)}

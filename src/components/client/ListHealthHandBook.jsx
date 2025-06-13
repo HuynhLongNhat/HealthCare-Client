@@ -16,7 +16,6 @@ import LatestArticlesSection from "./LatestArticlesSection";
 import OutStandingHealthHandBook from "./OutStandingHealthHandBook";
 import { motion } from "framer-motion";
 import { Badge } from "../ui/badge";
-import { load } from "@fingerprintjs/fingerprintjs";
 import Loading from "../Loading";
 
 const ListHealthHandBook = () => {
