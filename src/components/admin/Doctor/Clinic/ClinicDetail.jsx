@@ -92,7 +92,7 @@ const ClinicDetail = () => {
       </nav>
       <div className="relative rounded-2xl w-full bg-white overflow-hidden shadow-lg border border-gray-100">
         {/* Edit button for authorized users - positioned more discreetly */}
-        {(auth?.role === 1 || auth?.userId === clinicDetail.doctor_id) &&
+        {(auth?.role === 1 || auth?.userId === clinicDetail?.doctor_id) &&
           clinicDetail && (
             <div className="absolute top-4 right-4 z-20">
               <Button
@@ -101,7 +101,7 @@ const ClinicDetail = () => {
                 className="flex items-center p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all"
                 onClick={() =>
                   navigate(
-                    `/doctor/${auth.userId}/clinics/${clinicDetail.id}/update`
+                    `/doctor/${auth?.userId}/clinics/${clinicDetail?.id}/update`
                   )
                 }
               >
@@ -117,8 +117,8 @@ const ClinicDetail = () => {
           {clinicDetail?.avatar && (
             <div className="md:w-1/3  w-full h-64  relative overflow-hidden">
               <img
-                src={clinicDetail.avatar}
-                alt={clinicDetail.name}
+                src={clinicDetail?.avatar}
+                alt={clinicDetail?.name}
                 className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />

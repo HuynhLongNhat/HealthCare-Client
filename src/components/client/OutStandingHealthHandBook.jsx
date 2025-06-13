@@ -55,16 +55,16 @@ const OutStandingHealthHandBook = () => {
                         src={handbooks[0].doctor.DT?.userData?.profile_picture}
                       />
                       <AvatarFallback className="bg-blue-500 text-white">
-                        {handbooks[0].doctor.DT.userData.full_name.charAt(0)}
+                        {handbooks[0]?.doctor?.DT?.userData?.full_name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="mx-1">{handbooks[0].doctor.DT.doctor.position}</span>       
-                    <span>{handbooks[0].doctor.DT.userData.full_name}</span>
+                    <span className="mx-1">{handbooks[0]?.doctor?.DT?.doctor?.position}</span>       
+                    <span>{handbooks[0]?.doctor?.DT?.userData?.full_name}</span>
                   </div>
                   <div className="flex items-center">
                     <Calendar size={14} className="mr-1" />
                     <span>
-                      {moment(handbooks[0].handbook.createdAt).format(
+                      {moment(handbooks[0]?.handbook?.createdAt).format(
                         "DD/MM/YYYY"
                       )}
                     </span>
