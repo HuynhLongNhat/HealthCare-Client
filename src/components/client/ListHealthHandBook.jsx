@@ -16,6 +16,8 @@ import LatestArticlesSection from "./LatestArticlesSection";
 import OutStandingHealthHandBook from "./OutStandingHealthHandBook";
 import { motion } from "framer-motion";
 import { Badge } from "../ui/badge";
+import { load } from "@fingerprintjs/fingerprintjs";
+import Loading from "../Loading";
 
 const ListHealthHandBook = () => {
   const [handbooks, setHandbooks] = useState([]);
@@ -43,6 +45,11 @@ const ListHealthHandBook = () => {
     handbook.handbook.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  if(loading) {
+    return (
+      <Loading/>
+    );
+  }
   return (
     <div className="container mx-auto p-4 md:p-6 mt-16 md:mt-20">
       {/* Decorative background elements */}
@@ -139,13 +146,7 @@ const ListHealthHandBook = () => {
             </div>
           </div>
 
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-              {[1, 2, 3].map((item) => (
-                <div key={item} className="h-96 bg-gray-200 rounded-xl"></div>
-              ))}
-            </div>
-          ) : filteredHandbooks.length === 0 ? (
+          { filteredHandbooks.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

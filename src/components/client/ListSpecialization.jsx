@@ -7,6 +7,7 @@ import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import Loading from "../Loading";
 
 // Animation components
 const AnimatedCard = ({ children, index }) => {
@@ -30,6 +31,8 @@ const AnimatedCard = ({ children, index }) => {
 const ListSpecialization = () => {
   const [specializations, setSpecializations] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,15 +45,22 @@ const ListSpecialization = () => {
 
   const fetchSpecializations = async () => {
     try {
+      setLoading(true);
+
       let res = await getAllSpecializations();
       if (res && res.EC === 0) {
         setSpecializations(res.DT);
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="container mx-auto p-4 md:p-6 mt-16 md:mt-20">
       {/* Decorative background elements */}
@@ -171,8 +181,6 @@ const ListSpecialization = () => {
                     <h3 className="text-lg font-semibold text-gray-800 text-center group-hover:text-blue-600 transition-colors">
                       {specialty.name}
                     </h3>
-
-                    
                   </CardContent>
                 </Card>
               </AnimatedCard>

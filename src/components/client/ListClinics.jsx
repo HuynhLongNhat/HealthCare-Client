@@ -16,6 +16,7 @@ import { ComboBox } from "../Combobox";
 import { Separator } from "../ui/separator";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import Loading from "../Loading";
 
 // Animation variants
 const containerVariants = {
@@ -66,6 +67,7 @@ const ListClinics = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
   const [provinces, setProvinces] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -77,16 +79,19 @@ const ListClinics = () => {
     filterClinics();
   }, [searchTerm, selectedProvince, clinics]);
 
-  const fetchClinics = async () => {
-    try {
-      const res = await getAllClinics();
-      if (res && res.EC === 0) {
-        setClinics(res.DT);
-      }
-    } catch (error) {
-      console.error(error);
+const fetchClinics = async () => {
+  try {
+    setLoading(true);
+    const res = await getAllClinics();
+    if (res && res.EC === 0) {
+      setClinics(res.DT);
     }
-  };
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const fetchProvinces = async () => {
     const provincesData = await getProvinces();
@@ -110,7 +115,11 @@ const ListClinics = () => {
 
     setFilteredClinics(result);
   };
-
+  if (loading) {
+    return (
+     <Loading/>
+    );
+  }
   return (
     <div className="container mx-auto p-4 md:p-6 mt-16 md:mt-20">
       {/* Decorative background elements */}

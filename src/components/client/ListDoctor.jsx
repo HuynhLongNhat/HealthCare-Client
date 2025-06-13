@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { getAllDoctors, getAllSpecializations } from "@/api/doctor.api";
@@ -17,6 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Badge } from "../ui/badge";
+import Loading from "../Loading";
 
 // Animation components
 const AnimatedCard = ({ children, index }) => {
@@ -142,6 +144,9 @@ const ListDoctor = () => {
     })) || []),
   ];
 
+  if (isLoading) {
+    return <Loading />;
+  }
   return (
     <div className="container mx-auto p-4 md:p-6 mt-16 md:mt-20">
       {/* Decorative background elements */}
@@ -269,24 +274,7 @@ const ListDoctor = () => {
         </motion.div>
 
         {/* Doctors List */}
-        {isLoading ? (
-          <div className="grid grid-cols-1 gap-6">
-            {[...Array(4)].map((_, index) => (
-              <Card key={index} className="animate-pulse">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 rounded-full bg-gray-200"></div>
-                    <div className="space-y-3 flex-1">
-                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : filteredDoctors.length > 0 ? (
+     { filteredDoctors.length > 0 ? (
           <div className="space-y-4">
             {filteredDoctors.map((doctor, index) => (
               <AnimatedCard key={doctor.userData.id} index={index}>
