@@ -89,7 +89,7 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         >
-          <Route path="/profile/:userId" element={<UserProfile />} />
+          <Route path="/:username" element={<UserProfile />} />
           <Route path=":userId/appointments" element={<MyBooking />} />
           <Route
             path=":userId/appointment/:appointmentId"

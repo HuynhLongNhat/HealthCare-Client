@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Eye,
   EyeOff,
@@ -10,7 +10,7 @@ import {
   Home,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
@@ -30,6 +30,8 @@ import { FaFacebook } from "react-icons/fa";
 import loginBg from "@/assets/login-bg.svg";
 import loginTree from "@/assets/login-tree.svg";
 import { FcGoogle } from "react-icons/fc";
+import slugify from "slugify";
+import { v4 as uuidv4 } from "uuid";
 
 const formSchema = z
   .object({
@@ -73,6 +75,24 @@ const SignupForm = () => {
       confirmPassword: "",
     },
   });
+
+  
+    const full_name = useWatch({
+      control: form.control,
+      name: "full_name",
+    });
+  
+    useEffect(() => {
+      if (full_name) {
+        const slug = slugify(full_name, {
+          lower: true,
+          strict: true,
+          locale: "vi",
+        });
+        const uniqueSlug = `${slug}-${uuidv4().split("-")[0]}`;
+        form.setValue("username", uniqueSlug);
+      }
+    }, [full_name, form.setValue]);
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
@@ -133,28 +153,7 @@ const SignupForm = () => {
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4 md:space-y-6"
-              >
-                <FormField
-                  control={form.control}
-                  name="username"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tên đăng nhập</FormLabel>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-                        <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="Nhập tên đăng nhập"
-                            className="w-full px-10 py-6 border rounded-lg focus:outline-blue-500 focus:outline-2 transition-colors"
-                            disabled={isLoading}
-                          />
-                        </FormControl>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />{" "}
+              >            
                 <FormField
                   control={form.control}
                   name="full_name"

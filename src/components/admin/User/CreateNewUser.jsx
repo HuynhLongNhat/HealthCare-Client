@@ -54,7 +54,7 @@ const CreateNewUser = () => {
         ...values,
       });
       if (newUser.EC === 0) {
-        navigate("/admin/users");
+        navigate(-1);
         toast.success(newUser.EM);
       }
       if (newUser.EC === -1) {
@@ -235,7 +235,7 @@ const CreateNewUser = () => {
                   type="button"
                   variant="outline"
                   disabled={isLoading}
-                  onClick={() => navigate("/admin/users")}
+                  onClick={() => navigate(-1)}
                   className="dark:border-gray-500 dark:text-white hover:dark:bg-gray-700"
                 >
                   <X />

@@ -128,23 +128,7 @@ return deleteClinic(dataToDelete.id);
       variants={fadeIn}
       className="container mx-auto p-6 mt-16 mb-3"
     >
-      {auth.role !== 1 && (
-        // <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
-        //   <Link to="/" className="hover:text-blue-700 text-blue-600 transition-colors">
-        //     <Home size={18} />
-        //   </Link>
-        //   <span>/</span>
-        //   <span 
-        //     className="text-blue-600 hover:text-blue-700 cursor-pointer transition-colors"
-        //     onClick={() => navigate("/clinics")}
-        //   >
-        //     Cơ sở y tế
-        //   </span>
-        //   <span>/</span>
-        //   <span className="text-gray-400">Cơ sở của tôi</span>
-        // </nav>
-
-        
+      {auth.role !== 1 && (  
      <nav className="mb-6" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-2 text-sm">
           <li className="flex items-center">

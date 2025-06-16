@@ -113,7 +113,7 @@ const Header = () => {
   const profileItems = auth
     ? [
         {
-          to: `profile/${auth.userId}`,
+          to: `/${auth.username}`,
           icon: Contact,
           label: "Thông tin cá nhân",
         },

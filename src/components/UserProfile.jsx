@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import {
   Mail,
@@ -30,7 +31,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const UserProfile = () => {
   const dispatch = useDispatch();
-  const { userId } = useParams();
+  const { username } = useParams();
   const auth = useAuthToken();
   const [isLoading, setIsLoading] = useState(false);
   const [avatar, setAvatar] = useState(null);
@@ -135,11 +136,11 @@ const UserProfile = () => {
 
   useEffect(() => {
     fetchUserProfile();
-  }, [userId]);
+  }, [username]);
 
   const fetchUserProfile = async () => {
     try {
-      const res = await getUserProfile(userId);
+      const res = await getUserProfile(username);
       if (res && res.EC === 0) {
         const userData = res.DT;
         setUserData(userData);
@@ -414,6 +415,7 @@ const UserProfile = () => {
                   <input
                     type="text"
                     name="username"
+                    disabled={true}
                     value={formData.username}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-2 rounded-lg border ${
@@ -597,7 +599,7 @@ const UserProfile = () => {
                 <h3 className="text-2xl font-bold text-blue-600 dark:text-white">
                   Thông tin cá nhân
                 </h3>
-                {Number(userId) === Number(auth?.userId) && (
+                {String(username) === String(auth?.username) && (
                   <Button onClick={() => setIsEditing(true)} variant="ghost">
                     <Edit className="w-5 h-5 text-blue-500" />
                   </Button>

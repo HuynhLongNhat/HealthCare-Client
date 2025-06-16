@@ -65,7 +65,7 @@ const statusConfig = {
 
 const MyBooking = () => {
   const auth = useAuthToken();
-  const { doctorId ,userId} = useParams();
+  const { doctorId, userId } = useParams();
   const [myBookings, setMyBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -79,34 +79,32 @@ const MyBooking = () => {
 
   useEffect(() => {
     fetchAllMyBooking();
-  }, [auth ]);
+  }, [auth]);
 
   useEffect(() => {
     // Reset về trang 1 khi bộ lọc thay đổi
     setCurrentPage(1);
   }, [selectedStatuses, searchTerm, dateFilter]);
 
-const fetchAllMyBooking = async () => {
-  setLoading(true);
-  try {
- 
-    const id = auth?.role === 2 ? doctorId : auth?.role === 3 ? userId : null;
-    if (!id) {
-      console.warn("Không có ID phù hợp để fetch booking.");
-      return;
-    }
+  const fetchAllMyBooking = async () => {
+    setLoading(true);
+    try {
+      const id = auth?.role === 2 ? doctorId : auth?.role === 3 ? userId : null;
+      if (!id) {
+        console.warn("Không có ID phù hợp để fetch booking.");
+        return;
+      }
 
-    const res = await getAllMyBooking(id);
-    if (res.EC === 0) {
-      setMyBookings(res.DT);
+      const res = await getAllMyBooking(id);
+      if (res.EC === 0) {
+        setMyBookings(res.DT);
+      }
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching bookings:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const filterByDate = (appointments, filterType) => {
     const now = new Date();
@@ -282,40 +280,39 @@ const fetchAllMyBooking = async () => {
       }`}
     >
       {auth && auth.role === 3 && (
-      <nav className="mb-6" aria-label="Breadcrumb">
-  <ol className="flex items-center space-x-2 text-sm">
-    <li className="flex items-center">
-      <Link
-        to="/"
-        className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
-      >
-        <Home 
-          size={16} 
-          className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors" 
-        />
-        <span className="font-medium">Trang chủ</span>
-      </Link>
-    </li>
-    <li className="flex items-center">
-      <ChevronRight 
-        size={16} 
-        className="text-gray-400 mx-1" 
-        aria-hidden="true" 
-      />
-    </li>
-    <li className="flex items-center">
-      <span className="text-gray-700 font-medium">Lịch khám của tôi</span>
-    </li>
-  </ol>
-</nav>
-
-
-
+        <nav className="mb-6" aria-label="Breadcrumb">
+          <ol className="flex items-center space-x-2 text-sm">
+            <li className="flex items-center">
+              <Link
+                to="/"
+                className="text-blue-600 hover:text-blue-800 transition-colors duration-200 flex items-center group"
+              >
+                <Home
+                  size={16}
+                  className="mr-2 text-blue-500 group-hover:text-blue-700 transition-colors"
+                />
+                <span className="font-medium">Trang chủ</span>
+              </Link>
+            </li>
+            <li className="flex items-center">
+              <ChevronRight
+                size={16}
+                className="text-gray-400 mx-1"
+                aria-hidden="true"
+              />
+            </li>
+            <li className="flex items-center">
+              <span className="text-gray-700 font-medium">
+                Lịch khám của tôi
+              </span>
+            </li>
+          </ol>
+        </nav>
       )}
 
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-blue-700 mb-2">
-          Lịch khám của tôi
+          Lịch khám của tôi 
         </h1>
       </div>
 
